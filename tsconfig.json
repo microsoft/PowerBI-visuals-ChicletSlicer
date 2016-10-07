@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "target": "ES5",
+    "sourceMap": true,
+    "out": "./.tmp/build/visual.js"
+  },
+  "files": [
+    ".api/v1.2.0/PowerBI-visuals.d.ts",
+
+    "typings/globals/d3/index.d.ts",
+    "typings/globals/jquery/index.d.ts",
+    "typings/globals/lodash/index.d.ts",
+
+    "node_modules/@powerbi-visuals-utils/colorutility/lib/index.d.ts",
+    "node_modules/@powerbi-visuals-utils/cssconstants/lib/index.d.ts",
+    "node_modules/@powerbi-visuals-utils/dataviewobjects/lib/index.d.ts",
+    "node_modules/@powerbi-visuals-utils/pixelconverter/lib/index.d.ts",
+    "node_modules/@powerbi-visuals-utils/valueformatter/lib/index.d.ts",
+    "src/visual.ts"
+  ]
+}
