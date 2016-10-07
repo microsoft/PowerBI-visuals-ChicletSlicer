@@ -4,6 +4,7 @@
     "@powerbi-visuals-utils/colorutility": "git+https://github.com/uve/powerbi-visuals-utils-colorutility.git",
     "@powerbi-visuals-utils/cssconstants": "git+https://github.com/uve/powerbi-visuals-utils-cssconstants.git",
     "@powerbi-visuals-utils/dataviewobjects": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-dataviewobjects.git",
+    "@powerbi-visuals-utils/imargin": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-imargin.git",
     "@powerbi-visuals-utils/pixelconverter": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-pixelconverter.git",
     "@powerbi-visuals-utils/valueformatter": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-valueformatter.git",
     "typings": "^1.4.0"

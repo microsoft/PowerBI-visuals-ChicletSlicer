@@ -29,7 +29,12 @@ module powerbi.extensibility.visual {
     // jsCommon
     import ClassAndSelector = jsCommon.CssConstants.ClassAndSelector;
     import createClassAndSelector = jsCommon.CssConstants.createClassAndSelector;
+    import IMargin = powerbi.visuals.IMargin;
     import PixelConverter = jsCommon.PixelConverter;
+    import hexToRGBString = powerbi.common.utils.ColorUtility.hexToRGBString;
+
+    import Selection = d3.Selection;
+    import UpdateSelection = d3.selection.Update;
 
     // powerbi
     import IViewport = powerbi.IViewport;
@@ -65,7 +70,6 @@ module powerbi.extensibility.visual {
 
     // powerbi.visuals
     import SelectableDataPoint = powerbi.visuals.SelectableDataPoint;
-    import IMargin = powerbi.visuals.IMargin;
     import IInteractivityService = powerbi.visuals.IInteractivityService;
     import valueFormatter = powerbi.visuals.valueFormatter;
     import createInteractivityService = powerbi.visuals.createInteractivityService;
@@ -75,443 +79,6 @@ module powerbi.extensibility.visual {
     import IInteractiveBehavior = powerbi.visuals.IInteractiveBehavior;
     import ISelectionHandler = powerbi.visuals.ISelectionHandler;
     import SelectionIdBuilder = powerbi.visuals.SelectionIdBuilder;
-
-    export interface ITableView {
-        data(data: any[], dataIdFunction: (d) => {}, dataAppended: boolean): ITableView;
-        rowHeight(rowHeight: number): ITableView;
-        columnWidth(columnWidth: number): ITableView;
-        orientation(orientation: string): ITableView;
-        rows(rows: number): ITableView;
-        columns(columns: number): ITableView;
-        viewport(viewport: IViewport): ITableView;
-        render(): void;
-        empty(): void;
-        computedColumns: number;
-        computedRows: number;
-    }
-
-    export module TableViewFactory {
-        export function createTableView(options): ITableView {
-            return new TableView(options);
-        }
-    }
-
-    export interface TableViewViewOptions {
-        enter: (selection: d3.Selection) => void;
-        exit: (selection: D3.Selection) => void;
-        update: (selection: D3.Selection) => void;
-        loadMoreData: () => void;
-        baseContainer: D3.Selection;
-        rowHeight: number;
-        columnWidth: number;
-        orientation: string;
-        rows: number;
-        columns: number;
-        viewport: IViewport;
-        scrollEnabled: boolean;
-    }
-
-    export interface TableViewGroupedData {
-        data: any[];
-        totalColumns: number;
-        totalRows: number;
-    }
-
-    export interface TableViewComputedOptions {
-        columns: number;
-        rows: number;
-    }
-
-    /**
-     * A UI Virtualized List, that uses the D3 Enter, Update & Exit pattern to update rows.
-     * It can create lists containing either HTML or SVG elements.
-     */
-    export class TableView implements ITableView {
-        public static RowSelector: ClassAndSelector = createClassAndSelector('row');
-        public static CellSelector: ClassAndSelector = createClassAndSelector('cell');
-
-        private static defaultRowHeight = 0;
-        private static defaultColumns = 1;
-
-        private getDatumIndex: (d: any) => {};
-        private _data: any[];
-        private _totalRows: number;
-        private _totalColumns: number;
-
-        private options: TableViewViewOptions;
-        private visibleGroupContainer: D3.Selection;
-        private scrollContainer: D3.Selection;
-
-        private computedOptions: TableViewComputedOptions;
-
-        public constructor(options: TableViewViewOptions) {
-            // make a copy of options so that it is not modified later by caller
-            this.options = $.extend(true, {}, options);
-
-            this.options.baseContainer
-                .style('overflow-y', 'auto')
-                .attr('drag-resize-disabled', true);
-
-            this.scrollContainer = options.baseContainer
-                .append('div')
-                .attr('class', 'scrollRegion');
-
-            this.visibleGroupContainer = this.scrollContainer
-                .append('div')
-                .attr('class', 'visibleGroup');
-
-            TableView.SetDefaultOptions(options);
-        }
-
-        private static SetDefaultOptions(options: TableViewViewOptions) {
-            options.rowHeight = options.rowHeight || TableView.defaultRowHeight;
-        }
-
-        public get computedColumns(): number {
-            return this.computedOptions
-                ? this.computedOptions.columns
-                : 0;
-        }
-
-        public get computedRows(): number {
-            return this.computedOptions
-                ? this.computedOptions.rows
-                : 0;
-        }
-
-        public rowHeight(rowHeight: number): TableView {
-            this.options.rowHeight = Math.ceil(rowHeight);
-
-            return this;
-        }
-
-        public columnWidth(columnWidth: number): TableView {
-            this.options.columnWidth = Math.ceil(columnWidth);
-
-            return this;
-        }
-
-        public orientation(orientation: string): TableView {
-            this.options.orientation = orientation;
-
-            return this;
-        }
-
-        public rows(rows: number): TableView {
-            this.options.rows = Math.ceil(rows);
-
-            return this;
-        }
-
-        public columns(columns: number): TableView {
-            this.options.columns = Math.ceil(columns);
-
-            return this;
-        }
-
-        public data(data: any[], getDatumIndex: (d) => {}, dataReset: boolean = false): ITableView {
-            this._data = data;
-            this.getDatumIndex = getDatumIndex;
-
-            this.setTotalRows();
-
-            if (dataReset) {
-                $(this.options.baseContainer.node()).scrollTop(0);
-            }
-
-            return this;
-        }
-
-        public viewport(viewport: IViewport): ITableView {
-            this.options.viewport = viewport;
-
-            return this;
-        }
-
-        public empty(): ITableView {
-            this._data = [];
-            this.render();
-
-            return this;
-        }
-
-        private setTotalRows(): void {
-            var count: number = this._data.length,
-                rows: number = Math.min(this.options.rows, count),
-                columns: number = Math.min(this.options.columns, count);
-
-            if ((columns > 0) && (rows > 0)) {
-                this._totalColumns = columns;
-                this._totalRows = rows;
-            } else if (rows > 0) {
-                this._totalRows = rows;
-                this._totalColumns = Math.ceil(count / rows);
-            } else if (columns > 0) {
-                this._totalColumns = columns;
-                this._totalRows = Math.ceil(count / columns);
-            } else {
-                this._totalColumns = TableView.defaultColumns;
-                this._totalRows = Math.ceil(count / TableView.defaultColumns);
-            }
-        }
-
-        private getGroupedData(): TableViewGroupedData {
-            var options = this.options,
-                groupedData: any[] = [],
-                totalRows = options.rows,
-                totalColumns = options.columns,
-                totalItems: number = this._data.length,
-                totalRows = options.rows > totalItems
-                    ? totalItems
-                    : options.rows,
-                totalColumns = options.columns > totalItems
-                    ? totalItems
-                    : options.columns;
-
-            if (totalColumns === 0 && totalRows === 0) {
-                if (options.orientation === Orientation.HORIZONTAL) {
-                    totalColumns = totalItems;
-                    totalRows = 1;
-                } else {
-                    totalColumns = 1;
-                    totalRows = totalItems;
-                }
-            } else if (totalColumns === 0 && totalRows > 0) {
-                totalColumns = Math.ceil(totalItems / totalRows);
-            } else if (totalColumns > 0 && totalRows === 0) {
-                totalRows = Math.ceil(totalItems / totalColumns);
-            }
-
-            if (this.options.orientation === Orientation.VERTICAL) {
-                var n = totalRows;
-
-                totalRows = totalColumns;
-                totalColumns = n;
-            } else if (this.options.orientation === Orientation.HORIZONTAL) {
-                if (totalRows === 0) {
-                    totalRows = this._totalRows;
-                }
-
-                if (totalColumns === 0) {
-                    totalColumns = this._totalColumns;
-                }
-            }
-
-            var m: number = 0,
-                k: number = 0;
-
-            for (var i: number = 0; i < totalRows; i++) {
-                if (this.options.orientation === Orientation.VERTICAL
-                    && options.rows === 0
-                    && totalItems % options.columns > 0
-                    && options.columns <= totalItems) {
-                    if (totalItems % options.columns > i) {
-                        m = i * Math.ceil(totalItems / options.columns);
-                        k = m + Math.ceil(totalItems / options.columns);
-
-                        this.addDataToArray(groupedData, this._data, m, k);
-                    } else {
-                        this.addDataToArray(groupedData, this._data, k, k + Math.floor(totalItems / options.columns));
-
-                        k = k + Math.floor(totalItems / options.columns);
-                    }
-                } else if (this.options.orientation === Orientation.HORIZONTAL
-                    && options.columns === 0
-                    && totalItems % options.rows > 0
-                    && options.rows <= totalItems) {
-
-                    if (totalItems % options.rows > i) {
-                        m = i * Math.ceil(totalItems / options.rows);
-                        k = m + Math.ceil(totalItems / options.rows);
-
-                        this.addDataToArray(groupedData, this._data, m, k);
-                    } else {
-                        this.addDataToArray(groupedData, this._data, k, k + Math.floor(totalItems / options.rows));
-
-                        k = k + Math.floor(totalItems / options.rows);
-                    }
-                } else {
-                    var k: number = i * totalColumns;
-
-                    this.addDataToArray(groupedData, this._data, k, k + totalColumns);
-                }
-            }
-
-            this.computedOptions = this.getComputedOptions(groupedData, this.options.orientation);
-
-            return {
-                data: groupedData,
-                totalColumns: totalColumns,
-                totalRows: totalRows
-            };
-        }
-
-        private addDataToArray(array: any[], data: any[], start: number, end: number): void {
-            if (!array || !data) {
-                return;
-            }
-
-            var elements: any[] = data.slice(start, end);
-
-            if (elements && elements.length > 0) {
-                array.push(elements);
-            }
-        }
-
-        private getComputedOptions(data: any[], orientation: string): TableViewComputedOptions {
-            var rows: number,
-                columns: number = 0;
-
-            rows = data
-                ? data.length
-                : 0;
-
-            for (var i: number = 0; i < rows; i++) {
-                var currentRow: any[] = data[i];
-
-                if (currentRow && currentRow.length > columns) {
-                    columns = currentRow.length;
-                }
-            }
-
-            if (orientation === Orientation.HORIZONTAL) {
-                return {
-                    columns: columns,
-                    rows: rows
-                };
-            } else {
-                return {
-                    columns: rows,
-                    rows: columns
-                };
-            }
-        }
-
-        public render(): void {
-            var options: TableViewViewOptions = this.options,
-                visibleGroupContainer: D3.Selection = this.visibleGroupContainer,
-                rowHeight: number = options.rowHeight || TableView.defaultRowHeight,
-                groupedData: TableViewGroupedData = this.getGroupedData(),
-                rowSelection: D3.UpdateSelection,
-                cellSelection: D3.UpdateSelection;
-
-            rowSelection = visibleGroupContainer
-                .selectAll(TableView.RowSelector.selector)
-                .data(<ChicletSlicerDataPoint[]>groupedData.data);
-
-            rowSelection
-                .enter()
-                .append("div")
-                .classed(TableView.RowSelector.class, true);
-
-            cellSelection = rowSelection
-                .selectAll(TableView.CellSelector.selector)
-                .data((dataPoints: ChicletSlicerDataPoint[]) => {
-                    return dataPoints;
-                });
-
-            cellSelection
-                .enter()
-                .append('div')
-                .classed(TableView.CellSelector.class, true);
-
-            cellSelection.call((selection: D3.Selection) => {
-                options.enter(selection);
-            });
-
-            cellSelection.call((selection: D3.Selection) => {
-                options.update(selection);
-            });
-
-            cellSelection.style({
-                'height': (rowHeight > 0) ? rowHeight + 'px' : 'auto'
-            });
-
-            if (this.options.orientation === Orientation.VERTICAL) {
-                var realColumnNumber: number = 0;
-
-                for (var i: number = 0; i < groupedData.data.length; i++) {
-                    if (groupedData.data[i].length !== 0)
-                        realColumnNumber = i + 1;
-                }
-
-                cellSelection.style({ 'width': '100%' });
-
-                rowSelection
-                    .style({
-                        'width': (options.columnWidth > 0)
-                            ? options.columnWidth + 'px'
-                            : (100 / realColumnNumber) + '%'
-                    });
-            }
-            else {
-                cellSelection.style({
-                    'width': (options.columnWidth > 0)
-                        ? options.columnWidth + 'px'
-                        : (100 / groupedData.totalColumns) + '%'
-                });
-
-                rowSelection.style({ 'width': null });
-            }
-
-            cellSelection
-                .exit()
-                .remove();
-
-            rowSelection
-                .exit()
-                .call(d => options.exit(d))
-                .remove();
-        }
-    }
-
-    // TODO: Generate these from above, defining twice just introduces potential for error
-    export var chicletSlicerProps = {
-        general: {
-            orientation: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'orientation' },
-            columns: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'columns' },
-            rows: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'rows' },
-            showDisabled: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'showDisabled' },
-            multiselect: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'multiselect' },
-            selection: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'selection' },
-            selfFilterEnabled: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'selfFilterEnabled' },
-        },
-        header: {
-            show: <DataViewObjectPropertyIdentifier>{ objectName: 'header', propertyName: 'show' },
-            title: <DataViewObjectPropertyIdentifier>{ objectName: 'header', propertyName: 'title' },
-            fontColor: <DataViewObjectPropertyIdentifier>{ objectName: 'header', propertyName: 'fontColor' },
-            background: <DataViewObjectPropertyIdentifier>{ objectName: 'header', propertyName: 'background' },
-            outline: <DataViewObjectPropertyIdentifier>{ objectName: 'header', propertyName: 'outline' },
-            textSize: <DataViewObjectPropertyIdentifier>{ objectName: 'header', propertyName: 'textSize' },
-            outlineColor: <DataViewObjectPropertyIdentifier>{ objectName: 'header', propertyName: 'outlineColor' },
-            outlineWeight: <DataViewObjectPropertyIdentifier>{ objectName: 'header', propertyName: 'outlineWeight' }
-        },
-        rows: {
-            fontColor: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'fontColor' },
-            textSize: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'textSize' },
-            height: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'height' },
-            width: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'width' },
-            background: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'background' },
-            transparency: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'transparency' },
-            selectedColor: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'selectedColor' },
-            hoverColor: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'hoverColor' },
-            unselectedColor: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'unselectedColor' },
-            disabledColor: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'disabledColor' },
-            outline: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'outline' },
-            outlineColor: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'outlineColor' },
-            outlineWeight: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'outlineWeight' },
-            borderStyle: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'borderStyle' },
-        },
-        images: {
-            imageSplit: <DataViewObjectPropertyIdentifier>{ objectName: 'images', propertyName: 'imageSplit' },
-            stretchImage: <DataViewObjectPropertyIdentifier>{ objectName: 'images', propertyName: 'stretchImage' },
-            bottomImage: <DataViewObjectPropertyIdentifier>{ objectName: 'images', propertyName: 'bottomImage' },
-        },
-        selectedPropertyIdentifier: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'selected' },
-        filterPropertyIdentifier: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'filter' },
-        formatString: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'formatString' },
-        hasSavedSelection: true,
-    };
 
     module ChicletBorderStyle {
         export var ROUNDED: string = 'Rounded';
@@ -537,7 +104,7 @@ module powerbi.extensibility.visual {
         ]);
     }
 
-    module Orientation {
+    export module Orientation {
         export var HORIZONTAL: string = 'Horizontal';
         export var VERTICAL: string = 'Vertical';
 
@@ -842,8 +409,8 @@ module powerbi.extensibility.visual {
         private searchInput: JQuery;
         private currentViewport: IViewport;
         private dataView: DataView;
-        private slicerHeader: D3.Selection;
-        private slicerBody: D3.Selection;
+        private slicerHeader: Selection<any>;
+        private slicerBody: Selection<any>;
         private tableView: ITableView;
         private slicerData: ChicletSlicerData;
         private settings: ChicletSlicerSettings;
@@ -979,8 +546,7 @@ module powerbi.extensibility.visual {
                 return;
             }
 
-            var converter = new ChicletSlicerChartConversion.ChicletSlicerConverter(dataView, interactivityService);
-
+            var converter = new ChicletSlicerConverter(dataView, interactivityService);
             converter.convert();
 
             var slicerData: ChicletSlicerData,
@@ -1306,7 +872,7 @@ module powerbi.extensibility.visual {
                     TextMeasurementService.estimateSvgTextBaselineDelta(textProperties) +
                     extraSpaceForCell;
 
-                var hasImage: boolean = _.any(data.slicerDataPoints, (dataPoint: ChicletSlicerDataPoint) => {
+                var hasImage: boolean = _.some(data.slicerDataPoints, (dataPoint: ChicletSlicerDataPoint) => {
                     return dataPoint.imageURL !== '' && typeof dataPoint.imageURL !== "undefined";
                 });
 
@@ -1335,7 +901,7 @@ module powerbi.extensibility.visual {
             var settings: ChicletSlicerSettings = this.settings,
                 slicerBodyViewport: IViewport = this.getSlicerBodyViewport(this.currentViewport);
 
-            var slicerContainer: D3.Selection = d3.select(this.element.get(0))
+            var slicerContainer: Selection<any> = d3.select(this.element.get(0))
                 .append('div')
                 .classed(ChicletSlicer.ContainerSelector.class, true);
 
@@ -1377,15 +943,15 @@ module powerbi.extensibility.visual {
                     'width': '100%',
                 });
 
-            var rowEnter = (rowSelection: D3.Selection) => {
+            var rowEnter = (rowSelection: Selection<any>) => {
                 this.enterSelection(rowSelection);
             };
 
-            var rowUpdate = (rowSelection: D3.Selection) => {
+            var rowUpdate = (rowSelection: Selection<any>) => {
                 this.updateSelection(rowSelection);
             };
 
-            var rowExit = (rowSelection: D3.Selection) => {
+            var rowExit = (rowSelection: Selection<any>) => {
                 rowSelection.remove();
             };
 
@@ -1407,7 +973,7 @@ module powerbi.extensibility.visual {
             this.tableView = TableViewFactory.createTableView(tableViewOptions);
         }
 
-        private enterSelection (rowSelection: D3.Selection): void {
+        private enterSelection (rowSelection: Selection<any>): void {
             var settings: ChicletSlicerSettings = this.settings;
 
             var ulItemElement = rowSelection
@@ -1439,7 +1005,7 @@ module powerbi.extensibility.visual {
                 'margin-left': PixelConverter.toString(settings.slicerItemContainer.marginLeft)
             });
 
-            var slicerImgWrapperSelection: D3.UpdateSelection = listItemElement
+            var slicerImgWrapperSelection: UpdateSelection<any> = listItemElement
                 .selectAll(ChicletSlicer.SlicerImgWrapperSelector.selector)
                 .data((dataPoint: ChicletSlicerDataPoint) => {
                     return [dataPoint];
@@ -1454,7 +1020,7 @@ module powerbi.extensibility.visual {
                 .exit()
                 .remove();
 
-            var slicerTextWrapperSelection: D3.UpdateSelection = listItemElement
+            var slicerTextWrapperSelection: UpdateSelection<any> = listItemElement
                 .selectAll(ChicletSlicer.SlicerTextWrapperSelector.selector)
                 .data((dataPoint: ChicletSlicerDataPoint) => {
                     return [dataPoint];
@@ -1465,7 +1031,7 @@ module powerbi.extensibility.visual {
                 .append('div')
                 .classed(ChicletSlicer.SlicerTextWrapperSelector.class, true);
 
-            var labelTextSelection: D3.UpdateSelection = slicerTextWrapperSelection
+            var labelTextSelection: UpdateSelection<any> = slicerTextWrapperSelection
                 .selectAll(ChicletSlicer.LabelTextSelector.selector)
                 .data((dataPoint: ChicletSlicerDataPoint) => {
                     return [dataPoint];
@@ -1493,7 +1059,7 @@ module powerbi.extensibility.visual {
                 .remove();
         };
 
-        private updateSelection(rowSelection: D3.Selection): void {
+        private updateSelection(rowSelection: Selection<any>): void {
             var settings: ChicletSlicerSettings = this.settings,
                 data: ChicletSlicerData = this.slicerData;
 
@@ -1523,7 +1089,7 @@ module powerbi.extensibility.visual {
                         ChicletSlicer.SlicerBodyVerticalSelector.class,
                         settings.general.orientation === Orientation.VERTICAL);
 
-                var slicerText: D3.Selection = rowSelection.selectAll(ChicletSlicer.LabelTextSelector.selector),
+                var slicerText: Selection<any> = rowSelection.selectAll(ChicletSlicer.LabelTextSelector.selector),
                     textProperties: TextProperties = ChicletSlicer.getChicletTextProperties(settings.slicerText.textSize),
                     formatString: string = data.formatString;
 
@@ -1599,7 +1165,7 @@ module powerbi.extensibility.visual {
                 });
 
                 if (settings.slicerText.background) {
-                    var backgroundColor: string = explore.util.hexToRGBString(
+                    var backgroundColor: string = hexToRGBString(
                         settings.slicerText.background,
                         (100 - settings.slicerText.transparency) / 100);
 
@@ -1612,11 +1178,11 @@ module powerbi.extensibility.visual {
                 if (this.interactivityService && this.slicerBody) {
                     this.interactivityService.applySelectionStateToData(data.slicerDataPoints);
 
-                    var slicerBody: D3.Selection = this.slicerBody.attr('width', this.currentViewport.width),
-                        slicerItemContainers: D3.Selection = slicerBody.selectAll(ChicletSlicer.ItemContainerSelector.selector),
-                        slicerItemLabels: D3.Selection = slicerBody.selectAll(ChicletSlicer.LabelTextSelector.selector),
-                        slicerItemInputs: D3.Selection = slicerBody.selectAll(ChicletSlicer.InputSelector.selector),
-                        slicerClear: D3.Selection = this.slicerHeader.select(ChicletSlicer.ClearSelector.selector);
+                    var slicerBody: Selection<any> = this.slicerBody.attr('width', this.currentViewport.width),
+                        slicerItemContainers: Selection<any> = slicerBody.selectAll(ChicletSlicer.ItemContainerSelector.selector),
+                        slicerItemLabels: Selection<any> = slicerBody.selectAll(ChicletSlicer.LabelTextSelector.selector),
+                        slicerItemInputs: Selection<any> = slicerBody.selectAll(ChicletSlicer.InputSelector.selector),
+                        slicerClear: Selection<any> = this.slicerHeader.select(ChicletSlicer.ClearSelector.selector);
 
                     var behaviorOptions: ChicletSlicerBehaviorOptions = {
                         dataPoints: data.slicerDataPoints,
@@ -1758,439 +1324,4 @@ module powerbi.extensibility.visual {
         }
     }
 
-    module ChicletSlicerChartConversion {
-        export class ChicletSlicerConverter {
-            private dataViewCategorical: DataViewCategorical;
-            private dataViewMetadata: DataViewMetadata;
-            private category: DataViewCategoryColumn;
-            private categoryIdentities: DataViewScopeIdentity[];
-            private categoryValues: any[];
-            private categoryColumnRef: SQExpr[];
-            private categoryFormatString: string;
-            private interactivityService: IInteractivityService;
-
-            public numberOfCategoriesSelectedInData: number;
-            public dataPoints: ChicletSlicerDataPoint[];
-            public hasSelectionOverride: boolean;
-
-            public constructor(dataView: DataView, interactivityService: IInteractivityService) {
-
-                var dataViewCategorical = dataView.categorical;
-                this.dataViewCategorical = dataViewCategorical;
-                this.dataViewMetadata = dataView.metadata;
-
-                if (dataViewCategorical.categories && dataViewCategorical.categories.length > 0) {
-                    this.category = dataViewCategorical.categories[0];
-                    this.categoryIdentities = this.category.identity;
-                    this.categoryValues = this.category.values;
-                    this.categoryColumnRef = <SQExpr[]>this.category.identityFields;
-                    this.categoryFormatString = valueFormatter.getFormatString(this.category.source, chicletSlicerProps.formatString);
-                }
-
-                this.dataPoints = [];
-
-                this.interactivityService = interactivityService;
-                this.hasSelectionOverride = false;
-            }
-
-            public convert(): void {
-                this.dataPoints = [];
-                this.numberOfCategoriesSelectedInData = 0;
-                // If category exists, we render labels using category values. If not, we render labels
-                // using measure labels.
-                if (this.categoryValues) {
-                    var objects = this.dataViewMetadata ? <any>this.dataViewMetadata.objects : undefined;
-
-                    var isInvertedSelectionMode = undefined;
-                    var numberOfScopeIds: number;
-                    if (objects && objects.general && objects.general.filter) {
-                        if (!this.categoryColumnRef)
-                            return;
-                        var filter = <SemanticFilter>objects.general.filter;
-                        var scopeIds = SQExprConverter.asScopeIdsContainer(filter, this.categoryColumnRef);
-                        if (scopeIds) {
-                            isInvertedSelectionMode = scopeIds.isNot;
-                            numberOfScopeIds = scopeIds.scopeIds ? scopeIds.scopeIds.length : 0;
-                        }
-                        else {
-                            isInvertedSelectionMode = false;
-                        }
-                    }
-
-                    if (this.interactivityService) {
-                        if (isInvertedSelectionMode === undefined) {
-                            // The selection state is read from the Interactivity service in case of SelectAll or Clear when query doesn't update the visual
-                            isInvertedSelectionMode = this.interactivityService.isSelectionModeInverted();
-                        }
-                        else {
-                            this.interactivityService.setSelectionModeInverted(isInvertedSelectionMode);
-                        }
-                    }
-
-                    var hasSelection: boolean = undefined;
-
-                    for (var idx = 0; idx < this.categoryValues.length; idx++) {
-                        var selected = isCategoryColumnSelected(chicletSlicerProps.selectedPropertyIdentifier, this.category, idx);
-                        if (selected != null) {
-                            hasSelection = selected;
-                            break;
-                        }
-                    }
-
-                    var dataViewCategorical = this.dataViewCategorical;
-                    var formatStringProp = chicletSlicerProps.formatString;
-                    var value: number = -Infinity;
-                    var imageURL: string = '';
-
-                    for (var categoryIndex: number = 0, categoryCount = this.categoryValues.length; categoryIndex < categoryCount; categoryIndex++) {
-                        //var categoryIdentity = this.category.identity ? this.category.identity[categoryIndex] : null;
-                        var categoryIsSelected = isCategoryColumnSelected(chicletSlicerProps.selectedPropertyIdentifier, this.category, categoryIndex);
-                        var selectable: boolean = true;
-
-                        if (hasSelection != null) {
-                            if (isInvertedSelectionMode) {
-                                if (this.category.objects == null)
-                                    categoryIsSelected = undefined;
-
-                                if (categoryIsSelected != null) {
-                                    categoryIsSelected = hasSelection;
-                                }
-                                else if (categoryIsSelected == null)
-                                    categoryIsSelected = !hasSelection;
-                            }
-                            else {
-                                if (categoryIsSelected == null) {
-                                    categoryIsSelected = !hasSelection;
-                                }
-                            }
-                        }
-
-                        if (categoryIsSelected) {
-                            this.numberOfCategoriesSelectedInData++;
-                        }
-
-                        var categoryValue = this.categoryValues[categoryIndex];
-                        var categoryLabel = valueFormatter.format(categoryValue, this.categoryFormatString);
-
-                        if (this.dataViewCategorical.values) {
-
-                            // Series are either measures in the multi-measure case, or the single series otherwise
-                            for (var seriesIndex: number = 0; seriesIndex < this.dataViewCategorical.values.length; seriesIndex++) {
-                                var seriesData = dataViewCategorical.values[seriesIndex];
-                                if (seriesData.values[categoryIndex] != null) {
-                                    value = <number>seriesData.values[categoryIndex];
-                                    if (seriesData.highlights) {
-                                        selectable = !(seriesData.highlights[categoryIndex] === null);
-                                    }
-                                    if (seriesData.source.groupName && seriesData.source.groupName !== '') {
-                                        imageURL = converterHelper.getFormattedLegendLabel(seriesData.source, dataViewCategorical.values, formatStringProp);
-                                        if (!/^(ftp|http|https):\/\/[^ "]+$/.test(imageURL)) {
-                                            imageURL = undefined;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        var categorySelectionId: SelectionId = SelectionIdBuilder.builder().withCategory(this.category, categoryIndex).createSelectionId();
-                        this.dataPoints.push({
-                            identity: categorySelectionId,
-                            category: categoryLabel,
-                            imageURL: imageURL,
-                            value: value,
-                            selected: categoryIsSelected,
-                            selectable: selectable
-                        });
-                    }
-                    if (numberOfScopeIds != null && numberOfScopeIds > this.numberOfCategoriesSelectedInData) {
-                        this.hasSelectionOverride = true;
-                    }
-                }
-            }
-        }
-    }
-
-    //TODO: This module should be removed once TextMeasruementService exports the "estimateSvgTextBaselineDelta" function.
-    export module ChicletSlicerTextMeasurementHelper {
-        interface CanvasContext {
-            font: string;
-            measureText(text: string): { width: number };
-        }
-
-        interface CanvasElement extends HTMLElement {
-            getContext(name: string);
-        }
-
-        var spanElement: JQuery;
-        var svgTextElement: D3.Selection;
-        var canvasCtx: CanvasContext;
-
-        export function estimateSvgTextBaselineDelta(textProperties: TextProperties): number {
-            var rect = estimateSvgTextRect(textProperties);
-            return rect.y + rect.height;
-        }
-
-        function ensureDOM(): void {
-            if (spanElement)
-                return;
-
-            spanElement = $('<span/>');
-            $('body').append(spanElement);
-            //The style hides the svg element from the canvas, preventing canvas from scrolling down to show svg black square.
-            svgTextElement = d3.select($('body').get(0))
-                .append('svg')
-                .style({
-                    'height': '0px',
-                    'width': '0px',
-                    'position': 'absolute'
-                })
-                .append('text');
-            canvasCtx = (<CanvasElement>$('<canvas/>').get(0)).getContext("2d");
-        }
-
-        function measureSvgTextRect(textProperties: TextProperties): SVGRect {
-            debug.assertValue(textProperties, 'textProperties');
-
-            ensureDOM();
-
-            svgTextElement.style(null);
-            svgTextElement
-                .text(textProperties.text)
-                .attr({
-                    'visibility': 'hidden',
-                    'font-family': textProperties.fontFamily,
-                    'font-size': textProperties.fontSize,
-                    'font-weight': textProperties.fontWeight,
-                    'font-style': textProperties.fontStyle,
-                    'white-space': textProperties.whiteSpace || 'nowrap'
-                });
-
-            // We're expecting the browser to give a synchronous measurement here
-            // We're using SVGTextElement because it works across all browsers
-            return svgTextElement.node<SVGTextElement>().getBBox();
-        }
-
-        function estimateSvgTextRect(textProperties: TextProperties): SVGRect {
-            //debug.assertValue(textProperties, 'textProperties');
-
-            var estimatedTextProperties: TextProperties = {
-                fontFamily: textProperties.fontFamily,
-                fontSize: textProperties.fontSize,
-                text: "M",
-            };
-
-            var rect = measureSvgTextRect(estimatedTextProperties);
-
-            return rect;
-        }
-    }
-
-    export interface ChicletSlicerBehaviorOptions {
-        slicerItemContainers: D3.Selection;
-        slicerItemLabels: D3.Selection;
-        slicerItemInputs: D3.Selection;
-        slicerClear: D3.Selection;
-        dataPoints: ChicletSlicerDataPoint[];
-        interactivityService: IInteractivityService;
-        slicerSettings: ChicletSlicerSettings;
-        isSelectionLoaded: boolean;
-    }
-
-    export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
-        private slicers: D3.Selection;
-        private slicerItemLabels: D3.Selection;
-        private slicerItemInputs: D3.Selection;
-        private dataPoints: ChicletSlicerDataPoint[];
-        private interactivityService: IInteractivityService;
-        private slicerSettings: ChicletSlicerSettings;
-        private options: ChicletSlicerBehaviorOptions;
-
-        public bindEvents(options: ChicletSlicerBehaviorOptions, selectionHandler: ISelectionHandler): void {
-            var slicers = this.slicers = options.slicerItemContainers;
-
-            this.slicerItemLabels = options.slicerItemLabels;
-            this.slicerItemInputs = options.slicerItemInputs;
-
-            var slicerClear = options.slicerClear;
-
-            this.dataPoints = options.dataPoints;
-            this.interactivityService = options.interactivityService;
-            this.slicerSettings = options.slicerSettings;
-            this.options = options;
-
-            if (!this.options.isSelectionLoaded) {
-                this.loadSelection(selectionHandler);
-            }
-
-            slicers.on("mouseover", (d: ChicletSlicerDataPoint) => {
-                if (d.selectable) {
-                    d.mouseOver = true;
-                    d.mouseOut = false;
-
-                    this.renderMouseover();
-                }
-            });
-
-            slicers.on("mouseout", (d: ChicletSlicerDataPoint) => {
-                if (d.selectable) {
-                    d.mouseOver = false;
-                    d.mouseOut = true;
-
-                    this.renderMouseover();
-                }
-            });
-
-            slicers.on("click", (dataPoint: ChicletSlicerDataPoint, index) => {
-                if (!dataPoint.selectable) {
-                    return;
-                }
-
-                d3.event.preventDefault();
-
-                var settings: ChicletSlicerSettings = this.slicerSettings;
-
-                if (d3.event.altKey && settings.general.multiselect) {
-                    var selectedIndexes = jQuery.map(this.dataPoints, (d, index) => {
-                        if (d.selected) {
-                            return index;
-                        };
-                    });
-
-                    var selIndex = selectedIndexes.length > 0
-                        ? (selectedIndexes[selectedIndexes.length - 1])
-                        : 0;
-
-                    if (selIndex > index) {
-                        var temp = index;
-                        index = selIndex;
-                        selIndex = temp;
-                    }
-
-                    selectionHandler.handleClearSelection();
-
-                    for (var i = selIndex; i <= index; i++) {
-                        selectionHandler.handleSelection(this.dataPoints[i], true /* isMultiSelect */);
-                    }
-                }
-                else if ((d3.event.ctrlKey || d3.event.metaKey) && settings.general.multiselect) {
-                    selectionHandler.handleSelection(dataPoint, true /* isMultiSelect */);
-                }
-                else {
-                    selectionHandler.handleSelection(dataPoint, false /* isMultiSelect */);
-                }
-
-                this.saveSelection(selectionHandler);
-            });
-
-            slicerClear.on("click", (d: SelectableDataPoint) => {
-                selectionHandler.handleClearSelection();
-                this.saveSelection(selectionHandler);
-            });
-        }
-
-        public loadSelection(selectionHandler: ISelectionHandler): void {
-            selectionHandler.handleClearSelection();
-            var savedSelectionIds = this.slicerSettings.general.getSavedSelection();
-            if (savedSelectionIds.length) {
-                var selectedDataPoints = this.dataPoints.filter(d => savedSelectionIds.some(x => d.identity.getKey() === x));
-                selectedDataPoints.forEach(x => selectionHandler.handleSelection(x, true));
-                selectionHandler.persistSelectionFilter(chicletSlicerProps.filterPropertyIdentifier);
-            }
-        }
-
-        private static getFilterFromSelectors(selectionHandler: ISelectionHandler, isSelectionModeInverted: boolean): SemanticFilter {
-            var selectors: Selector[] = [];
-            var selectedIds: SelectionId[] = <SelectionId[]>(<any>selectionHandler).selectedIds;
-
-            if (selectedIds.length > 0) {
-                selectors = _.chain(selectedIds)
-                    .filter((value: SelectionId) => value.hasIdentity())
-                    .map((value: SelectionId) => value.getSelector())
-                    .value();
-            }
-
-            var filter: SemanticFilter = Selector.filterFromSelector(selectors, isSelectionModeInverted);
-            return filter;
-        }
-
-        public saveSelection(selectionHandler: ISelectionHandler): void {
-            var filter: SemanticFilter = ChicletSlicerWebBehavior.getFilterFromSelectors(selectionHandler, this.interactivityService.isSelectionModeInverted());
-            var selectionIdKeys = (<SelectionId[]>(<any>selectionHandler).selectedIds).map(x => x.getKey());
-            this.slicerSettings.general.setSavedSelection(filter, selectionIdKeys);
-        }
-
-        public renderSelection(hasSelection: boolean): void {
-            if (!hasSelection && !this.interactivityService.isSelectionModeInverted()) {
-                this.slicers.style('background', this.slicerSettings.slicerText.unselectedColor);
-            }
-            else {
-                this.styleSlicerInputs(this.slicers, hasSelection);
-            }
-        }
-
-        private renderMouseover(): void {
-            this.slicerItemLabels.style({
-                'color': (d: ChicletSlicerDataPoint) => {
-                    if (d.mouseOver)
-                        return this.slicerSettings.slicerText.hoverColor;
-
-                    if (d.mouseOut) {
-                        if (d.selected)
-                            return this.slicerSettings.slicerText.fontColor;
-                        else
-                            return this.slicerSettings.slicerText.fontColor;
-                    }
-                }
-            });
-        }
-
-        public styleSlicerInputs(slicers: D3.Selection, hasSelection: boolean) {
-            var settings = this.slicerSettings;
-            var selectedItems = [];
-            slicers.each(function (d: ChicletSlicerDataPoint) {
-                // get selected items
-                if (d.selectable && d.selected) {
-                    selectedItems.push(d);
-                }
-
-                d3.select(this).style({
-                    'background': d.selectable ? (d.selected ? settings.slicerText.selectedColor : settings.slicerText.unselectedColor)
-                        : settings.slicerText.disabledColor
-                });
-
-                d3.select(this).classed('slicerItem-disabled', !d.selectable);
-            });
-        }
-    }
-
-    module explore.util {
-        export function hexToRGBString(hex: string, transparency?: number): string {
-
-            // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
-            var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
-            hex = hex.replace(shorthandRegex, function (m, r, g, b) {
-                return r + r + g + g + b + b;
-            });
-
-            // Hex format which return the format r-g-b
-            var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-
-            var rgb = result ? {
-                r: parseInt(result[1], 16),
-                g: parseInt(result[2], 16),
-                b: parseInt(result[3], 16)
-            } : null;
-
-            // Wrong input
-            if (rgb === null) {
-                return '';
-            }
-
-            if (!transparency && transparency !== 0) {
-                return "rgb(" + rgb.r + "," + rgb.g + "," + rgb.b + ")";
-            }
-            else {
-                return "rgba(" + rgb.r + "," + rgb.g + "," + rgb.b + "," + transparency + ")";
-            }
-        }
-    }
 }

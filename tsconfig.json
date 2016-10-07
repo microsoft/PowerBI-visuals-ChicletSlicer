@@ -17,8 +17,14 @@
     "node_modules/@powerbi-visuals-utils/colorutility/lib/index.d.ts",
     "node_modules/@powerbi-visuals-utils/cssconstants/lib/index.d.ts",
     "node_modules/@powerbi-visuals-utils/dataviewobjects/lib/index.d.ts",
+    "node_modules/@powerbi-visuals-utils/imargin/lib/index.d.ts",
     "node_modules/@powerbi-visuals-utils/pixelconverter/lib/index.d.ts",
     "node_modules/@powerbi-visuals-utils/valueformatter/lib/index.d.ts",
-    "src/visual.ts"
+
+    "src/chicletSlicerProps.ts",
+    "src/converter.ts",
+    "src/tableView.ts",
+    "src/visual.ts",
+    "src/webBehavior.ts"
   ]
 }
