@@ -1,6 +1,21 @@
 {
-  "name": "visual",
+  "name": "powerbi-visuals-chicletslicer",
+  "version": "2.0.0",
+  "author": {
+    "name": "Microsoft",
+    "email": "pbicvsupport@microsoft.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Microsoft/PowerBI-visuals-ChicletSlicer.git"
+  },
   "dependencies": {
+    "d3": "^4.2.6",
+    "jquery": "^3.1.1",
+    "lodash": "^4.16.2"
+  },
+  "devDependencies": {
     "@powerbi-visuals-utils/colorutility": "git+https://github.com/uve/powerbi-visuals-utils-colorutility.git",
     "@powerbi-visuals-utils/cssconstants": "git+https://github.com/uve/powerbi-visuals-utils-cssconstants.git",
     "@powerbi-visuals-utils/dataviewobjects": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-dataviewobjects.git",
