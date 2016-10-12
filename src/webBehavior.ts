@@ -144,12 +144,12 @@ module powerbi.extensibility.visual {
 
         private static getFilterFromSelectors(selectionHandler: ISelectionHandler, isSelectionModeInverted: boolean): SemanticFilter {
             var selectors: Selector[] = [];
-            var selectedIds: Selection<any>Id[] = <SelectionId[]>(<any>selectionHandler).selectedIds;
+            var selectedIds: SelectionId[] = <SelectionId[]>(<any>selectionHandler).selectedIds;
 
             if (selectedIds.length > 0) {
                 selectors = _.chain(selectedIds)
-                    .filter((value: Selection<any>Id) => value.hasIdentity())
-                    .map((value: Selection<any>Id) => value.getSelector())
+                    .filter((value: SelectionId) => value.hasIdentity())
+                    .map((value: SelectionId) => value.getSelector())
                     .value();
             }
 

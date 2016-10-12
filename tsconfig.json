@@ -15,8 +15,13 @@
     "typings/globals/lodash/index.d.ts",
 
     "node_modules/@powerbi-visuals-utils/colorutility/lib/index.d.ts",
+    "node_modules/@powerbi-visuals-utils/converterhelper/lib/index.d.ts",
     "node_modules/@powerbi-visuals-utils/cssconstants/lib/index.d.ts",
     "node_modules/@powerbi-visuals-utils/dataviewobjects/lib/index.d.ts",
+    "node_modules/@powerbi-visuals-utils/displayunitsystem/lib/index.d.ts",
+    "node_modules/@powerbi-visuals-utils/displayunitsystemtype/lib/index.d.ts",
+    "node_modules/@powerbi-visuals-utils/enumtype/lib/index.d.ts",
+    "node_modules/@powerbi-visuals-utils/formattingservice/lib/index.d.ts",
     "node_modules/@powerbi-visuals-utils/imargin/lib/index.d.ts",
     "node_modules/@powerbi-visuals-utils/pixelconverter/lib/index.d.ts",
     "node_modules/@powerbi-visuals-utils/valueformatter/lib/index.d.ts",

@@ -26,6 +26,7 @@
 
 module powerbi.extensibility.visual {
     import valueFormatter = powerbi.visuals.valueFormatter;
+    import converterHelper = powerbi.visuals.converterHelper;
 
     export class ChicletSlicerConverter {
         private dataViewCategorical: DataViewCategorical;
