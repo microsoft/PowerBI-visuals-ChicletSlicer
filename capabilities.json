@@ -1,37 +1,226 @@
 {
     "dataRoles": [
         {
-            "displayName": "Category Data",
-            "name": "category",
+            "displayName": "Category",
+            "name": "Category",
             "kind": "Grouping"
         },
         {
-            "displayName": "Measure Data",
-            "name": "measure",
+            "displayName": "Values",
+            "name": "Values",
             "kind": "Measure"
+        },
+        {
+            "displayName": "Image",
+            "name": "Image",
+            "kind": "Grouping"
         }
     ],
     "dataViewMappings": [
         {
+            "conditions": [
+                {
+                    "Category": { "max": 1 },
+                    "Image": { "min": 0, "max": 1 },
+                    "Values": { "min": 0, "max": 1 }
+                }
+            ],
             "categorical": {
                 "categories": {
                     "for": {
-                        "in": "category"
+                        "in": "Category"
                     },
                     "dataReductionAlgorithm": {
-                        "top": {}
+                        "top": {
+                           "count": 10000
+                        }
                     }
                 },
                 "values": {
-                    "select": [
-                        {
-                            "bind": {
-                                "to": "measure"
+                    "group": {
+                        "by": "Image",
+                        "select": [
+                            {
+                                "bind": {
+                                    "to": "Values"
+                                }
+                            }
+                        ],
+                        "dataReductionAlgorithm": {
+                            "top": {
+                            "count": 10000
                             }
                         }
-                    ]
+                    }
                 }
             }
         }
-    ]
+    ],
+    "objects": {
+        "general": {
+            "displayName": "General",
+            "properties": {
+                "selection": {
+                    "displayName": "Selection",
+                    "type": { "text": true }
+                },
+                "orientation": {
+                    "displayName": "Orientation",
+                    "type": { "enumeration": [/*Orientation.type*/] }
+                },
+                "columns": {
+                    "displayName": "Columns",
+                    "type": { "numeric": true }
+                },
+                "rows": {
+                    "displayName": "Rows",
+                    "type": { "numeric": true }
+                },
+                "showDisabled": {
+                    "displayName": "Show Disabled",
+                    "type": { "enumeration": [/*ChicletSlicerShowDisabled.type*/] }
+                },
+                "multiselect": {
+                    "displayName": "Multiple selection",
+                    "type": { "bool": true }
+                },
+                "selected": {
+                    "type": { "bool": true }
+                },
+                "filter": {
+                    "type": { "filter": {} }
+                },
+                "selfFilter": {
+                    "type": { "filter": { "selffilter": true } }
+                },
+                "selfFilterEnabled": {
+                    "type": { "operations": { "searchEnabled": true } }
+                },
+                "formatString": {
+                    "type": { "formatting": { "formatString": true } }
+                }
+            }
+        },
+        "header": {
+            "displayName": "Header",
+            "properties": {
+                "show": {
+                    "displayName": "Show",
+                    "type": { "bool": true }
+                },
+                "title": {
+                    "displayName": "Title",
+                    "type": { "text": true }
+                },
+                "fontColor": {
+                    "displayName": "Font color",
+                    "type": { "fill": { "solid": { "color": true } } }
+                },
+                "background": {
+                    "displayName": "Background",
+                    "type": { "fill": { "solid": { "color": true } } }
+                },
+                "outline": {
+                    "displayName": "Outline",
+                    "type": { "formatting": { "outline": true } }
+                },
+                "textSize": {
+                    "displayName": "Text Size",
+                    "type": { "numeric": true }
+                },
+                "outlineColor": {
+                    "displayName": "Outline Color",
+                    "type": { "fill": { "solid": { "color": true } } }
+                },
+                "outlineWeight": {
+                    "displayName": "Outline Weight",
+                    "type": { "numeric": true }
+                }
+            }
+        },
+        "rows": {
+            "displayName": "Chiclets",
+            "properties": {
+                "fontColor": {
+                    "displayName": "Text color",
+                    "type": { "fill": { "solid": { "color": true } } }
+                },
+                "textSize": {
+                    "displayName": "Text Size",
+                    "type": { "numeric": true }
+                },
+                "height": {
+                    "displayName": "Height",
+                    "type": { "numeric": true }
+                },
+                "width": {
+                    "displayName": "Width",
+                    "type": { "numeric": true }
+                },
+                "selectedColor": {
+                    "displayName": "Selected Color",
+                    "type": { "fill": { "solid": { "color": true } } }
+                },
+                "hoverColor": {
+                    "displayName": "Hover Color",
+                    "type": { "fill": { "solid": { "color": true } } }
+                },
+                "unselectedColor": {
+                    "displayName": "Unselected Color",
+                    "type": { "fill": { "solid": { "color": true } } }
+                },
+                "disabledColor": {
+                    "displayName": "Disabled Color",
+                    "type": { "fill": { "solid": { "color": true } } }
+                },
+                "background": {
+                    "displayName": "Background",
+                    "type": { "fill": { "solid": { "color": true } } }
+                },
+                "transparency": {
+                    "displayName": "Transparency",
+                    "description": "Set transparency for background color",
+                    "type": { "numeric": true }
+                },
+                "outline": {
+                    "displayName": "Outline",
+                    "type": { "formatting": { "outline": true } }
+                },
+                "outlineColor": {
+                    "displayName": "Outline Color",
+                    "type": { "fill": { "solid": { "color": true } } }
+                },
+                "outlineWeight": {
+                    "displayName": "Outline Weight",
+                    "type": { "numeric": true }
+                },
+                "borderStyle": {
+                    "displayName": "Outline Style",
+                    "type": { "enumeration": [/*ChicletBorderStyle.type*/] }
+                }
+            }
+        },
+        "images": {
+            "displayName": "Images",
+            "properties": {
+                "imageSplit": {
+                    "displayName": "Image Split",
+                    "type": { "numeric": true }
+                },
+                "stretchImage": {
+                    "displayName": "Stretch image",
+                    "type": { "bool": true }
+                },
+                "bottomImage": {
+                    "displayName": "Bottom image",
+                    "type": { "bool": true }
+                }
+            }
+        }
+    },
+    "supportsHighlight": true,
+    /*"sorting": {
+        "default": {},
+    },*/
+    "suppressDefaultTitle": true
 }

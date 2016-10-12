@@ -41,12 +41,10 @@ module powerbi.extensibility.visual {
     import DataViewObjectPropertyIdentifier = powerbi.DataViewObjectPropertyIdentifier;
     import IEnumType = powerbi.IEnumType;
     import createEnumType = powerbi.createEnumType;
-    import IVisual = powerbi.IVisual;
     import IVisualHostServices = powerbi.IVisualHostServices;
     import DataView = powerbi.DataView;
     import DataViewObjects = powerbi.DataViewObjects;
     import DataViewCategoricalColumn = powerbi.DataViewCategoricalColumn;
-    import VisualCapabilities = powerbi.VisualCapabilities;
     import VisualDataRoleKind = powerbi.VisualDataRoleKind;
     import SelectEventArgs = powerbi.SelectEventArgs;
     import VisualUpdateOptions = powerbi.VisualUpdateOptions;
@@ -194,215 +192,16 @@ module powerbi.extensibility.visual {
     }
 
     export class ChicletSlicer implements IVisual {
+        /*
         public static capabilities: VisualCapabilities = {
-            dataRoles: [
-                {
-                    name: 'Category',
-                    kind: VisualDataRoleKind.Grouping,
-                    displayName: 'Category',
-                },
-                {
-                    name: 'Values',
-                    kind: VisualDataRoleKind.Measure,
-                    displayName: 'Values',
-                },
-                {
-                    name: 'Image',
-                    kind: VisualDataRoleKind.Grouping,
-                    displayName: 'Image',
-                },
-            ],
-            objects: {
-                general: {
-                    displayName: 'General',
-                    properties: {
-                        selection: {
-                            displayName: "Selection",
-                            type: { text: true }
-                        },
-                        orientation: {
-                            displayName: 'Orientation',
-                            type: { enumeration: Orientation.type }
-                        },
-                        columns: {
-                            displayName: 'Columns',
-                            type: { numeric: true }
-                        },
-                        rows: {
-                            displayName: 'Rows',
-                            type: { numeric: true }
-                        },
-                        showDisabled: {
-                            displayName: 'Show Disabled',
-                            type: { enumeration: ChicletSlicerShowDisabled.type }
-                        },
-                        multiselect: {
-                            displayName: 'Multiple selection',
-                            type: { bool: true }
-                        },
-                        selected: {
-                            type: { bool: true }
-                        },
-                        filter: {
-                            type: { filter: {} }
-                        },
-                        selfFilter: {
-                            type: { filter: { selfFilter: true } }
-                        },
-                        selfFilterEnabled: {
-                            type: { operations: { searchEnabled: true } }
-                        },
-                        formatString: {
-                            type: { formatting: { formatString: true } }
-                        },
-                    },
-                },
-                header: {
-                    displayName: 'Header',
-                    properties: {
-                        show: {
-                            displayName: 'Show',
-                            type: { bool: true }
-                        },
-                        title: {
-                            displayName: 'Title',
-                            type: { text: true }
-                        },
-                        fontColor: {
-                            displayName: 'Font color',
-                            type: { fill: { solid: { color: true } } }
-                        },
-                        background: {
-                            displayName: 'Background',
-                            type: { fill: { solid: { color: true } } }
-                        },
-                        outline: {
-                            displayName: 'Outline',
-                            type: { formatting: { outline: true } }
-                        },
-                        textSize: {
-                            displayName: 'Text Size',
-                            type: { numeric: true }
-                        },
-                        outlineColor: {
-                            displayName: 'Outline Color',
-                            type: { fill: { solid: { color: true } } }
-                        },
-                        outlineWeight: {
-                            displayName: 'Outline Weight',
-                            type: { numeric: true }
-                        }
-                    }
-                },
-                rows: {
-                    displayName: 'Chiclets',
-                    properties: {
-                        fontColor: {
-                            displayName: 'Text color',
-                            type: { fill: { solid: { color: true } } }
-                        },
-                        textSize: {
-                            displayName: 'Text Size',
-                            type: { numeric: true }
-                        },
-                        height: {
-                            displayName: 'Height',
-                            type: { numeric: true }
-                        },
-                        width: {
-                            displayName: 'Width',
-                            type: { numeric: true }
-                        },
-                        selectedColor: {
-                            displayName: 'Selected Color',
-                            type: { fill: { solid: { color: true } } }
-                        },
-                        hoverColor: {
-                            displayName: 'Hover Color',
-                            type: { fill: { solid: { color: true } } }
-                        },
-                        unselectedColor: {
-                            displayName: 'Unselected Color',
-                            type: { fill: { solid: { color: true } } }
-                        },
-                        disabledColor: {
-                            displayName: 'Disabled Color',
-                            type: { fill: { solid: { color: true } } }
-                        },
-                        background: {
-                            displayName: 'Background',
-                            type: { fill: { solid: { color: true } } }
-                        },
-                        transparency: {
-                            displayName: "Transparency",
-                            description: "Set transparency for background color",
-                            type: { numeric: true }
-                        },
-                        outline: {
-                            displayName: 'Outline',
-                            type: { formatting: { outline: true } }
-                        },
-                        outlineColor: {
-                            displayName: 'Outline Color',
-                            type: { fill: { solid: { color: true } } }
-                        },
-                        outlineWeight: {
-                            displayName: 'Outline Weight',
-                            type: { numeric: true }
-                        },
-                        borderStyle: {
-                            displayName: 'Outline Style',
-                            type: { enumeration: ChicletBorderStyle.type }
-                        },
-                    }
-                },
-                images: {
-                    displayName: 'Images',
-                    properties: {
-                        imageSplit: {
-                            displayName: 'Image Split',
-                            type: { numeric: true }
-                        },
-                        stretchImage: {
-                            displayName: 'Stretch image',
-                            type: { bool: true }
-                        },
-                        bottomImage: {
-                            displayName: 'Bottom image',
-                            type: { bool: true }
-                        },
-                    }
-                },
-            },
-            dataViewMappings: [{
-                conditions: [
-                    {
-                        'Category': { max: 1 },
-                        'Image': { min: 0, max: 1 },
-                        'Values': { min: 0, max: 1 }
-                    }
-                ],
-                categorical: {
-                    categories: {
-                        for: { in: 'Category' },
-                        dataReductionAlgorithm: { top: { count: 10000 } }
-                    },
-                    values: {
-                        group: {
-                            by: 'Image',
-                            select: [{ bind: { to: 'Values' } }],
-                            dataReductionAlgorithm: { top: { count: 10000 } }
-                        }
-                    },
-                    includeEmptyGroups: true
-                }
-            }],
+
             supportsHighlight: true,
             sorting: {
                 default: {},
             },
             suppressDefaultTitle: true,
         };
+        */
 
         private element: JQuery;
         private searchHeader: JQuery;
