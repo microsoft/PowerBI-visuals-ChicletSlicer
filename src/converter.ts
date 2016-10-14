@@ -34,15 +34,15 @@ module powerbi.extensibility.visual {
         private category: DataViewCategoryColumn;
         private categoryIdentities: DataViewScopeIdentity[];
         private categoryValues: any[];
-        private categoryColumnRef: SQExpr[];
         private categoryFormatString: string;
-        private interactivityService: IInteractivityService;
+       // private categoryColumnRef: SQExpr[];
+        //private interactivityService: IInteractivityService;
 
         public numberOfCategoriesSelectedInData: number;
         public dataPoints: ChicletSlicerDataPoint[];
         public hasSelectionOverride: boolean;
 
-        public constructor(dataView: DataView, interactivityService: IInteractivityService) {
+        public constructor(dataView: DataView/*, interactivityService: IInteractivityService*/) {
 
             var dataViewCategorical = dataView.categorical;
             this.dataViewCategorical = dataViewCategorical;
@@ -52,13 +52,13 @@ module powerbi.extensibility.visual {
                 this.category = dataViewCategorical.categories[0];
                 this.categoryIdentities = this.category.identity;
                 this.categoryValues = this.category.values;
-                this.categoryColumnRef = <SQExpr[]>this.category.identityFields;
+               // this.categoryColumnRef = <SQExpr[]>this.category.identityFields;
                 this.categoryFormatString = valueFormatter.getFormatString(this.category.source, chicletSlicerProps.formatString);
             }
 
             this.dataPoints = [];
 
-            this.interactivityService = interactivityService;
+           // this.interactivityService = interactivityService;
             this.hasSelectionOverride = false;
         }
 
@@ -72,6 +72,7 @@ module powerbi.extensibility.visual {
 
                 var isInvertedSelectionMode = undefined;
                 var numberOfScopeIds: number;
+                /*
                 if (objects && objects.general && objects.general.filter) {
                     if (!this.categoryColumnRef)
                         return;
@@ -104,7 +105,7 @@ module powerbi.extensibility.visual {
                         hasSelection = selected;
                         break;
                     }
-                }
+                }  */
 
                 var dataViewCategorical = this.dataViewCategorical;
                 var formatStringProp = chicletSlicerProps.formatString;
@@ -113,9 +114,9 @@ module powerbi.extensibility.visual {
 
                 for (var categoryIndex: number = 0, categoryCount = this.categoryValues.length; categoryIndex < categoryCount; categoryIndex++) {
                     //var categoryIdentity = this.category.identity ? this.category.identity[categoryIndex] : null;
-                    var categoryIsSelected = isCategoryColumnSelected(chicletSlicerProps.selectedPropertyIdentifier, this.category, categoryIndex);
+                  //  var categoryIsSelected = isCategoryColumnSelected(chicletSlicerProps.selectedPropertyIdentifier, this.category, categoryIndex);
                     var selectable: boolean = true;
-
+                    /*
                     if (hasSelection != null) {
                         if (isInvertedSelectionMode) {
                             if (this.category.objects == null)
@@ -134,9 +135,10 @@ module powerbi.extensibility.visual {
                         }
                     }
 
+
                     if (categoryIsSelected) {
                         this.numberOfCategoriesSelectedInData++;
-                    }
+                    }  */
 
                     var categoryValue = this.categoryValues[categoryIndex];
                     var categoryLabel = valueFormatter.format(categoryValue, this.categoryFormatString);
@@ -160,13 +162,13 @@ module powerbi.extensibility.visual {
                             }
                         }
                     }
-                    var categorySelectionId: SelectionId = SelectionIdBuilder.builder().withCategory(this.category, categoryIndex).createSelectionId();
+                    //var categorySelectionId: SelectionId = SelectionIdBuilder.builder().withCategory(this.category, categoryIndex).createSelectionId();
                     this.dataPoints.push({
-                        identity: categorySelectionId,
+                       // identity: categorySelectionId,
                         category: categoryLabel,
                         imageURL: imageURL,
                         value: value,
-                        selected: categoryIsSelected,
+                        selected: false,//categoryIsSelected,
                         selectable: selectable
                     });
                 }

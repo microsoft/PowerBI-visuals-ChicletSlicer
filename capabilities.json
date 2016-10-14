@@ -196,7 +196,7 @@
                 },
                 "borderStyle": {
                     "displayName": "Outline Style",
-                    "type": { "enumeration": [/*ChicletBorderStyle.type*/] }
+                    "type": { "enumeration": [] }
                 }
             }
         },

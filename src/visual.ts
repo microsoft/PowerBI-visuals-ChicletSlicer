@@ -29,11 +29,16 @@ module powerbi.extensibility.visual {
     // powerbi npm-packages
     import ClassAndSelector = jsCommon.CssConstants.ClassAndSelector;
     import createClassAndSelector = jsCommon.CssConstants.createClassAndSelector;
+    import converterHelper = powerbi.visuals.converterHelper;
     import hexToRGBString = powerbi.common.utils.ColorUtility.hexToRGBString;
     import IMargin = powerbi.visuals.IMargin;
     import PixelConverter = jsCommon.PixelConverter;
     import TextMeasurementService = powerbi.TextMeasurementService;
     import TextProperties = powerbi.TextProperties;
+    import valueFormatter = powerbi.visuals.valueFormatter;
+    import IEnumType = powerbi.IEnumType;
+    import createEnumType = powerbi.createEnumType;
+    import DataViewObjects = powerbi.DataViewObjects;
 
     // npm-packages
     import Selection = d3.Selection;
@@ -42,16 +47,10 @@ module powerbi.extensibility.visual {
     // powerbi internal modules
     import IViewport = powerbi.IViewport;
     import DataViewObjectPropertyIdentifier = powerbi.DataViewObjectPropertyIdentifier;
-    import IEnumType = powerbi.IEnumType;
-    import createEnumType = powerbi.createEnumType;
-    import IVisualHostServices = powerbi.IVisualHostServices;
+
     import DataView = powerbi.DataView;
-    import DataViewObjects = powerbi.DataViewObjects;
     import DataViewCategoricalColumn = powerbi.DataViewCategoricalColumn;
     import VisualDataRoleKind = powerbi.VisualDataRoleKind;
-    import SelectEventArgs = powerbi.SelectEventArgs;
-    import VisualUpdateOptions = powerbi.VisualUpdateOptions;
-    import DataViewAnalysis = powerbi.DataViewAnalysis;
     import EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInstancesOptions;
     import VisualObjectInstance = powerbi.VisualObjectInstance;
     import VisualObjectInstancesToPersist = powerbi.VisualObjectInstancesToPersist;
@@ -59,26 +58,29 @@ module powerbi.extensibility.visual {
     import DataViewMetadata = powerbi.DataViewMetadata;
     import DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
     import DataViewScopeIdentity = powerbi.DataViewScopeIdentity;
-    import VisualInitOptions = powerbi.VisualInitOptions;
-
+   /*
     // powerbi.data
     import SemanticFilter = powerbi.data.SemanticFilter;
     import SQExprConverter = powerbi.data.SQExprConverter;
     import Selector = powerbi.data.Selector;
     import SQExpr = powerbi.data.SQExpr;
 
+
+    import IVisualHostServices = powerbi.IVisualHostServices;
+    import SelectEventArgs = powerbi.SelectEventArgs;
+    import VisualUpdateOptions = powerbi.VisualUpdateOptions;
+    import DataViewAnalysis = powerbi.DataViewAnalysis;
+
     // powerbi.visuals
     import SelectableDataPoint = powerbi.visuals.SelectableDataPoint;
     import IInteractivityService = powerbi.visuals.IInteractivityService;
-    import valueFormatter = powerbi.visuals.valueFormatter;
     import createInteractivityService = powerbi.visuals.createInteractivityService;
     import isCategoryColumnSelected = powerbi.visuals.isCategoryColumnSelected;
-    import converterHelper = powerbi.visuals.converterHelper;
     import SelectionId = powerbi.visuals.SelectionId;
     import IInteractiveBehavior = powerbi.visuals.IInteractiveBehavior;
     import ISelectionHandler = powerbi.visuals.ISelectionHandler;
     import SelectionIdBuilder = powerbi.visuals.SelectionIdBuilder;
-
+ */
     module ChicletBorderStyle {
         export var ROUNDED: string = 'Rounded';
         export var CUT: string = 'Cut';
@@ -112,10 +114,11 @@ module powerbi.extensibility.visual {
             { value: VERTICAL, displayName: VERTICAL }
         ]);
     }
-
+    /*
     export interface ChicletSlicerConstructorOptions {
         behavior?: ChicletSlicerWebBehavior;
     }
+    */
 
     export interface ChicletSlicerData {
         categorySourceName: string;
@@ -123,6 +126,19 @@ module powerbi.extensibility.visual {
         slicerDataPoints: ChicletSlicerDataPoint[];
         slicerSettings: ChicletSlicerSettings;
         hasSelectionOverride?: boolean;
+    }
+
+
+    export interface SelectableDataPoint {
+        selected: boolean;
+        /** Identity for identifying the selectable data point for selection purposes */
+        //identity: SelectionId;
+        /**
+         * A specific identity for when data points exist at a finer granularity than
+         * selection is performed.  For example, if your data points should select based
+         * only on series even if they exist as category/series intersections.
+         */
+       // specificIdentity?: SelectionId;
     }
 
     export interface ChicletSlicerDataPoint extends SelectableDataPoint {
@@ -145,8 +161,8 @@ module powerbi.extensibility.visual {
             showDisabled: string;
             selection: string;
             selfFilterEnabled: boolean;
-            getSavedSelection?: () => string[];
-            setSavedSelection?: (filter: SemanticFilter, selectionIds: string[]) => void;
+            //getSavedSelection?: () => string[];
+            //setSavedSelection?: (filter: SemanticFilter, selectionIds: string[]) => void;
         };
         margin: IMargin;
         header: {
@@ -204,7 +220,7 @@ module powerbi.extensibility.visual {
         };
         */
 
-        private element: JQuery;
+        private root: JQuery;
         private searchHeader: JQuery;
         private searchInput: JQuery;
         private currentViewport: IViewport;
@@ -214,9 +230,9 @@ module powerbi.extensibility.visual {
         private tableView: ITableView;
         private slicerData: ChicletSlicerData;
         private settings: ChicletSlicerSettings;
-        private interactivityService: IInteractivityService;
-        private behavior: ChicletSlicerWebBehavior;
-        private hostServices: IVisualHostServices;
+       // private interactivityService: IInteractivityService;
+      //  private behavior: ChicletSlicerWebBehavior;
+        //private hostServices: IVisualHostServices;
         private waitingForData: boolean;
         private isSelectionLoaded: boolean;
         private isSelectionSaved: boolean;
@@ -311,18 +327,6 @@ module powerbi.extensibility.visual {
             };
         }
 
-        constructor(options?: ChicletSlicerConstructorOptions) {
-            if (options) {
-                if (options.behavior) {
-                    this.behavior = options.behavior;
-                }
-            }
-
-            if (!this.behavior) {
-                this.behavior = new ChicletSlicerWebBehavior();
-            }
-        }
-
         /**
          * Public to testability.
          */
@@ -336,7 +340,7 @@ module powerbi.extensibility.visual {
             }
         }
 
-        public static converter(dataView: DataView, searchText: string, interactivityService: IInteractivityService): ChicletSlicerData {
+        public static converter(dataView: DataView, searchText: string/*, interactivityService: IInteractivityService*/): ChicletSlicerData {
             if (!dataView ||
                 !dataView.categorical ||
                 !dataView.categorical.categories ||
@@ -346,7 +350,7 @@ module powerbi.extensibility.visual {
                 return;
             }
 
-            var converter = new ChicletSlicerConverter(dataView, interactivityService);
+            var converter = new ChicletSlicerConverter(dataView/*, interactivityService*/);
             converter.convert();
 
             var slicerData: ChicletSlicerData,
@@ -411,22 +415,37 @@ module powerbi.extensibility.visual {
             return slicerData;
         }
 
-        public init(options: VisualInitOptions): void {
-            this.element = options.element;
-            this.currentViewport = options.viewport;
 
-            if (this.behavior) {
-                this.interactivityService = createInteractivityService(options.host);
+        constructor(options: VisualConstructorOptions) {
+
+            console.log('Visual constructor', options);
+            /*
+            if (options) {
+                if (options.behavior) {
+                    this.behavior = options.behavior;
+                }
             }
 
-            this.hostServices = options.host;
-            this.hostServices.canSelect = ChicletSlicer.canSelect;
+            if (!this.behavior) {
+                this.behavior = new ChicletSlicerWebBehavior();
+            }
+            */
+            this.root = $(options.element);
+            // Todo: add default viewport
+            // this.currentViewport = options.viewport;
+            /*
+            if (this.behavior) {
+                this.interactivityService = createInteractivityService(options.host);
+            }*/
+
+          //  this.hostServices = options.host;
+           // this.hostServices.canSelect = ChicletSlicer.canSelect;
 
             this.settings = ChicletSlicer.DefaultStyleProperties();
 
             this.initContainer();
         }
-
+      /*
         private static canSelect(args: SelectEventArgs): boolean {
             var selectors = _.map(args.visualObjects, (visualObject) => {
                 return Selector.convertSelectorsByColumnToSelector(visualObject.selectorsByColumn);
@@ -441,7 +460,7 @@ module powerbi.extensibility.visual {
 
             // Todo: check for cases of trying to select a category and a series (not the intersection)
             return true;
-        }
+        }*/
 
         public update(options: VisualUpdateOptions) {
             if (!options ||
@@ -456,7 +475,7 @@ module powerbi.extensibility.visual {
 
             var resetScrollbarPosition: boolean = true;
             if (existingDataView) {
-                resetScrollbarPosition = !DataViewAnalysis.hasSameCategoryIdentity(existingDataView, this.dataView);
+              //  resetScrollbarPosition = !DataViewAnalysis.hasSameCategoryIdentity(existingDataView, this.dataView);
             }
 
             if (options.viewport.height === this.currentViewport.height
@@ -573,17 +592,17 @@ module powerbi.extensibility.visual {
             var data = ChicletSlicer.converter(
                 this.dataView,
                 this.searchInput.val(),
-                this.interactivityService);
+                /*this.interactivityService*/);
 
             if (!data) {
                 this.tableView.empty();
 
                 return;
             }
-
+            /*
             if (this.interactivityService) {
                 this.interactivityService.applySelectionStateToData(data.slicerDataPoints);
-            }
+            }*/
 
             data.slicerSettings.header.outlineWeight = data.slicerSettings.header.outlineWeight < 0
                 ? 0
@@ -610,7 +629,7 @@ module powerbi.extensibility.visual {
             data.slicerSettings.general.rows = data.slicerSettings.general.rows < 0
                 ? 0
                 : data.slicerSettings.general.rows;
-
+           /*
             data.slicerSettings.general.getSavedSelection = () => {
                 try {
                     return JSON.parse(this.slicerData.slicerSettings.general.selection) || [];
@@ -631,7 +650,7 @@ module powerbi.extensibility.visual {
                         }
                     }]
                 });
-            };
+            };*/
 
             if (this.slicerData) {
                 if (this.isSelectionSaved) {
@@ -701,7 +720,7 @@ module powerbi.extensibility.visual {
             var settings: ChicletSlicerSettings = this.settings,
                 slicerBodyViewport: IViewport = this.getSlicerBodyViewport(this.currentViewport);
 
-            var slicerContainer: Selection<any> = d3.select(this.element.get(0))
+            var slicerContainer: Selection<any> = d3.select(this.root.get(0))
                 .append('div')
                 .classed(ChicletSlicer.ContainerSelector.class, true);
 
@@ -974,8 +993,9 @@ module powerbi.extensibility.visual {
                 else {
                     this.slicerBody.style('background-color', null);
                 }
-
+                 /*
                 if (this.interactivityService && this.slicerBody) {
+
                     this.interactivityService.applySelectionStateToData(data.slicerDataPoints);
 
                     var slicerBody: Selection<any> = this.slicerBody.attr('width', this.currentViewport.width),
@@ -990,7 +1010,7 @@ module powerbi.extensibility.visual {
                         slicerItemLabels: slicerItemLabels,
                         slicerItemInputs: slicerItemInputs,
                         slicerClear: slicerClear,
-                        interactivityService: this.interactivityService,
+                        //interactivityService: this.interactivityService,
                         slicerSettings: data.slicerSettings,
                         isSelectionLoaded: this.isSelectionLoaded
                     };
@@ -1003,10 +1023,11 @@ module powerbi.extensibility.visual {
                     this.behavior.styleSlicerInputs(
                         rowSelection.select(ChicletSlicer.ItemContainerSelector.selector),
                         this.interactivityService.hasSelection());
+
                 }
                 else {
                     this.behavior.styleSlicerInputs(rowSelection.select(ChicletSlicer.ItemContainerSelector.selector), false);
-                }
+                }*/
             }
         };
 
@@ -1024,8 +1045,8 @@ module powerbi.extensibility.visual {
             this.searchInput = $("<input>").appendTo(this.searchHeader)
                 .attr("type", "text")
                 .attr("drag-resize-disabled", "true")
-                .addClass("searchInput")
-                .on("input", () => this.hostServices.persistProperties(<VisualObjectInstancesToPersist>{
+                .addClass("searchInput");
+             /*   .on("input", () => this.hostServices.persistProperties(<VisualObjectInstancesToPersist>{
                     merge: [{
                         objectName: "general",
                         selector: null,
@@ -1033,7 +1054,7 @@ module powerbi.extensibility.visual {
                             counter: counter++
                         }
                     }]
-                }));
+                }));*/
         }
 
         private updateSearchHeader(): void {
@@ -1043,7 +1064,7 @@ module powerbi.extensibility.visual {
 
         private onLoadMoreData(): void {
             if (!this.waitingForData && this.dataView.metadata && this.dataView.metadata.segment) {
-                this.hostServices.loadMoreData();
+               // this.hostServices.loadMoreData();
                 this.waitingForData = true;
             }
         }

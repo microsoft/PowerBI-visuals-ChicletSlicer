@@ -30,7 +30,6 @@
     "src/chicletSlicerProps.ts",
     "src/converter.ts",
     "src/tableView.ts",
-    "src/visual.ts",
-    "src/webBehavior.ts"
+    "src/visual.ts"
   ]
 }
