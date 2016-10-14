@@ -24,6 +24,7 @@
     "node_modules/@powerbi-visuals-utils/formattingservice/lib/index.d.ts",
     "node_modules/@powerbi-visuals-utils/imargin/lib/index.d.ts",
     "node_modules/@powerbi-visuals-utils/pixelconverter/lib/index.d.ts",
+    "node_modules/@powerbi-visuals-utils/textmeasurementservice/lib/index.d.ts",
     "node_modules/@powerbi-visuals-utils/valueformatter/lib/index.d.ts",
 
     "src/chicletSlicerProps.ts",

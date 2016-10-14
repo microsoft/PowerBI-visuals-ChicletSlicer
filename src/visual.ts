@@ -26,17 +26,20 @@
 
 module powerbi.extensibility.visual {
 
-    // jsCommon
+    // powerbi npm-packages
     import ClassAndSelector = jsCommon.CssConstants.ClassAndSelector;
     import createClassAndSelector = jsCommon.CssConstants.createClassAndSelector;
+    import hexToRGBString = powerbi.common.utils.ColorUtility.hexToRGBString;
     import IMargin = powerbi.visuals.IMargin;
     import PixelConverter = jsCommon.PixelConverter;
-    import hexToRGBString = powerbi.common.utils.ColorUtility.hexToRGBString;
+    import TextMeasurementService = powerbi.TextMeasurementService;
+    import TextProperties = powerbi.TextProperties;
 
+    // npm-packages
     import Selection = d3.Selection;
     import UpdateSelection = d3.selection.Update;
 
-    // powerbi
+    // powerbi internal modules
     import IViewport = powerbi.IViewport;
     import DataViewObjectPropertyIdentifier = powerbi.DataViewObjectPropertyIdentifier;
     import IEnumType = powerbi.IEnumType;
@@ -52,8 +55,6 @@ module powerbi.extensibility.visual {
     import EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInstancesOptions;
     import VisualObjectInstance = powerbi.VisualObjectInstance;
     import VisualObjectInstancesToPersist = powerbi.VisualObjectInstancesToPersist;
-    import TextMeasurementService = powerbi.TextMeasurementService;
-    import TextProperties = powerbi.TextProperties;
     import DataViewCategorical = powerbi.DataViewCategorical;
     import DataViewMetadata = powerbi.DataViewMetadata;
     import DataViewCategoryColumn = powerbi.DataViewCategoryColumn;

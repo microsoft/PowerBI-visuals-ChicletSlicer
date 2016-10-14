@@ -25,6 +25,7 @@
     "@powerbi-visuals-utils/formattingservice": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-formattingservice.git",
     "@powerbi-visuals-utils/imargin": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-imargin.git",
     "@powerbi-visuals-utils/pixelconverter": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-pixelconverter.git",
+    "@powerbi-visuals-utils/textmeasurementservice": "git+https://github.com/uve/powerbi-visuals-utils-textmeasurementservice.git",
     "@powerbi-visuals-utils/valueformatter": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-valueformatter.git",
     "d3": "^4.2.6",
     "jquery": "^3.1.1",
