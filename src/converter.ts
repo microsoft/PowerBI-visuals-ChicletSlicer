@@ -43,7 +43,6 @@ module powerbi.extensibility.visual {
         public hasSelectionOverride: boolean;
 
         public constructor(dataView: DataView/*, interactivityService: IInteractivityService*/) {
-
             var dataViewCategorical = dataView.categorical;
             this.dataViewCategorical = dataViewCategorical;
             this.dataViewMetadata = dataView.metadata;

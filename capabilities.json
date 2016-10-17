@@ -66,7 +66,7 @@
                 },
                 "orientation": {
                     "displayName": "Orientation",
-                    "type": { "enumeration": [/*Orientation.type*/] }
+                    "type": { "enumeration": [] }
                 },
                 "columns": {
                     "displayName": "Columns",
@@ -78,7 +78,7 @@
                 },
                 "showDisabled": {
                     "displayName": "Show Disabled",
-                    "type": { "enumeration": [/*ChicletSlicerShowDisabled.type*/] }
+                    "type": { "enumeration": [] }
                 },
                 "multiselect": {
                     "displayName": "Multiple selection",
@@ -86,18 +86,6 @@
                 },
                 "selected": {
                     "type": { "bool": true }
-                },
-                "filter": {
-                    "type": { "filter": {} }
-                },
-                "selfFilter": {
-                    "type": { "filter": { "selffilter": true } }
-                },
-                "selfFilterEnabled": {
-                    "type": { "operations": { "searchEnabled": true } }
-                },
-                "formatString": {
-                    "type": { "formatting": { "formatString": true } }
                 }
             }
         },
@@ -121,8 +109,7 @@
                     "type": { "fill": { "solid": { "color": true } } }
                 },
                 "outline": {
-                    "displayName": "Outline",
-                    "type": { "formatting": { "outline": true } }
+                    "displayName": "Outline"
                 },
                 "textSize": {
                     "displayName": "Text Size",
@@ -183,8 +170,7 @@
                     "type": { "numeric": true }
                 },
                 "outline": {
-                    "displayName": "Outline",
-                    "type": { "formatting": { "outline": true } }
+                    "displayName": "Outline"
                 },
                 "outlineColor": {
                     "displayName": "Outline Color",
@@ -217,10 +203,5 @@
                 }
             }
         }
-    },
-    "supportsHighlight": true,
-    /*"sorting": {
-        "default": {},
-    },*/
-    "suppressDefaultTitle": true
+    }
 }

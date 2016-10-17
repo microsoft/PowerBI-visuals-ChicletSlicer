@@ -417,7 +417,7 @@ module powerbi.extensibility.visual {
 
 
         constructor(options: VisualConstructorOptions) {
-
+            console.clear();
             console.log('Visual constructor', options);
             /*
             if (options) {
@@ -430,6 +430,7 @@ module powerbi.extensibility.visual {
                 this.behavior = new ChicletSlicerWebBehavior();
             }
             */
+
             this.root = $(options.element);
             // Todo: add default viewport
             // this.currentViewport = options.viewport;
@@ -443,7 +444,8 @@ module powerbi.extensibility.visual {
 
             this.settings = ChicletSlicer.DefaultStyleProperties();
 
-            this.initContainer();
+            //console.log("DefaultSettings:", this.settings);
+           // this.initContainer();
         }
       /*
         private static canSelect(args: SelectEventArgs): boolean {
@@ -463,11 +465,18 @@ module powerbi.extensibility.visual {
         }*/
 
         public update(options: VisualUpdateOptions) {
+
+            console.log('Visual update method', options);
             if (!options ||
                 !options.dataViews ||
                 !options.dataViews[0] ||
                 !options.viewport) {
                 return;
+            }
+
+            if (!this.currentViewport) {
+                this.currentViewport = options.viewport;
+                this.initContainer();
             }
 
             var existingDataView = this.dataView;

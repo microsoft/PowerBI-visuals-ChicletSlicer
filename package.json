@@ -19,22 +19,29 @@
     "@powerbi-visuals-utils/converterhelper": "git+https://github.com/uve/powerbi-visuals-utils-converterhelper.git",
     "@powerbi-visuals-utils/cssconstants": "git+https://github.com/uve/powerbi-visuals-utils-cssconstants.git",
     "@powerbi-visuals-utils/dataviewobjects": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-dataviewobjects.git",
+    "@powerbi-visuals-utils/datetimesequence": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-datetimesequence.git",
     "@powerbi-visuals-utils/displayunitsystem": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-displayunitsystem.git",
     "@powerbi-visuals-utils/displayunitsystemtype": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-displayunitsystemtype.git",
+    "@powerbi-visuals-utils/double": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-double.git",
     "@powerbi-visuals-utils/enumtype": "git+https://github.com/uve/powerbi-visuals-utils-enumtype.git",
+    "@powerbi-visuals-utils/external-loader": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-external-loader.git",
+    "@powerbi-visuals-utils/formatting": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-formatting.git",
     "@powerbi-visuals-utils/formattingservice": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-formattingservice.git",
     "@powerbi-visuals-utils/imargin": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-imargin.git",
     "@powerbi-visuals-utils/pixelconverter": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-pixelconverter.git",
+    "@powerbi-visuals-utils/regexpextensions": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-regexpextensions.git",
+    "@powerbi-visuals-utils/stringextensions": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-stringextensions.git",
     "@powerbi-visuals-utils/textmeasurementservice": "git+https://github.com/uve/powerbi-visuals-utils-textmeasurementservice.git",
     "@powerbi-visuals-utils/valueformatter": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-valueformatter.git",
-    "d3": "^4.2.6",
+    "@types/d3": "^3.5.36",
+    "@types/jquery": "^2.0.33",
+    "@types/lodash": "^4.14.37",
+    "d3": "3.5.17",
+    "globalize": "0.1.0-a2",
     "jquery": "^3.1.1",
-    "lodash": "^4.16.2",
-    "typings": "^1.4.0"
+    "lodash": "^4.16.4"
   },
   "scripts": {
-    "preinstall": "pbiviz update",
-    "postinstall": "typings install",
-    "typings": "node node_modules/typings/dist/bin.js i"
+    "preinstall": "pbiviz update"
   }
 }
