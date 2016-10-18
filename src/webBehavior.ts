@@ -35,7 +35,6 @@ module powerbi.extensibility.visual {
         slicerItemInputs: Selection<any>;
         slicerClear: Selection<any>;
         dataPoints: ChicletSlicerDataPoint[];
-       // interactivityService: IInteractivityService;
         slicerSettings: ChicletSlicerSettings;
         isSelectionLoaded: boolean;
     }
@@ -55,7 +54,6 @@ module powerbi.extensibility.visual {
         private slicerItemLabels: Selection<any>;
         private slicerItemInputs: Selection<any>;
         private dataPoints: ChicletSlicerDataPoint[];
-       // private interactivityService: IInteractivityService;
         private slicerSettings: ChicletSlicerSettings;
         private options: ChicletSlicerBehaviorOptions;
 
@@ -66,15 +64,14 @@ module powerbi.extensibility.visual {
         }
 
         public bindEvents(options: ChicletSlicerBehaviorOptions): void {
-            var slicers = this.slicers = options.slicerItemContainers;
+            let slicers = this.slicers = options.slicerItemContainers;
 
             this.slicerItemLabels = options.slicerItemLabels;
             this.slicerItemInputs = options.slicerItemInputs;
 
-            var slicerClear = options.slicerClear;
+            let slicerClear = options.slicerClear;
 
             this.dataPoints = options.dataPoints;
-            //this.interactivityService = options.interactivityService;
             this.slicerSettings = options.slicerSettings;
             this.options = options;
 
@@ -106,27 +103,24 @@ module powerbi.extensibility.visual {
                 }
 
                 (d3.event as Event).preventDefault();
-                //d3.event.preventDefault();
 
-                var settings: ChicletSlicerSettings = this.slicerSettings;
+                let settings: ChicletSlicerSettings = this.slicerSettings;
 
                 if ((d3.event as KeyboardEvent).altKey && settings.general.multiselect) {
-                    var selectedIndexes = jQuery.map(this.dataPoints, (d, index) => {
+                    let selectedIndexes = jQuery.map(this.dataPoints, (d, index) => {
                         if (d.selected) {
                             return index;
                         };
                     });
 
-                    var selIndex = selectedIndexes.length > 0
+                    let selIndex: number = selectedIndexes.length > 0
                         ? (selectedIndexes[selectedIndexes.length - 1])
                         : 0;
 
                     if (selIndex > index) {
-                        var temp = index;
-                        index = selIndex;
-                        selIndex = temp;
+                        [index, selIndex] = [selIndex, index];
                     }
-                    var selectedItems = [];
+                    let selectedItems: ISelectionId[] = [];
 
                     for (let i: number = selIndex; i <= index; i++) {
                         selectedItems.push(this.dataPoints[i].identity);
@@ -135,65 +129,33 @@ module powerbi.extensibility.visual {
                     this.selectionManager.clear().then(() => {
                         this.selectionManager.select(selectedItems, true).then((ids: ISelectionId[]) => this.renderSelection(ids));
                     });
-                }
-                else if (((d3.event as KeyboardEvent).ctrlKey || (d3.event as KeyboardEvent).metaKey) && settings.general.multiselect) {
+                } else if (((d3.event as KeyboardEvent).ctrlKey || (d3.event as KeyboardEvent).metaKey) && settings.general.multiselect) {
                    this.selectionManager.select(dataPoint.identity, true).then((ids: ISelectionId[]) => this.renderSelection(ids));;
-                }
-                else {
+                } else {
                     this.selectionManager.select(dataPoint.identity, false).then((ids: ISelectionId[]) => this.renderSelection(ids));;
                 }
-
-                //this.saveSelection(selectionHandler);
 
             });
 
             slicerClear.on("click", (d: SelectableDataPoint) => {
                 this.selectionManager.clear().then((ids: ISelectionId[]) => this.renderSelection(ids));
-                //this.saveSelection(selectionHandler);
             });
         }
 
-        /*
-        public loadSelection(selectionHandler: ISelectionHandler): void {
-            selectionHandler.handleClearSelection();
-            var savedSelectionIds = this.slicerSettings.general.getSavedSelection();
-            if (savedSelectionIds.length) {
-                var selectedDataPoints = this.dataPoints.filter(d => savedSelectionIds.some(x => d.identity.getKey() === x));
-                selectedDataPoints.forEach(x => selectionHandler.handleSelection(x, true));
-                selectionHandler.persistSelectionFilter(chicletSlicerProps.filterPropertyIdentifier);
-            }
-        }
-
-        private static getFilterFromSelectors(selectionHandler: ISelectionHandler, isSelectionModeInverted: boolean): SemanticFilter {
-            var selectors: Selector[] = [];
-            var selectedIds: SelectionId[] = <SelectionId[]>(<any>selectionHandler).selectedIds;
-
-            if (selectedIds.length > 0) {
-                selectors = _.chain(selectedIds)
-                    .filter((value: SelectionId) => value.hasIdentity())
-                    .map((value: SelectionId) => value.getSelector())
-                    .value();
-            }
-
-            var filter: SemanticFilter = Selector.filterFromSelector(selectors, isSelectionModeInverted);
-            return filter;
-        }
-
-        public saveSelection(selectionHandler: ISelectionHandler): void {
-            var filter: SemanticFilter = ChicletSlicerWebBehavior.getFilterFromSelectors(selectionHandler, this.interactivityService.isSelectionModeInverted());
-            var selectionIdKeys = (<SelectionId[]>(<any>selectionHandler).selectedIds).map(x => x.getKey());
-            this.slicerSettings.general.setSavedSelection(filter, selectionIdKeys);
-        }
-
- */
         public renderSelection(ids: ISelectionId[]): void {
+            const settings:ChicletSlicerSettings = this.slicerSettings;
 
-            if (!this.selectionManager.hasSelection()/* && !this.interactivityService.isSelectionModeInverted()*/) {
-                this.slicers.style('background', this.slicerSettings.slicerText.unselectedColor);
-            }
-            else {
-                this.styleSlicerInputs(this.slicers, ids);
-            }
+            this.slicers.each(function (d: ChicletSlicerDataPoint) {
+                // get selected items
+                d.selected = _.some(ids, d.identity);
+
+                d3.select(this).style({
+                    'background': d.selectable ? (d.selected ? settings.slicerText.selectedColor : settings.slicerText.unselectedColor)
+                        : settings.slicerText.disabledColor
+                });
+
+                d3.select(this).classed('slicerItem-disabled', !d.selectable);
+            });
 
            //this.saveSelection();
         }
@@ -216,21 +178,40 @@ module powerbi.extensibility.visual {
             });
         }
 
-        public styleSlicerInputs(slicers: Selection<any>, ids: ISelectionId[]) {
-            let settings = this.slicerSettings;
 
-            slicers.each(function (d: ChicletSlicerDataPoint) {
-                // get selected items
-                d.selected = _.some(ids, d.identity);
-
-                d3.select(this).style({
-                    'background': d.selectable ? (d.selected ? settings.slicerText.selectedColor : settings.slicerText.unselectedColor)
-                        : settings.slicerText.disabledColor
-                });
-
-                d3.select(this).classed('slicerItem-disabled', !d.selectable);
-            });
+        /*
+        public loadSelection(selectionHandler: ISelectionHandler): void {
+            selectionHandler.handleClearSelection();
+            let savedSelectionIds = this.slicerSettings.general.getSavedSelection();
+            if (savedSelectionIds.length) {
+                let selectedDataPoints = this.dataPoints.filter(d => savedSelectionIds.some(x => d.identity.getKey() === x));
+                selectedDataPoints.forEach(x => selectionHandler.handleSelection(x, true));
+                selectionHandler.persistSelectionFilter(chicletSlicerProps.filterPropertyIdentifier);
+            }
         }
+
+        private static getFilterFromSelectors(selectionHandler: ISelectionHandler, isSelectionModeInverted: boolean): SemanticFilter {
+            let selectors: Selector[] = [];
+            let selectedIds: SelectionId[] = <SelectionId[]>(<any>selectionHandler).selectedIds;
+
+            if (selectedIds.length > 0) {
+                selectors = _.chain(selectedIds)
+                    .filter((value: SelectionId) => value.hasIdentity())
+                    .map((value: SelectionId) => value.getSelector())
+                    .value();
+            }
+
+            let filter: SemanticFilter = Selector.filterFromSelector(selectors, isSelectionModeInverted);
+            return filter;
+        }
+
+        public saveSelection(selectionHandler: ISelectionHandler): void {
+            let filter: SemanticFilter = ChicletSlicerWebBehavior.getFilterFromSelectors(selectionHandler, this.interactivityService.isSelectionModeInverted());
+            let selectionIdKeys = (<SelectionId[]>(<any>selectionHandler).selectedIds).map(x => x.getKey());
+            this.slicerSettings.general.setSavedSelection(filter, selectionIdKeys);
+        }
+
+ */
 
     }
 
