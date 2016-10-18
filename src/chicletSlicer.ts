@@ -132,7 +132,7 @@ module powerbi.extensibility.visual {
     export interface SelectableDataPoint {
         selected: boolean;
         /** Identity for identifying the selectable data point for selection purposes */
-        //identity: SelectionId;
+        identity: ISelectionId;
         /**
          * A specific identity for when data points exist at a finer granularity than
          * selection is performed.  For example, if your data points should select based
@@ -233,6 +233,10 @@ module powerbi.extensibility.visual {
        // private interactivityService: IInteractivityService;
       //  private behavior: ChicletSlicerWebBehavior;
         //private hostServices: IVisualHostServices;
+
+        private host: IVisualHost;
+        private selectionIdBuilder: ISelectionIdBuilder;
+
         private waitingForData: boolean;
         private isSelectionLoaded: boolean;
         private isSelectionSaved: boolean;
@@ -340,7 +344,7 @@ module powerbi.extensibility.visual {
             }
         }
 
-        public static converter(dataView: DataView, searchText: string/*, interactivityService: IInteractivityService*/): ChicletSlicerData {
+        public static converter(dataView: DataView, searchText: string, host: IVisualHost/*, interactivityService: IInteractivityService*/): ChicletSlicerData {
             if (!dataView ||
                 !dataView.categorical ||
                 !dataView.categorical.categories ||
@@ -350,7 +354,7 @@ module powerbi.extensibility.visual {
                 return;
             }
 
-            var converter = new ChicletSlicerConverter(dataView/*, interactivityService*/);
+            var converter = new ChicletSlicerConverter(dataView, host/*, interactivityService*/);
             converter.convert();
 
             var slicerData: ChicletSlicerData,
@@ -419,6 +423,7 @@ module powerbi.extensibility.visual {
         constructor(options: VisualConstructorOptions) {
             console.clear();
             console.log('Visual constructor', options);
+
             /*
             if (options) {
                 if (options.behavior) {
@@ -439,8 +444,11 @@ module powerbi.extensibility.visual {
                 this.interactivityService = createInteractivityService(options.host);
             }*/
 
-          //  this.hostServices = options.host;
+            this.host = options.host;
            // this.hostServices.canSelect = ChicletSlicer.canSelect;
+
+            //this.selectionIdBuilder = this.host.createSelectionIdBuilder();
+            //this.selectionManager = this.host.createSelectionManager();
 
             this.settings = ChicletSlicer.DefaultStyleProperties();
 
@@ -464,8 +472,9 @@ module powerbi.extensibility.visual {
             return true;
         }*/
 
+        @logExceptions()
         public update(options: VisualUpdateOptions) {
-
+             debugger;
             console.log('Visual update method', options);
             if (!options ||
                 !options.dataViews ||
@@ -503,7 +512,9 @@ module powerbi.extensibility.visual {
             this.updateInternal(false /* resetScrollbarPosition */);
         }
 
-        public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions): VisualObjectInstance[] {
+        @logExceptions()
+        public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions): VisualObjectInstanceEnumeration {
+            debugger;
             var data: ChicletSlicerData = this.slicerData;
 
             if (!data) {
@@ -601,6 +612,7 @@ module powerbi.extensibility.visual {
             var data = ChicletSlicer.converter(
                 this.dataView,
                 this.searchInput.val(),
+                this.host
                 /*this.interactivityService*/);
 
             if (!data) {
@@ -1150,6 +1162,23 @@ module powerbi.extensibility.visual {
                     return "0px";
                 default:
                     return "5px";
+            }
+        }
+    }
+
+    export function logExceptions(): MethodDecorator {
+        return function (target: Object, propertyKey: string, descriptor: TypedPropertyDescriptor<Function>)
+        : TypedPropertyDescriptor<Function> {
+
+            return {
+                value: function () {
+                    try {
+                        return descriptor.value.apply(this, arguments);
+                    } catch (e) {
+                        console.error(e);
+                        throw e;
+                    }
+                }
             }
         }
     }

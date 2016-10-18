@@ -41,11 +41,13 @@ module powerbi.extensibility.visual {
         public numberOfCategoriesSelectedInData: number;
         public dataPoints: ChicletSlicerDataPoint[];
         public hasSelectionOverride: boolean;
+        private host: IVisualHost;
 
-        public constructor(dataView: DataView/*, interactivityService: IInteractivityService*/) {
+        public constructor(dataView: DataView, host: IVisualHost/*, interactivityService: IInteractivityService*/) {
             var dataViewCategorical = dataView.categorical;
             this.dataViewCategorical = dataViewCategorical;
             this.dataViewMetadata = dataView.metadata;
+            this.host = host;
 
             if (dataViewCategorical.categories && dataViewCategorical.categories.length > 0) {
                 this.category = dataViewCategorical.categories[0];
@@ -134,7 +136,6 @@ module powerbi.extensibility.visual {
                         }
                     }
 
-
                     if (categoryIsSelected) {
                         this.numberOfCategoriesSelectedInData++;
                     }  */
@@ -162,8 +163,14 @@ module powerbi.extensibility.visual {
                         }
                     }
                     //var categorySelectionId: SelectionId = SelectionIdBuilder.builder().withCategory(this.category, categoryIndex).createSelectionId();
+                    let categorySelectionId: ISelectionId = this.host.createSelectionIdBuilder()
+                            .withCategory(this.category, categoryIndex)
+                           // .withMeasure(dataValue.source.queryName)
+                            //.withSeries(categorical.values, categorical.values[i])
+                            .createSelectionId();
+
                     this.dataPoints.push({
-                       // identity: categorySelectionId,
+                        identity: categorySelectionId,
                         category: categoryLabel,
                         imageURL: imageURL,
                         value: value,

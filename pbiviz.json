@@ -18,15 +18,12 @@
     "icon": "assets/icon.png"
   },
   "externalJS": [
-
     "node_modules/@powerbi-visuals-utils/external-loader/lib/index.js",
-
     "node_modules/d3/d3.min.js",
     "node_modules/jquery/dist/jquery.min.js",
     "node_modules/lodash/lodash.min.js",
     "node_modules/globalize/lib/globalize.js",
     "node_modules/globalize/lib/cultures/globalize.cultures.js",
-
     "node_modules/@powerbi-visuals-utils/colorutility/lib/index.js",
     "node_modules/@powerbi-visuals-utils/converterhelper/lib/index.js",
     "node_modules/@powerbi-visuals-utils/cssconstants/lib/index.js",
@@ -45,15 +42,11 @@
     "node_modules/@powerbi-visuals-utils/pixelconverter/lib/index.js",
     "node_modules/@powerbi-visuals-utils/prototype/lib/index.js",
     "node_modules/@powerbi-visuals-utils/textmeasurementservice/lib/index.js",
-
-
     "node_modules/@powerbi-visuals-utils/regexpextensions/lib/index.js",
     "node_modules/@powerbi-visuals-utils/stringextensions/lib/index.js",
     "node_modules/@powerbi-visuals-utils/valuetype/lib/index.js",
     "node_modules/@powerbi-visuals-utils/valueformatter/lib/index.js",
-
     "node_modules/@powerbi-visuals-utils/wordbreaker/lib/index.js"
-
   ],
   "style": "style/chicletSlicer.less",
   "capabilities": "capabilities.json",
