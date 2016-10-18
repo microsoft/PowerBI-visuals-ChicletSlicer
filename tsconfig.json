@@ -27,6 +27,7 @@
     "src/chicletSlicerProps.ts",
     "src/converter.ts",
     "src/tableView.ts",
+    "src/webBehavior.ts",
     "src/chicletSlicer.ts"
   ]
 }

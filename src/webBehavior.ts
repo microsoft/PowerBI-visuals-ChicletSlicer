@@ -35,9 +35,19 @@ module powerbi.extensibility.visual {
         slicerItemInputs: Selection<any>;
         slicerClear: Selection<any>;
         dataPoints: ChicletSlicerDataPoint[];
-        interactivityService: IInteractivityService;
+       // interactivityService: IInteractivityService;
         slicerSettings: ChicletSlicerSettings;
         isSelectionLoaded: boolean;
+    }
+
+    export interface IInteractiveBehavior {
+        /*
+        bindEvents(behaviorOptions: any, selectionHandler: ISelectionHandler): void;
+        renderSelection(hasSelection: boolean): void;
+
+        hoverLassoRegion?(e: MouseEvent, rect: shapes.BoundingRect): void;
+        lassoSelect?(e: MouseEvent, rect: shapes.BoundingRect): void;
+        */
     }
 
     export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
@@ -45,11 +55,17 @@ module powerbi.extensibility.visual {
         private slicerItemLabels: Selection<any>;
         private slicerItemInputs: Selection<any>;
         private dataPoints: ChicletSlicerDataPoint[];
-        private interactivityService: IInteractivityService;
+       // private interactivityService: IInteractivityService;
         private slicerSettings: ChicletSlicerSettings;
         private options: ChicletSlicerBehaviorOptions;
 
-        public bindEvents(options: ChicletSlicerBehaviorOptions, selectionHandler: ISelectionHandler): void {
+        private selectionManager: ISelectionManager
+
+        constructor(selectionManager: ISelectionManager) {
+            this.selectionManager = selectionManager;
+        }
+
+        public bindEvents(options: ChicletSlicerBehaviorOptions): void {
             var slicers = this.slicers = options.slicerItemContainers;
 
             this.slicerItemLabels = options.slicerItemLabels;
@@ -58,12 +74,12 @@ module powerbi.extensibility.visual {
             var slicerClear = options.slicerClear;
 
             this.dataPoints = options.dataPoints;
-            this.interactivityService = options.interactivityService;
+            //this.interactivityService = options.interactivityService;
             this.slicerSettings = options.slicerSettings;
             this.options = options;
 
             if (!this.options.isSelectionLoaded) {
-                this.loadSelection(selectionHandler);
+                //this.loadSelection(selectionHandler);
             }
 
             slicers.on("mouseover", (d: ChicletSlicerDataPoint) => {
@@ -89,11 +105,12 @@ module powerbi.extensibility.visual {
                     return;
                 }
 
-                d3.event.preventDefault();
+                (d3.event as Event).preventDefault();
+                //d3.event.preventDefault();
 
                 var settings: ChicletSlicerSettings = this.slicerSettings;
 
-                if (d3.event.altKey && settings.general.multiselect) {
+                if ((d3.event as KeyboardEvent).altKey && settings.general.multiselect) {
                     var selectedIndexes = jQuery.map(this.dataPoints, (d, index) => {
                         if (d.selected) {
                             return index;
@@ -109,29 +126,34 @@ module powerbi.extensibility.visual {
                         index = selIndex;
                         selIndex = temp;
                     }
+                    var selectedItems = [];
 
-                    selectionHandler.handleClearSelection();
-
-                    for (var i = selIndex; i <= index; i++) {
-                        selectionHandler.handleSelection(this.dataPoints[i], true);
+                    for (let i: number = selIndex; i <= index; i++) {
+                        selectedItems.push(this.dataPoints[i].identity);
                     }
+
+                    this.selectionManager.clear().then(() => {
+                        this.selectionManager.select(selectedItems, true).then((ids: ISelectionId[]) => this.renderSelection(ids));
+                    });
                 }
-                else if ((d3.event.ctrlKey || d3.event.metaKey) && settings.general.multiselect) {
-                    selectionHandler.handleSelection(dataPoint, true);
+                else if (((d3.event as KeyboardEvent).ctrlKey || (d3.event as KeyboardEvent).metaKey) && settings.general.multiselect) {
+                   this.selectionManager.select(dataPoint.identity, true).then((ids: ISelectionId[]) => this.renderSelection(ids));;
                 }
                 else {
-                    selectionHandler.handleSelection(dataPoint, false);
+                    this.selectionManager.select(dataPoint.identity, false).then((ids: ISelectionId[]) => this.renderSelection(ids));;
                 }
 
-                this.saveSelection(selectionHandler);
+                //this.saveSelection(selectionHandler);
+
             });
 
             slicerClear.on("click", (d: SelectableDataPoint) => {
-                selectionHandler.handleClearSelection();
-                this.saveSelection(selectionHandler);
+                this.selectionManager.clear().then((ids: ISelectionId[]) => this.renderSelection(ids));
+                //this.saveSelection(selectionHandler);
             });
         }
 
+        /*
         public loadSelection(selectionHandler: ISelectionHandler): void {
             selectionHandler.handleClearSelection();
             var savedSelectionIds = this.slicerSettings.general.getSavedSelection();
@@ -163,13 +185,17 @@ module powerbi.extensibility.visual {
             this.slicerSettings.general.setSavedSelection(filter, selectionIdKeys);
         }
 
-        public renderSelection(hasSelection: boolean): void {
-            if (!hasSelection && !this.interactivityService.isSelectionModeInverted()) {
+ */
+        public renderSelection(ids: ISelectionId[]): void {
+
+            if (!this.selectionManager.hasSelection()/* && !this.interactivityService.isSelectionModeInverted()*/) {
                 this.slicers.style('background', this.slicerSettings.slicerText.unselectedColor);
             }
             else {
-                this.styleSlicerInputs(this.slicers, hasSelection);
+                this.styleSlicerInputs(this.slicers, ids);
             }
+
+           //this.saveSelection();
         }
 
         private renderMouseover(): void {
@@ -190,14 +216,12 @@ module powerbi.extensibility.visual {
             });
         }
 
-        public styleSlicerInputs(slicers: Selection<any>, hasSelection: boolean) {
-            var settings = this.slicerSettings;
-            var selectedItems = [];
+        public styleSlicerInputs(slicers: Selection<any>, ids: ISelectionId[]) {
+            let settings = this.slicerSettings;
+
             slicers.each(function (d: ChicletSlicerDataPoint) {
                 // get selected items
-                if (d.selectable && d.selected) {
-                    selectedItems.push(d);
-                }
+                d.selected = _.some(ids, d.identity);
 
                 d3.select(this).style({
                     'background': d.selectable ? (d.selected ? settings.slicerText.selectedColor : settings.slicerText.unselectedColor)
@@ -207,6 +231,7 @@ module powerbi.extensibility.visual {
                 d3.select(this).classed('slicerItem-disabled', !d.selectable);
             });
         }
+
     }
 
 }

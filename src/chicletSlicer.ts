@@ -231,11 +231,13 @@ module powerbi.extensibility.visual {
         private slicerData: ChicletSlicerData;
         private settings: ChicletSlicerSettings;
        // private interactivityService: IInteractivityService;
-      //  private behavior: ChicletSlicerWebBehavior;
+
+        private behavior: ChicletSlicerWebBehavior;
         //private hostServices: IVisualHostServices;
 
         private host: IVisualHost;
-        private selectionIdBuilder: ISelectionIdBuilder;
+       // private selectionIdBuilder: ISelectionIdBuilder;
+        private selectionManager: ISelectionManager;
 
         private waitingForData: boolean;
         private isSelectionLoaded: boolean;
@@ -306,8 +308,8 @@ module powerbi.extensibility.visual {
                     width: 0,
                     fontColor: '#666666',
                     hoverColor: '#212121',
-                    selectedColor: '#BDD7EE',
-                    unselectedColor: '#ffffff',
+                    selectedColor: 'red',//#BDD7EE',
+                    unselectedColor: 'blue',//#ffffff',
                     disabledColor: 'grey',
                     marginLeft: 8,
                     outline: 'Frame',
@@ -448,7 +450,9 @@ module powerbi.extensibility.visual {
            // this.hostServices.canSelect = ChicletSlicer.canSelect;
 
             //this.selectionIdBuilder = this.host.createSelectionIdBuilder();
-            //this.selectionManager = this.host.createSelectionManager();
+            this.selectionManager = this.host.createSelectionManager();
+
+            this.behavior = new ChicletSlicerWebBehavior(this.selectionManager);
 
             this.settings = ChicletSlicer.DefaultStyleProperties();
 
@@ -474,7 +478,7 @@ module powerbi.extensibility.visual {
 
         @logExceptions()
         public update(options: VisualUpdateOptions) {
-             debugger;
+
             console.log('Visual update method', options);
             if (!options ||
                 !options.dataViews ||
@@ -512,9 +516,7 @@ module powerbi.extensibility.visual {
             this.updateInternal(false /* resetScrollbarPosition */);
         }
 
-        @logExceptions()
         public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions): VisualObjectInstanceEnumeration {
-            debugger;
             var data: ChicletSlicerData = this.slicerData;
 
             if (!data) {
@@ -1014,6 +1016,30 @@ module powerbi.extensibility.visual {
                 else {
                     this.slicerBody.style('background-color', null);
                 }
+
+                  var slicerBody: Selection<any> = this.slicerBody.attr('width', this.currentViewport.width),
+                        slicerItemContainers: Selection<any> = slicerBody.selectAll(ChicletSlicer.ItemContainerSelector.selector),
+                        slicerItemLabels: Selection<any> = slicerBody.selectAll(ChicletSlicer.LabelTextSelector.selector),
+                        slicerItemInputs: Selection<any> = slicerBody.selectAll(ChicletSlicer.InputSelector.selector),
+                        slicerClear: Selection<any> = this.slicerHeader.select(ChicletSlicer.ClearSelector.selector);
+
+                    var behaviorOptions: ChicletSlicerBehaviorOptions = {
+                        dataPoints: data.slicerDataPoints,
+                        slicerItemContainers: slicerItemContainers,
+                        slicerItemLabels: slicerItemLabels,
+                        slicerItemInputs: slicerItemInputs,
+                        slicerClear: slicerClear,
+                        //interactivityService: this.interactivityService,
+                        slicerSettings: data.slicerSettings,
+                        isSelectionLoaded: this.isSelectionLoaded
+                    };
+                    /*
+                    this.interactivityService.bind(data.slicerDataPoints, this.behavior, behaviorOptions, {
+                        overrideSelectionFromData: true,
+                        hasSelectionOverride: data.hasSelectionOverride,
+                    });*/
+                 this.behavior.bindEvents(behaviorOptions);
+
                  /*
                 if (this.interactivityService && this.slicerBody) {
 
