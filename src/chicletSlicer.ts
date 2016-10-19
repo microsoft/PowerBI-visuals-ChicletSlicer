@@ -125,7 +125,7 @@ module powerbi.extensibility.visual {
         formatString: string;
         slicerDataPoints: ChicletSlicerDataPoint[];
         slicerSettings: ChicletSlicerSettings;
-        hasSelectionOverride?: boolean;
+        //hasSelectionOverride?: boolean;
     }
 
 
@@ -150,6 +150,7 @@ module powerbi.extensibility.visual {
         imageURL?: string;
         selectable?: boolean;
         filtered?: boolean;
+        highlight: boolean;
     }
 
     export interface ChicletSlicerSettings {
@@ -416,7 +417,7 @@ module powerbi.extensibility.visual {
             };
 
             // Override hasSelection if a objects contained more scopeIds than selections we found in the data
-            slicerData.hasSelectionOverride = converter.hasSelectionOverride;
+            //slicerData.hasSelectionOverride = converter.hasSelectionOverride;
 
             return slicerData;
         }
@@ -478,7 +479,7 @@ module powerbi.extensibility.visual {
 
         @logExceptions()
         public update(options: VisualUpdateOptions) {
-
+           // debugger;
             console.log('Visual update method', options);
             if (!options ||
                 !options.dataViews ||
@@ -626,6 +627,10 @@ module powerbi.extensibility.visual {
             if (this.interactivityService) {
                 this.interactivityService.applySelectionStateToData(data.slicerDataPoints);
             }*/
+
+            if (this.behavior) {
+                this.behavior.applySelectionStateToData(data.slicerDataPoints);
+            }
 
             data.slicerSettings.header.outlineWeight = data.slicerSettings.header.outlineWeight < 0
                 ? 0
@@ -1075,6 +1080,8 @@ module powerbi.extensibility.visual {
                 else {
                     this.behavior.styleSlicerInputs(rowSelection.select(ChicletSlicer.ItemContainerSelector.selector), false);
                 }*/
+
+                this.behavior.styleSlicerInputs();
             }
         };
 

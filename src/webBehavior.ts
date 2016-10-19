@@ -142,15 +142,26 @@ module powerbi.extensibility.visual {
             });
         }
 
-        public renderSelection(ids: ISelectionId[]): void {
-            const settings:ChicletSlicerSettings = this.slicerSettings;
+        private renderSelection(ids: ISelectionId[]): void {
+            this.slicers.each(function (d: ChicletSlicerDataPoint) {
+                d.selected = _.some(ids, d.identity);
+            });
+            this.styleSlicerInputs();
+        }
+
+        public styleSlicerInputs(): void {
+            debugger
+            const settings: ChicletSlicerSettings = this.slicerSettings;
+            let hasHighlight: boolean = !this.slicers.filter((d: ChicletSlicerDataPoint) => {
+                return d.highlight;
+            }).empty();
+            let hasSelection: boolean = this.selectionManager.hasSelection();
 
             this.slicers.each(function (d: ChicletSlicerDataPoint) {
-                // get selected items
-                d.selected = _.some(ids, d.identity);
+                let selected: boolean = (hasHighlight && d.highlight) || (!hasHighlight && d.selected);
 
                 d3.select(this).style({
-                    'background': d.selectable ? (d.selected ? settings.slicerText.selectedColor : settings.slicerText.unselectedColor)
+                    'background': d.selectable ? (selected ? settings.slicerText.selectedColor : settings.slicerText.unselectedColor)
                         : settings.slicerText.disabledColor
                 });
 
@@ -178,6 +189,17 @@ module powerbi.extensibility.visual {
             });
         }
 
+        public applySelectionStateToData(dataPoints: SelectableDataPoint[]): void {
+            if (!this.selectionManager.hasSelection()) {
+                return;
+            }
+
+            let selectedIds: ISelectionId[] = this.selectionManager.getSelectionIds();
+
+            dataPoints.forEach((d: SelectableDataPoint) => {
+                d.selected = _.some(selectedIds, d.identity);
+            });
+        }
 
         /*
         public loadSelection(selectionHandler: ISelectionHandler): void {
@@ -210,7 +232,6 @@ module powerbi.extensibility.visual {
             let selectionIdKeys = (<SelectionId[]>(<any>selectionHandler).selectedIds).map(x => x.getKey());
             this.slicerSettings.general.setSavedSelection(filter, selectionIdKeys);
         }
-
  */
 
     }

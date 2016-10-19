@@ -51,7 +51,8 @@
                             "count": 10000
                             }
                         }
-                    }
+                    },
+                    "includeEmptyGroups": true
                 }
             }
         }
@@ -86,6 +87,13 @@
                 },
                 "selected": {
                     "type": { "bool": true }
+                },
+                "formatString": {
+                    "type": {
+                        "formatting": {
+                            "labelDisplayUnits": false
+                         }
+                    }
                 }
             }
         },
@@ -203,5 +211,10 @@
                 }
             }
         }
+    },
+    "supportsHighlight": true,
+    "suppressDefaultTitle": true,
+    "sorting": {
+        "default": {}
     }
 }

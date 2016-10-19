@@ -40,7 +40,7 @@ module powerbi.extensibility.visual {
 
         public numberOfCategoriesSelectedInData: number;
         public dataPoints: ChicletSlicerDataPoint[];
-        public hasSelectionOverride: boolean;
+        //public hasSelectionOverride: boolean;
         private host: IVisualHost;
 
         public constructor(dataView: DataView, host: IVisualHost/*, interactivityService: IInteractivityService*/) {
@@ -60,7 +60,14 @@ module powerbi.extensibility.visual {
             this.dataPoints = [];
 
            // this.interactivityService = interactivityService;
-            this.hasSelectionOverride = false;
+        // this.hasSelectionOverride = false;
+        }
+
+
+        private isCategoryColumnSelected(propertyId: DataViewObjectPropertyIdentifier, categories: DataViewCategoricalColumn, idx: number): boolean {
+            return categories.objects != null
+                && categories.objects[idx]
+                && DataViewObjects.getValue<boolean>(categories.objects[idx], propertyId);
         }
 
         public convert(): void {
@@ -97,25 +104,36 @@ module powerbi.extensibility.visual {
                         this.interactivityService.setSelectionModeInverted(isInvertedSelectionMode);
                     }
                 }
-
+                */
+                /*
                 var hasSelection: boolean = undefined;
 
-                for (var idx = 0; idx < this.categoryValues.length; idx++) {
-                    var selected = isCategoryColumnSelected(chicletSlicerProps.selectedPropertyIdentifier, this.category, idx);
-                    if (selected != null) {
-                        hasSelection = selected;
-                        break;
+                if (this.dataViewCategorical.values) {
+                    for (let idx: number = 0; idx < this.categoryValues.length; idx++) {
+                        //var selected = this.isCategoryColumnSelected(chicletSlicerProps.selectedPropertyIdentifier, this.category, idx);
+                        let selected: boolean = !!this.dataViewCategorical.values[idx].highlights;
+                        if (selected != null) {
+                            hasSelection = selected;
+                            break;
+                        }
                     }
-                }  */
+                }
+                */
 
                 var dataViewCategorical = this.dataViewCategorical;
                 var formatStringProp = chicletSlicerProps.formatString;
                 var value: number = -Infinity;
                 var imageURL: string = '';
 
-                for (var categoryIndex: number = 0, categoryCount = this.categoryValues.length; categoryIndex < categoryCount; categoryIndex++) {
+                //debugger;
+
+                for (let categoryIndex: number = 0, categoryCount = this.categoryValues.length; categoryIndex < categoryCount; categoryIndex++) {
                     //var categoryIdentity = this.category.identity ? this.category.identity[categoryIndex] : null;
-                  //  var categoryIsSelected = isCategoryColumnSelected(chicletSlicerProps.selectedPropertyIdentifier, this.category, categoryIndex);
+                    //var categoryIsSelected = this.isCategoryColumnSelected(chicletSlicerProps.selectedPropertyIdentifier, this.category, categoryIndex);
+                    let highlight: boolean = false;
+                    /*if (hasSelection) {
+                        categoryIsSelected = !!this.dataViewCategorical.values[categoryIndex].highlights.some((value: any) => !!value);
+                    }*/
                     var selectable: boolean = true;
                     /*
                     if (hasSelection != null) {
@@ -138,7 +156,7 @@ module powerbi.extensibility.visual {
 
                     if (categoryIsSelected) {
                         this.numberOfCategoriesSelectedInData++;
-                    }  */
+                    }*/
 
                     var categoryValue = this.categoryValues[categoryIndex];
                     var categoryLabel = valueFormatter.format(categoryValue, this.categoryFormatString);
@@ -151,7 +169,7 @@ module powerbi.extensibility.visual {
                             if (seriesData.values[categoryIndex] != null) {
                                 value = <number>seriesData.values[categoryIndex];
                                 if (seriesData.highlights) {
-                                    selectable = !(seriesData.highlights[categoryIndex] === null);
+                                    highlight = !(seriesData.highlights[categoryIndex] === null);
                                 }
                                 if (seriesData.source.groupName && seriesData.source.groupName !== '') {
                                     imageURL = converterHelper.getFormattedLegendLabel(seriesData.source, dataViewCategorical.values, formatStringProp);
@@ -174,13 +192,16 @@ module powerbi.extensibility.visual {
                         category: categoryLabel,
                         imageURL: imageURL,
                         value: value,
-                        selected: false,//categoryIsSelected,
-                        selectable: selectable
+                        selected: false,
+                        selectable: selectable,
+                        highlight: highlight
                     });
                 }
+                /*
                 if (numberOfScopeIds != null && numberOfScopeIds > this.numberOfCategoriesSelectedInData) {
                     this.hasSelectionOverride = true;
                 }
+                */
             }
         }
     }
