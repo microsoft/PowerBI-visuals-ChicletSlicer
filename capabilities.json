@@ -67,7 +67,9 @@
                 },
                 "orientation": {
                     "displayName": "Orientation",
-                    "type": { "enumeration": [] }
+                    "type": { "enumeration": [
+                        { "value": "Horizontal", "displayName": "Horizontal" },
+                        { "value": "Vertical", "displayName": "Vertical" }] }
                 },
                 "columns": {
                     "displayName": "Columns",
@@ -79,7 +81,11 @@
                 },
                 "showDisabled": {
                     "displayName": "Show Disabled",
-                    "type": { "enumeration": [] }
+                    "type": { "enumeration": [
+                        { "value": "Inplace", "displayName": "Inplace" },
+                        { "value": "Bottom", "displayName": "Bottom" },
+                        { "value": "Hide", "displayName": "Hide" }
+                    ] }
                 },
                 "multiselect": {
                     "displayName": "Multiple selection",
@@ -115,9 +121,6 @@
                 "background": {
                     "displayName": "Background",
                     "type": { "fill": { "solid": { "color": true } } }
-                },
-                "outline": {
-                    "displayName": "Outline"
                 },
                 "textSize": {
                     "displayName": "Text Size",
@@ -177,9 +180,6 @@
                     "description": "Set transparency for background color",
                     "type": { "numeric": true }
                 },
-                "outline": {
-                    "displayName": "Outline"
-                },
                 "outlineColor": {
                     "displayName": "Outline Color",
                     "type": { "fill": { "solid": { "color": true } } }
@@ -190,7 +190,11 @@
                 },
                 "borderStyle": {
                     "displayName": "Outline Style",
-                    "type": { "enumeration": [] }
+                    "type": { "enumeration": [
+                        { "value": "Rounded", "displayName": "Rounded" },
+                        { "value": "Cut", "displayName": "Cut" },
+                        { "value": "Square", "displayName": "Square" }
+                    ] }
                 }
             }
         },

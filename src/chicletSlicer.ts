@@ -58,6 +58,9 @@ module powerbi.extensibility.visual {
     import DataViewMetadata = powerbi.DataViewMetadata;
     import DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
     import DataViewScopeIdentity = powerbi.DataViewScopeIdentity;
+
+    import ISemanticFilter = data.ISemanticFilter;
+    import ISQExpr = data.ISQExpr;
    /*
     // powerbi.data
     import SemanticFilter = powerbi.data.SemanticFilter;
@@ -126,6 +129,7 @@ module powerbi.extensibility.visual {
         slicerDataPoints: ChicletSlicerDataPoint[];
         slicerSettings: ChicletSlicerSettings;
         //hasSelectionOverride?: boolean;
+        identityFields: ISQExpr[];
     }
 
 
@@ -162,8 +166,8 @@ module powerbi.extensibility.visual {
             showDisabled: string;
             selection: string;
             selfFilterEnabled: boolean;
-            //getSavedSelection?: () => string[];
-            //setSavedSelection?: (filter: SemanticFilter, selectionIds: string[]) => void;
+            getSavedSelection?: () => string[];
+            setSavedSelection?: (filter: ISemanticFilter, selectionIds: string[]) => void;
         };
         margin: IMargin;
         header: {
@@ -210,17 +214,6 @@ module powerbi.extensibility.visual {
     }
 
     export class ChicletSlicer implements IVisual {
-        /*
-        public static capabilities: VisualCapabilities = {
-
-            supportsHighlight: true,
-            sorting: {
-                default: {},
-            },
-            suppressDefaultTitle: true,
-        };
-        */
-
         private root: JQuery;
         private searchHeader: JQuery;
         private searchInput: JQuery;
@@ -414,6 +407,7 @@ module powerbi.extensibility.visual {
                 formatString: valueFormatter.getFormatString(categories.source, chicletSlicerProps.formatString),
                 slicerSettings: defaultSettings,
                 slicerDataPoints: converter.dataPoints,
+                identityFields: converter.identityFields
             };
 
             // Override hasSelection if a objects contained more scopeIds than selections we found in the data
@@ -451,9 +445,9 @@ module powerbi.extensibility.visual {
            // this.hostServices.canSelect = ChicletSlicer.canSelect;
 
             //this.selectionIdBuilder = this.host.createSelectionIdBuilder();
-            this.selectionManager = this.host.createSelectionManager();
+            //this.selectionManager = this.host.createSelectionManager();
 
-            this.behavior = new ChicletSlicerWebBehavior(this.selectionManager);
+            this.behavior = new ChicletSlicerWebBehavior(options.host);
 
             this.settings = ChicletSlicer.DefaultStyleProperties();
 
@@ -477,9 +471,7 @@ module powerbi.extensibility.visual {
             return true;
         }*/
 
-        @logExceptions()
         public update(options: VisualUpdateOptions) {
-           // debugger;
             console.log('Visual update method', options);
             if (!options ||
                 !options.dataViews ||
@@ -657,7 +649,7 @@ module powerbi.extensibility.visual {
             data.slicerSettings.general.rows = data.slicerSettings.general.rows < 0
                 ? 0
                 : data.slicerSettings.general.rows;
-           /*
+
             data.slicerSettings.general.getSavedSelection = () => {
                 try {
                     return JSON.parse(this.slicerData.slicerSettings.general.selection) || [];
@@ -666,19 +658,19 @@ module powerbi.extensibility.visual {
                 }
             };
 
-            data.slicerSettings.general.setSavedSelection = (filter: SemanticFilter, selectionIds: string[]): void => {
+            data.slicerSettings.general.setSavedSelection = (filter: ISemanticFilter, selectionIds: string[]): void => {
                 this.isSelectionSaved = true;
-                this.hostServices.persistProperties(<VisualObjectInstancesToPersist>{
+                this.host.persistProperties(<VisualObjectInstancesToPersist>{
                     merge: [{
                         objectName: "general",
                         selector: null,
                         properties: {
-                            filter: filter,
+                            filter: filter || null,
                             selection: selectionIds && JSON.stringify(selectionIds) || ""
                         }
                     }]
                 });
-            };*/
+            };
 
             if (this.slicerData) {
                 if (this.isSelectionSaved) {
@@ -1036,7 +1028,9 @@ module powerbi.extensibility.visual {
                         slicerClear: slicerClear,
                         //interactivityService: this.interactivityService,
                         slicerSettings: data.slicerSettings,
-                        isSelectionLoaded: this.isSelectionLoaded
+                        isSelectionLoaded: this.isSelectionLoaded,
+                        identityFields: data.identityFields,
+                        host: this.host
                     };
                     /*
                     this.interactivityService.bind(data.slicerDataPoints, this.behavior, behaviorOptions, {
@@ -1049,23 +1043,6 @@ module powerbi.extensibility.visual {
                 if (this.interactivityService && this.slicerBody) {
 
                     this.interactivityService.applySelectionStateToData(data.slicerDataPoints);
-
-                    var slicerBody: Selection<any> = this.slicerBody.attr('width', this.currentViewport.width),
-                        slicerItemContainers: Selection<any> = slicerBody.selectAll(ChicletSlicer.ItemContainerSelector.selector),
-                        slicerItemLabels: Selection<any> = slicerBody.selectAll(ChicletSlicer.LabelTextSelector.selector),
-                        slicerItemInputs: Selection<any> = slicerBody.selectAll(ChicletSlicer.InputSelector.selector),
-                        slicerClear: Selection<any> = this.slicerHeader.select(ChicletSlicer.ClearSelector.selector);
-
-                    var behaviorOptions: ChicletSlicerBehaviorOptions = {
-                        dataPoints: data.slicerDataPoints,
-                        slicerItemContainers: slicerItemContainers,
-                        slicerItemLabels: slicerItemLabels,
-                        slicerItemInputs: slicerItemInputs,
-                        slicerClear: slicerClear,
-                        //interactivityService: this.interactivityService,
-                        slicerSettings: data.slicerSettings,
-                        isSelectionLoaded: this.isSelectionLoaded
-                    };
 
                     this.interactivityService.bind(data.slicerDataPoints, this.behavior, behaviorOptions, {
                         overrideSelectionFromData: true,
@@ -1099,8 +1076,8 @@ module powerbi.extensibility.visual {
             this.searchInput = $("<input>").appendTo(this.searchHeader)
                 .attr("type", "text")
                 .attr("drag-resize-disabled", "true")
-                .addClass("searchInput");
-             /*   .on("input", () => this.hostServices.persistProperties(<VisualObjectInstancesToPersist>{
+                .addClass("searchInput")
+                .on("input", () => this.host.persistProperties(<VisualObjectInstancesToPersist>{
                     merge: [{
                         objectName: "general",
                         selector: null,
@@ -1108,7 +1085,7 @@ module powerbi.extensibility.visual {
                             counter: counter++
                         }
                     }]
-                }));*/
+                }));
         }
 
         private updateSearchHeader(): void {
@@ -1195,23 +1172,6 @@ module powerbi.extensibility.visual {
                     return "0px";
                 default:
                     return "5px";
-            }
-        }
-    }
-
-    export function logExceptions(): MethodDecorator {
-        return function (target: Object, propertyKey: string, descriptor: TypedPropertyDescriptor<Function>)
-        : TypedPropertyDescriptor<Function> {
-
-            return {
-                value: function () {
-                    try {
-                        return descriptor.value.apply(this, arguments);
-                    } catch (e) {
-                        console.error(e);
-                        throw e;
-                    }
-                }
             }
         }
     }

@@ -27,6 +27,8 @@
 module powerbi.extensibility.visual {
     import valueFormatter = powerbi.visuals.valueFormatter;
     import converterHelper = powerbi.visuals.converterHelper;
+    import ISQExpr = data.ISQExpr;
+    import SemanticFilter = data.ISemanticFilter;
 
     export class ChicletSlicerConverter {
         private dataViewCategorical: DataViewCategorical;
@@ -35,7 +37,7 @@ module powerbi.extensibility.visual {
         private categoryIdentities: DataViewScopeIdentity[];
         private categoryValues: any[];
         private categoryFormatString: string;
-       // private categoryColumnRef: SQExpr[];
+        public identityFields: ISQExpr[];
         //private interactivityService: IInteractivityService;
 
         public numberOfCategoriesSelectedInData: number;
@@ -53,14 +55,14 @@ module powerbi.extensibility.visual {
                 this.category = dataViewCategorical.categories[0];
                 this.categoryIdentities = this.category.identity;
                 this.categoryValues = this.category.values;
-               // this.categoryColumnRef = <SQExpr[]>this.category.identityFields;
+                this.identityFields = <ISQExpr[]>this.category.identityFields;
                 this.categoryFormatString = valueFormatter.getFormatString(this.category.source, chicletSlicerProps.formatString);
             }
 
             this.dataPoints = [];
 
-           // this.interactivityService = interactivityService;
-        // this.hasSelectionOverride = false;
+            // this.interactivityService = interactivityService;
+            // this.hasSelectionOverride = false;
         }
 
 
@@ -80,21 +82,24 @@ module powerbi.extensibility.visual {
 
                 var isInvertedSelectionMode = undefined;
                 var numberOfScopeIds: number;
-                /*
+
                 if (objects && objects.general && objects.general.filter) {
-                    if (!this.categoryColumnRef)
+                    if (!this.identityFields) {
                         return;
-                    var filter = <SemanticFilter>objects.general.filter;
-                    var scopeIds = SQExprConverter.asScopeIdsContainer(filter, this.categoryColumnRef);
+                    }
+                    var filter: SemanticFilter = <SemanticFilter>objects.general.filter;
+
+                    /*
+                    var scopeIds = SQExprConverter.asScopeIdsContainer(filter, this.identityFields);
                     if (scopeIds) {
                         isInvertedSelectionMode = scopeIds.isNot;
                         numberOfScopeIds = scopeIds.scopeIds ? scopeIds.scopeIds.length : 0;
                     }
                     else {
                         isInvertedSelectionMode = false;
-                    }
+                    }*/
                 }
-
+                /*
                 if (this.interactivityService) {
                     if (isInvertedSelectionMode === undefined) {
                         // The selection state is read from the Interactivity service in case of SelectAll or Clear when query doesn't update the visual
@@ -125,7 +130,7 @@ module powerbi.extensibility.visual {
                 var value: number = -Infinity;
                 var imageURL: string = '';
 
-                //debugger;
+               // debugger;
 
                 for (let categoryIndex: number = 0, categoryCount = this.categoryValues.length; categoryIndex < categoryCount; categoryIndex++) {
                     //var categoryIdentity = this.category.identity ? this.category.identity[categoryIndex] : null;
