@@ -46,8 +46,10 @@
     "node_modules/@powerbi-visuals-utils/stringextensions/lib/index.js",
     "node_modules/@powerbi-visuals-utils/valuetype/lib/index.js",
     "node_modules/@powerbi-visuals-utils/valueformatter/lib/index.js",
-    "node_modules/@powerbi-visuals-utils/wordbreaker/lib/index.js"
-
+    "node_modules/@powerbi-visuals-utils/wordbreaker/lib/index.js",
+    "node_modules/@powerbi-visuals-utils/arrayextensions/lib/index.js",
+    "node_modules/@powerbi-visuals-utils/shapes/lib/index.js",
+    "node_modules/@powerbi-visuals-utils/interactivityservice/lib/index.js"
   ],
   "style": "style/chicletSlicer.less",
   "capabilities": "capabilities.json",
