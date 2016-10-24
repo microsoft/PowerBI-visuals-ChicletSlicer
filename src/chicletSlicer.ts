@@ -61,29 +61,26 @@ module powerbi.extensibility.visual {
 
     import ISemanticFilter = data.ISemanticFilter;
     import ISQExpr = data.ISQExpr;
-   /*
-    // powerbi.data
-    import SemanticFilter = powerbi.data.SemanticFilter;
-    import SQExprConverter = powerbi.data.SQExprConverter;
-    import Selector = powerbi.data.Selector;
-    import SQExpr = powerbi.data.SQExpr;
-
-
-    import IVisualHostServices = powerbi.IVisualHostServices;
-    import SelectEventArgs = powerbi.SelectEventArgs;
-    import VisualUpdateOptions = powerbi.VisualUpdateOptions;
-    import DataViewAnalysis = powerbi.DataViewAnalysis;
+    /*
+     // powerbi.data
+     import SemanticFilter = powerbi.data.SemanticFilter;
+     import SQExprConverter = powerbi.data.SQExprConverter;
+     import Selector = powerbi.data.Selector;
+     import SQExpr = powerbi.data.SQExpr;
+ 
+ 
+     import IVisualHostServices = powerbi.IVisualHostServices;
+     import SelectEventArgs = powerbi.SelectEventArgs;
+     import VisualUpdateOptions = powerbi.VisualUpdateOptions;
+     import DataViewAnalysis = powerbi.DataViewAnalysis;*/
 
     // powerbi.visuals
     import SelectableDataPoint = powerbi.visuals.SelectableDataPoint;
     import IInteractivityService = powerbi.visuals.IInteractivityService;
     import createInteractivityService = powerbi.visuals.createInteractivityService;
-    import isCategoryColumnSelected = powerbi.visuals.isCategoryColumnSelected;
-    import SelectionId = powerbi.visuals.SelectionId;
-    import IInteractiveBehavior = powerbi.visuals.IInteractiveBehavior;
-    import ISelectionHandler = powerbi.visuals.ISelectionHandler;
-    import SelectionIdBuilder = powerbi.visuals.SelectionIdBuilder;
- */
+    // import IInteractiveBehavior = powerbi.visuals.IInteractiveBehavior;
+    // import ISelectionHandler = powerbi.visuals.ISelectionHandler;
+
     module ChicletBorderStyle {
         export var ROUNDED: string = 'Rounded';
         export var CUT: string = 'Cut';
@@ -117,32 +114,14 @@ module powerbi.extensibility.visual {
             { value: VERTICAL, displayName: VERTICAL }
         ]);
     }
-    /*
-    export interface ChicletSlicerConstructorOptions {
-        behavior?: ChicletSlicerWebBehavior;
-    }
-    */
 
     export interface ChicletSlicerData {
         categorySourceName: string;
         formatString: string;
         slicerDataPoints: ChicletSlicerDataPoint[];
         slicerSettings: ChicletSlicerSettings;
-        //hasSelectionOverride?: boolean;
+        hasSelectionOverride?: boolean;
         identityFields: ISQExpr[];
-    }
-
-
-    export interface SelectableDataPoint {
-        selected: boolean;
-        /** Identity for identifying the selectable data point for selection purposes */
-        identity: ISelectionId;
-        /**
-         * A specific identity for when data points exist at a finer granularity than
-         * selection is performed.  For example, if your data points should select based
-         * only on series even if they exist as category/series intersections.
-         */
-       // specificIdentity?: SelectionId;
     }
 
     export interface ChicletSlicerDataPoint extends SelectableDataPoint {
@@ -154,7 +133,6 @@ module powerbi.extensibility.visual {
         imageURL?: string;
         selectable?: boolean;
         filtered?: boolean;
-        highlight: boolean;
     }
 
     export interface ChicletSlicerSettings {
@@ -224,14 +202,10 @@ module powerbi.extensibility.visual {
         private tableView: ITableView;
         private slicerData: ChicletSlicerData;
         private settings: ChicletSlicerSettings;
-       // private interactivityService: IInteractivityService;
 
+        private interactivityService: IInteractivityService;
         private behavior: ChicletSlicerWebBehavior;
-        //private hostServices: IVisualHostServices;
-
-        private host: IVisualHost;
-       // private selectionIdBuilder: ISelectionIdBuilder;
-        private selectionManager: ISelectionManager;
+        private visualHost: IVisualHost;
 
         private waitingForData: boolean;
         private isSelectionLoaded: boolean;
@@ -340,7 +314,11 @@ module powerbi.extensibility.visual {
             }
         }
 
-        public static converter(dataView: DataView, searchText: string, host: IVisualHost/*, interactivityService: IInteractivityService*/): ChicletSlicerData {
+        public static converter(
+            dataView: DataView,
+            searchText: string,
+            visualHost: IVisualHost): ChicletSlicerData {
+
             if (!dataView ||
                 !dataView.categorical ||
                 !dataView.categorical.categories ||
@@ -350,7 +328,7 @@ module powerbi.extensibility.visual {
                 return;
             }
 
-            var converter = new ChicletSlicerConverter(dataView, host/*, interactivityService*/);
+            var converter = new ChicletSlicerConverter(dataView, visualHost);
             converter.convert();
 
             var slicerData: ChicletSlicerData,
@@ -411,68 +389,26 @@ module powerbi.extensibility.visual {
             };
 
             // Override hasSelection if a objects contained more scopeIds than selections we found in the data
-            //slicerData.hasSelectionOverride = converter.hasSelectionOverride;
+            slicerData.hasSelectionOverride = converter.hasSelectionOverride;
 
             return slicerData;
         }
 
 
         constructor(options: VisualConstructorOptions) {
-            console.clear();
             console.log('Visual constructor', options);
 
-            /*
-            if (options) {
-                if (options.behavior) {
-                    this.behavior = options.behavior;
-                }
-            }
-
-            if (!this.behavior) {
-                this.behavior = new ChicletSlicerWebBehavior();
-            }
-            */
-
             this.root = $(options.element);
-            // Todo: add default viewport
-            // this.currentViewport = options.viewport;
-            /*
-            if (this.behavior) {
-                this.interactivityService = createInteractivityService(options.host);
-            }*/
 
-            this.host = options.host;
-           // this.hostServices.canSelect = ChicletSlicer.canSelect;
+            this.visualHost = options.host;
 
-            //this.selectionIdBuilder = this.host.createSelectionIdBuilder();
-            //this.selectionManager = this.host.createSelectionManager();
-
-            this.behavior = new ChicletSlicerWebBehavior(options.host);
+            this.behavior = new ChicletSlicerWebBehavior();
+            this.interactivityService = createInteractivityService(options.host);
 
             this.settings = ChicletSlicer.DefaultStyleProperties();
-
-            //console.log("DefaultSettings:", this.settings);
-           // this.initContainer();
         }
-      /*
-        private static canSelect(args: SelectEventArgs): boolean {
-            var selectors = _.map(args.visualObjects, (visualObject) => {
-                return Selector.convertSelectorsByColumnToSelector(visualObject.selectorsByColumn);
-            });
-
-            // We can't have multiple selections if any include more than one identity
-            if (selectors && (selectors.length > 1)) {
-                if (selectors.some((value: Selector) => value && value.data && value.data.length > 1)) {
-                    return false;
-                }
-            }
-
-            // Todo: check for cases of trying to select a category and a series (not the intersection)
-            return true;
-        }*/
 
         public update(options: VisualUpdateOptions) {
-            console.log('Visual update method', options);
             if (!options ||
                 !options.dataViews ||
                 !options.dataViews[0] ||
@@ -490,7 +426,7 @@ module powerbi.extensibility.visual {
 
             var resetScrollbarPosition: boolean = true;
             if (existingDataView) {
-              //  resetScrollbarPosition = !DataViewAnalysis.hasSameCategoryIdentity(existingDataView, this.dataView);
+                //  resetScrollbarPosition = !DataViewAnalysis.hasSameCategoryIdentity(existingDataView, this.dataView);
             }
 
             if (options.viewport.height === this.currentViewport.height
@@ -607,21 +543,16 @@ module powerbi.extensibility.visual {
             var data = ChicletSlicer.converter(
                 this.dataView,
                 this.searchInput.val(),
-                this.host
-                /*this.interactivityService*/);
+                this.visualHost);
 
             if (!data) {
                 this.tableView.empty();
 
                 return;
             }
-            /*
+
             if (this.interactivityService) {
                 this.interactivityService.applySelectionStateToData(data.slicerDataPoints);
-            }*/
-
-            if (this.behavior) {
-                this.behavior.applySelectionStateToData(data.slicerDataPoints);
             }
 
             data.slicerSettings.header.outlineWeight = data.slicerSettings.header.outlineWeight < 0
@@ -660,7 +591,7 @@ module powerbi.extensibility.visual {
 
             data.slicerSettings.general.setSavedSelection = (filter: ISemanticFilter, selectionIds: string[]): void => {
                 this.isSelectionSaved = true;
-                this.host.persistProperties(<VisualObjectInstancesToPersist>{
+                this.visualHost.persistProperties(<VisualObjectInstancesToPersist>{
                     merge: [{
                         objectName: "general",
                         selector: null,
@@ -727,9 +658,9 @@ module powerbi.extensibility.visual {
                 .rows(this.settings.general.rows)
                 .columns(this.settings.general.columns)
                 .data(
-                    data.slicerDataPoints.filter(x => !x.filtered),
-                    (d: ChicletSlicerDataPoint) => $.inArray(d, data.slicerDataPoints),
-                    resetScrollbarPosition)
+                data.slicerDataPoints.filter(x => !x.filtered),
+                (d: ChicletSlicerDataPoint) => $.inArray(d, data.slicerDataPoints),
+                resetScrollbarPosition)
                 .viewport(this.getSlicerBodyViewport(this.currentViewport))
                 .render();
 
@@ -771,11 +702,11 @@ module powerbi.extensibility.visual {
                 .append('div')
                 .classed(ChicletSlicer.BodySelector.class, true)
                 .classed(
-                    ChicletSlicer.SlicerBodyHorizontalSelector.class,
-                    settings.general.orientation === Orientation.HORIZONTAL)
+                ChicletSlicer.SlicerBodyHorizontalSelector.class,
+                settings.general.orientation === Orientation.HORIZONTAL)
                 .classed(
-                    ChicletSlicer.SlicerBodyVerticalSelector.class,
-                    settings.general.orientation === Orientation.VERTICAL
+                ChicletSlicer.SlicerBodyVerticalSelector.class,
+                settings.general.orientation === Orientation.VERTICAL
                 )
                 .style({
                     'height': PixelConverter.toString(slicerBodyViewport.height),
@@ -812,7 +743,7 @@ module powerbi.extensibility.visual {
             this.tableView = TableViewFactory.createTableView(tableViewOptions);
         }
 
-        private enterSelection (rowSelection: Selection<any>): void {
+        private enterSelection(rowSelection: Selection<any>): void {
             var settings: ChicletSlicerSettings = this.settings;
 
             var ulItemElement = rowSelection
@@ -922,11 +853,11 @@ module powerbi.extensibility.visual {
 
                 this.slicerBody
                     .classed(
-                        ChicletSlicer.SlicerBodyHorizontalSelector.class,
-                        settings.general.orientation === Orientation.HORIZONTAL)
+                    ChicletSlicer.SlicerBodyHorizontalSelector.class,
+                    settings.general.orientation === Orientation.HORIZONTAL)
                     .classed(
-                        ChicletSlicer.SlicerBodyVerticalSelector.class,
-                        settings.general.orientation === Orientation.VERTICAL);
+                    ChicletSlicer.SlicerBodyVerticalSelector.class,
+                    settings.general.orientation === Orientation.VERTICAL);
 
                 var slicerText: Selection<any> = rowSelection.selectAll(ChicletSlicer.LabelTextSelector.selector),
                     textProperties: TextProperties = ChicletSlicer.getChicletTextProperties(settings.slicerText.textSize),
@@ -1014,7 +945,10 @@ module powerbi.extensibility.visual {
                     this.slicerBody.style('background-color', null);
                 }
 
-                  var slicerBody: Selection<any> = this.slicerBody.attr('width', this.currentViewport.width),
+                if (this.interactivityService && this.slicerBody) {
+                    this.interactivityService.applySelectionStateToData(data.slicerDataPoints);
+
+                    var slicerBody: Selection<any> = this.slicerBody.attr('width', this.currentViewport.width),
                         slicerItemContainers: Selection<any> = slicerBody.selectAll(ChicletSlicer.ItemContainerSelector.selector),
                         slicerItemLabels: Selection<any> = slicerBody.selectAll(ChicletSlicer.LabelTextSelector.selector),
                         slicerItemInputs: Selection<any> = slicerBody.selectAll(ChicletSlicer.InputSelector.selector),
@@ -1026,23 +960,11 @@ module powerbi.extensibility.visual {
                         slicerItemLabels: slicerItemLabels,
                         slicerItemInputs: slicerItemInputs,
                         slicerClear: slicerClear,
-                        //interactivityService: this.interactivityService,
+                        interactivityService: this.interactivityService,
                         slicerSettings: data.slicerSettings,
                         isSelectionLoaded: this.isSelectionLoaded,
-                        identityFields: data.identityFields,
-                        host: this.host
+                        identityFields: data.identityFields
                     };
-                    /*
-                    this.interactivityService.bind(data.slicerDataPoints, this.behavior, behaviorOptions, {
-                        overrideSelectionFromData: true,
-                        hasSelectionOverride: data.hasSelectionOverride,
-                    });*/
-                 this.behavior.bindEvents(behaviorOptions);
-
-                 /*
-                if (this.interactivityService && this.slicerBody) {
-
-                    this.interactivityService.applySelectionStateToData(data.slicerDataPoints);
 
                     this.interactivityService.bind(data.slicerDataPoints, this.behavior, behaviorOptions, {
                         overrideSelectionFromData: true,
@@ -1052,13 +974,10 @@ module powerbi.extensibility.visual {
                     this.behavior.styleSlicerInputs(
                         rowSelection.select(ChicletSlicer.ItemContainerSelector.selector),
                         this.interactivityService.hasSelection());
-
                 }
                 else {
                     this.behavior.styleSlicerInputs(rowSelection.select(ChicletSlicer.ItemContainerSelector.selector), false);
-                }*/
-
-                this.behavior.styleSlicerInputs();
+                }
             }
         };
 
@@ -1077,7 +996,7 @@ module powerbi.extensibility.visual {
                 .attr("type", "text")
                 .attr("drag-resize-disabled", "true")
                 .addClass("searchInput")
-                .on("input", () => this.host.persistProperties(<VisualObjectInstancesToPersist>{
+                .on("input", () => this.visualHost.persistProperties(<VisualObjectInstancesToPersist>{
                     merge: [{
                         objectName: "general",
                         selector: null,
@@ -1095,7 +1014,7 @@ module powerbi.extensibility.visual {
 
         private onLoadMoreData(): void {
             if (!this.waitingForData && this.dataView.metadata && this.dataView.metadata.segment) {
-               // this.hostServices.loadMoreData();
+                // this.hostServices.loadMoreData();
                 this.waitingForData = true;
             }
         }

@@ -38,12 +38,11 @@ module powerbi.extensibility.visual {
         private categoryValues: any[];
         private categoryFormatString: string;
         public identityFields: ISQExpr[];
-        //private interactivityService: IInteractivityService;
 
         public numberOfCategoriesSelectedInData: number;
         public dataPoints: ChicletSlicerDataPoint[];
-        //public hasSelectionOverride: boolean;
         private host: IVisualHost;
+        public hasSelectionOverride: boolean;
 
         public constructor(dataView: DataView, host: IVisualHost/*, interactivityService: IInteractivityService*/) {
             var dataViewCategorical = dataView.categorical;
@@ -61,10 +60,8 @@ module powerbi.extensibility.visual {
 
             this.dataPoints = [];
 
-            // this.interactivityService = interactivityService;
-            // this.hasSelectionOverride = false;
+            this.hasSelectionOverride = false;
         }
-
 
         private isCategoryColumnSelected(propertyId: DataViewObjectPropertyIdentifier, categories: DataViewCategoricalColumn, idx: number): boolean {
             return categories.objects != null
@@ -87,7 +84,7 @@ module powerbi.extensibility.visual {
                     if (!this.identityFields) {
                         return;
                     }
-                    var filter: SemanticFilter = <SemanticFilter>objects.general.filter;
+                    // var filter: SemanticFilter = <SemanticFilter>objects.general.filter;
 
                     /*
                     var scopeIds = SQExprConverter.asScopeIdsContainer(filter, this.identityFields);
@@ -99,48 +96,29 @@ module powerbi.extensibility.visual {
                         isInvertedSelectionMode = false;
                     }*/
                 }
-                /*
-                if (this.interactivityService) {
-                    if (isInvertedSelectionMode === undefined) {
-                        // The selection state is read from the Interactivity service in case of SelectAll or Clear when query doesn't update the visual
-                        isInvertedSelectionMode = this.interactivityService.isSelectionModeInverted();
-                    }
-                    else {
-                        this.interactivityService.setSelectionModeInverted(isInvertedSelectionMode);
-                    }
-                }
-                */
-                /*
+
                 var hasSelection: boolean = undefined;
 
                 if (this.dataViewCategorical.values) {
                     for (let idx: number = 0; idx < this.categoryValues.length; idx++) {
-                        //var selected = this.isCategoryColumnSelected(chicletSlicerProps.selectedPropertyIdentifier, this.category, idx);
-                        let selected: boolean = !!this.dataViewCategorical.values[idx].highlights;
+                        var selected = this.isCategoryColumnSelected(chicletSlicerProps.selectedPropertyIdentifier, this.category, idx);
                         if (selected != null) {
                             hasSelection = selected;
                             break;
                         }
                     }
                 }
-                */
 
                 var dataViewCategorical = this.dataViewCategorical;
                 var formatStringProp = chicletSlicerProps.formatString;
                 var value: number = -Infinity;
                 var imageURL: string = '';
 
-               // debugger;
-
-                for (let categoryIndex: number = 0, categoryCount = this.categoryValues.length; categoryIndex < categoryCount; categoryIndex++) {
+                for (var categoryIndex: number = 0, categoryCount = this.categoryValues.length; categoryIndex < categoryCount; categoryIndex++) {
                     //var categoryIdentity = this.category.identity ? this.category.identity[categoryIndex] : null;
-                    //var categoryIsSelected = this.isCategoryColumnSelected(chicletSlicerProps.selectedPropertyIdentifier, this.category, categoryIndex);
-                    let highlight: boolean = false;
-                    /*if (hasSelection) {
-                        categoryIsSelected = !!this.dataViewCategorical.values[categoryIndex].highlights.some((value: any) => !!value);
-                    }*/
+                    var categoryIsSelected = this.isCategoryColumnSelected(chicletSlicerProps.selectedPropertyIdentifier, this.category, categoryIndex);
                     var selectable: boolean = true;
-                    /*
+
                     if (hasSelection != null) {
                         if (isInvertedSelectionMode) {
                             if (this.category.objects == null)
@@ -161,7 +139,7 @@ module powerbi.extensibility.visual {
 
                     if (categoryIsSelected) {
                         this.numberOfCategoriesSelectedInData++;
-                    }*/
+                    }
 
                     var categoryValue = this.categoryValues[categoryIndex];
                     var categoryLabel = valueFormatter.format(categoryValue, this.categoryFormatString);
@@ -174,7 +152,7 @@ module powerbi.extensibility.visual {
                             if (seriesData.values[categoryIndex] != null) {
                                 value = <number>seriesData.values[categoryIndex];
                                 if (seriesData.highlights) {
-                                    highlight = !(seriesData.highlights[categoryIndex] === null);
+                                    selectable = !(seriesData.highlights[categoryIndex] === null);
                                 }
                                 if (seriesData.source.groupName && seriesData.source.groupName !== '') {
                                     imageURL = converterHelper.getFormattedLegendLabel(seriesData.source, dataViewCategorical.values, formatStringProp);
@@ -185,28 +163,24 @@ module powerbi.extensibility.visual {
                             }
                         }
                     }
-                    //var categorySelectionId: SelectionId = SelectionIdBuilder.builder().withCategory(this.category, categoryIndex).createSelectionId();
+
                     let categorySelectionId: ISelectionId = this.host.createSelectionIdBuilder()
-                            .withCategory(this.category, categoryIndex)
-                           // .withMeasure(dataValue.source.queryName)
-                            //.withSeries(categorical.values, categorical.values[i])
-                            .createSelectionId();
+                        .withCategory(this.category, categoryIndex)
+                        .createSelectionId();
 
                     this.dataPoints.push({
-                        identity: categorySelectionId,
+                        identity: categorySelectionId as powerbi.visuals.ISelectionId,
                         category: categoryLabel,
                         imageURL: imageURL,
                         value: value,
                         selected: false,
-                        selectable: selectable,
-                        highlight: highlight
+                        selectable: selectable
                     });
                 }
-                /*
+
                 if (numberOfScopeIds != null && numberOfScopeIds > this.numberOfCategoriesSelectedInData) {
                     this.hasSelectionOverride = true;
                 }
-                */
             }
         }
     }

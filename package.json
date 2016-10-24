@@ -11,10 +11,11 @@
     "url": "git+https://github.com/Microsoft/PowerBI-visuals-ChicletSlicer.git"
   },
   "devDependencies": {
-    "powerbi-visuals-tools": "^1.1.0",
-    "typescript": "^2.0.3"
+    "powerbi-visuals-tools": "git+https://github.com/Microsoft/PowerBI-visuals-tools.git",
+    "typings": "1.4.0"
   },
   "dependencies": {
+    "@powerbi-visuals-utils/arrayextensions": "git+https://github.com/vtkalek/powerbi-visuals-utils-arrayextensions.git",
     "@powerbi-visuals-utils/colorutility": "git+https://github.com/uve/powerbi-visuals-utils-colorutility.git",
     "@powerbi-visuals-utils/converterhelper": "git+https://github.com/uve/powerbi-visuals-utils-converterhelper.git",
     "@powerbi-visuals-utils/cssconstants": "git+https://github.com/uve/powerbi-visuals-utils-cssconstants.git",
@@ -28,20 +29,21 @@
     "@powerbi-visuals-utils/formatting": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-formatting.git",
     "@powerbi-visuals-utils/formattingservice": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-formattingservice.git",
     "@powerbi-visuals-utils/imargin": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-imargin.git",
+    "@powerbi-visuals-utils/interactivityservice": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-interactivityservice.git",
     "@powerbi-visuals-utils/pixelconverter": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-pixelconverter.git",
     "@powerbi-visuals-utils/regexpextensions": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-regexpextensions.git",
+    "@powerbi-visuals-utils/shapes": "git+https://github.com/vtkalek/powerbi-visuals-utils-shapes.git",
     "@powerbi-visuals-utils/stringextensions": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-stringextensions.git",
     "@powerbi-visuals-utils/textmeasurementservice": "git+https://github.com/uve/powerbi-visuals-utils-textmeasurementservice.git",
     "@powerbi-visuals-utils/valueformatter": "git+https://github.com/ignatvilesov/powerbi-visuals-utils-valueformatter.git",
-    "@types/d3": "^3.5.36",
-    "@types/jquery": "^2.0.33",
-    "@types/lodash": "^4.14.37",
     "d3": "3.5.17",
     "globalize": "0.1.0-a2",
     "jquery": "^3.1.1",
     "lodash": "^4.16.4"
   },
   "scripts": {
-    "preinstall": "pbiviz update"
+    "postinstall": "typings install && pbiviz update 1.2.0",
+    "typings": "node node_modules/typings/dist/bin.js i",
+    "pbiviz": "node node_modules/powerbi-visuals-tools/bin/pbiviz.js"
   }
 }

@@ -8,10 +8,8 @@
     "out": "./.tmp/build/visual.js"
   },
   "files": [
+    "typings/index.d.ts",
     ".api/v1.2.0/PowerBI-visuals.d.ts",
-    "node_modules/@types/d3/index.d.ts",
-    "node_modules/@types/jquery/index.d.ts",
-    "node_modules/@types/lodash/index.d.ts",
     "node_modules/@powerbi-visuals-utils/colorutility/lib/index.d.ts",
     "node_modules/@powerbi-visuals-utils/converterhelper/lib/index.d.ts",
     "node_modules/@powerbi-visuals-utils/cssconstants/lib/index.d.ts",
@@ -24,6 +22,8 @@
     "node_modules/@powerbi-visuals-utils/pixelconverter/lib/index.d.ts",
     "node_modules/@powerbi-visuals-utils/textmeasurementservice/lib/index.d.ts",
     "node_modules/@powerbi-visuals-utils/valueformatter/lib/index.d.ts",
+    "node_modules/@powerbi-visuals-utils/shapes/lib/index.d.ts",
+    "node_modules/@powerbi-visuals-utils/interactivityservice/lib/index.d.ts",
     "src/chicletSlicerProps.ts",
     "src/converter.ts",
     "src/tableView.ts",
