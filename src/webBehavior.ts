@@ -117,6 +117,21 @@ module powerbi.extensibility.visual {
                         };
                     });
 
+                if (settings.general.forcedSelection && selectedIndexes.length === 1) {
+                    var availableDataPoints: ChicletSlicerDataPoint[] = jQuery.map(
+                        this.dataPoints,
+                        (dataPoint: ChicletSlicerDataPoint, index: number) => {
+                            if (!dataPoint.filtered) {
+                                return dataPoint;
+                            };
+                        });
+
+                    if (availableDataPoints[index]
+                        && this.dataPoints[selectedIndexes[0]].identity === availableDataPoints[index].identity) {
+                        return;
+                    }
+                }
+
                 if ((d3.event as MouseEvent).altKey && settings.general.multiselect) {
                     let selIndex = selectedIndexes.length > 0
                         ? (selectedIndexes[selectedIndexes.length - 1])
@@ -148,6 +163,35 @@ module powerbi.extensibility.visual {
                 selectionHandler.handleClearSelection();
                 this.saveSelection(selectionHandler);
             });
+
+            this.forceSelection(selectionHandler);
+        }
+
+        public forceSelection(selectionHandler: ISelectionHandler): void {
+            if (!this.slicerSettings.general.forcedSelection) {
+                return;
+            }
+
+            var selectedIndexes: number[] = jQuery.map(
+                this.dataPoints,
+                (dataPoint: ChicletSlicerDataPoint, index: number) => {
+                    if (dataPoint.selected) {
+                        return index;
+                    };
+                });
+
+            if (selectedIndexes.length === 0) {
+                for (var i = 0; i < this.dataPoints.length; i++) {
+                    var dataPoint: ChicletSlicerDataPoint = this.dataPoints[i];
+
+                    if (dataPoint.selectable && !dataPoint.filtered) {
+                        selectionHandler.handleSelection(dataPoint, false);
+                        this.saveSelection(selectionHandler);
+
+                        break;
+                    }
+                }
+            }
         }
 
         public loadSelection(selectionHandler: ISelectionHandler): void {

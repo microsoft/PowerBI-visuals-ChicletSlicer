@@ -91,6 +91,10 @@
                     "displayName": "Multiple selection",
                     "type": { "bool": true }
                 },
+                "forcedSelection": {
+                    "displayName": "Forced selection",
+                    "type": { "bool": true }
+                },
                 "selected": {
                     "type": { "bool": true }
                 },

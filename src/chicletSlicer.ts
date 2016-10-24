@@ -141,6 +141,7 @@ module powerbi.extensibility.visual {
             columns: number;
             rows: number;
             multiselect: boolean;
+            forcedSelection: boolean;
             showDisabled: string;
             selection: string;
             selfFilterEnabled: boolean;
@@ -248,6 +249,7 @@ module powerbi.extensibility.visual {
                     columns: 3,
                     rows: 0,
                     multiselect: true,
+                    forcedSelection: false,
                     showDisabled: ChicletSlicerShowDisabled.INPLACE,
                     selection: null,
                     selfFilterEnabled: false
@@ -344,6 +346,7 @@ module powerbi.extensibility.visual {
                 defaultSettings.general.columns = DataViewObjects.getValue<number>(objects, chicletSlicerProps.general.columns, defaultSettings.general.columns);
                 defaultSettings.general.rows = DataViewObjects.getValue<number>(objects, chicletSlicerProps.general.rows, defaultSettings.general.rows);
                 defaultSettings.general.multiselect = DataViewObjects.getValue<boolean>(objects, chicletSlicerProps.general.multiselect, defaultSettings.general.multiselect);
+                defaultSettings.general.forcedSelection = DataViewObjects.getValue<boolean>(objects, chicletSlicerProps.general.forcedSelection, defaultSettings.general.forcedSelection);
                 defaultSettings.general.showDisabled = DataViewObjects.getValue<string>(objects, chicletSlicerProps.general.showDisabled, defaultSettings.general.showDisabled);
                 defaultSettings.general.selection = DataViewObjects.getValue(dataView.metadata.objects, chicletSlicerProps.general.selection, defaultSettings.general.selection);
                 defaultSettings.general.selfFilterEnabled = DataViewObjects.getValue<boolean>(objects, chicletSlicerProps.general.selfFilterEnabled, defaultSettings.general.selfFilterEnabled);
@@ -524,6 +527,7 @@ module powerbi.extensibility.visual {
                     rows: slicerSettings.general.rows,
                     showDisabled: slicerSettings.general.showDisabled,
                     multiselect: slicerSettings.general.multiselect,
+                    forcedSelection: slicerSettings.general.forcedSelection,
                     selfFilterEnabled: slicerSettings.general.selfFilterEnabled
                 }
             }];

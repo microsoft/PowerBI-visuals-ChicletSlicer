@@ -45,7 +45,7 @@ module powerbi.extensibility.visual {
         public hasSelectionOverride: boolean;
 
         public constructor(dataView: DataView, host: IVisualHost/*, interactivityService: IInteractivityService*/) {
-            var dataViewCategorical = dataView.categorical;
+            let dataViewCategorical = dataView.categorical;
             this.dataViewCategorical = dataViewCategorical;
             this.dataViewMetadata = dataView.metadata;
             this.host = host;
@@ -75,19 +75,19 @@ module powerbi.extensibility.visual {
             // If category exists, we render labels using category values. If not, we render labels
             // using measure labels.
             if (this.categoryValues) {
-                var objects = this.dataViewMetadata ? <any>this.dataViewMetadata.objects : undefined;
+                let objects = this.dataViewMetadata ? <any>this.dataViewMetadata.objects : undefined;
 
-                var isInvertedSelectionMode = undefined;
-                var numberOfScopeIds: number;
+                let isInvertedSelectionMode = undefined;
+                let numberOfScopeIds: number;
 
                 if (objects && objects.general && objects.general.filter) {
                     if (!this.identityFields) {
                         return;
                     }
-                    // var filter: SemanticFilter = <SemanticFilter>objects.general.filter;
+                    // let filter: SemanticFilter = <SemanticFilter>objects.general.filter;
 
                     /*
-                    var scopeIds = SQExprConverter.asScopeIdsContainer(filter, this.identityFields);
+                    let scopeIds = SQExprConverter.asScopeIdsContainer(filter, this.identityFields);
                     if (scopeIds) {
                         isInvertedSelectionMode = scopeIds.isNot;
                         numberOfScopeIds = scopeIds.scopeIds ? scopeIds.scopeIds.length : 0;
@@ -97,11 +97,11 @@ module powerbi.extensibility.visual {
                     }*/
                 }
 
-                var hasSelection: boolean = undefined;
+                let hasSelection: boolean = undefined;
 
                 if (this.dataViewCategorical.values) {
                     for (let idx: number = 0; idx < this.categoryValues.length; idx++) {
-                        var selected = this.isCategoryColumnSelected(chicletSlicerProps.selectedPropertyIdentifier, this.category, idx);
+                        let selected = this.isCategoryColumnSelected(chicletSlicerProps.selectedPropertyIdentifier, this.category, idx);
                         if (selected != null) {
                             hasSelection = selected;
                             break;
@@ -109,15 +109,15 @@ module powerbi.extensibility.visual {
                     }
                 }
 
-                var dataViewCategorical = this.dataViewCategorical;
-                var formatStringProp = chicletSlicerProps.formatString;
-                var value: number = -Infinity;
-                var imageURL: string = '';
+                let dataViewCategorical = this.dataViewCategorical;
+                let formatStringProp = chicletSlicerProps.formatString;
+                let value: number = -Infinity;
+                let imageURL: string = '';
 
-                for (var categoryIndex: number = 0, categoryCount = this.categoryValues.length; categoryIndex < categoryCount; categoryIndex++) {
-                    //var categoryIdentity = this.category.identity ? this.category.identity[categoryIndex] : null;
-                    var categoryIsSelected = this.isCategoryColumnSelected(chicletSlicerProps.selectedPropertyIdentifier, this.category, categoryIndex);
-                    var selectable: boolean = true;
+                for (let categoryIndex: number = 0, categoryCount = this.categoryValues.length; categoryIndex < categoryCount; categoryIndex++) {
+                    //let categoryIdentity = this.category.identity ? this.category.identity[categoryIndex] : null;
+                    let categoryIsSelected = this.isCategoryColumnSelected(chicletSlicerProps.selectedPropertyIdentifier, this.category, categoryIndex);
+                    let selectable: boolean = true;
 
                     if (hasSelection != null) {
                         if (isInvertedSelectionMode) {
@@ -141,14 +141,14 @@ module powerbi.extensibility.visual {
                         this.numberOfCategoriesSelectedInData++;
                     }
 
-                    var categoryValue = this.categoryValues[categoryIndex];
-                    var categoryLabel = valueFormatter.format(categoryValue, this.categoryFormatString);
+                    let categoryValue = this.categoryValues[categoryIndex];
+                    let categoryLabel = valueFormatter.format(categoryValue, this.categoryFormatString);
 
                     if (this.dataViewCategorical.values) {
 
                         // Series are either measures in the multi-measure case, or the single series otherwise
-                        for (var seriesIndex: number = 0; seriesIndex < this.dataViewCategorical.values.length; seriesIndex++) {
-                            var seriesData = dataViewCategorical.values[seriesIndex];
+                        for (let seriesIndex: number = 0; seriesIndex < this.dataViewCategorical.values.length; seriesIndex++) {
+                            let seriesData = dataViewCategorical.values[seriesIndex];
                             if (seriesData.values[categoryIndex] != null) {
                                 value = <number>seriesData.values[categoryIndex];
                                 if (seriesData.highlights) {
