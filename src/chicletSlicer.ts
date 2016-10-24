@@ -194,9 +194,9 @@ module powerbi.extensibility.visual {
     }
 
     export class ChicletSlicer implements IVisual {
-        private root: JQuery;
-        private searchHeader: JQuery;
-        private searchInput: JQuery;
+        private $root: JQuery;
+        private $searchHeader: JQuery;
+        private $searchInput: JQuery;
         private currentViewport: IViewport;
         private dataView: DataView;
         private slicerHeader: Selection<any>;
@@ -404,7 +404,7 @@ module powerbi.extensibility.visual {
 
 
         constructor(options: VisualConstructorOptions) {
-            this.root = $(options.element);
+            this.$root = $(options.element);
 
             this.visualHost = options.host;
 
@@ -550,17 +550,13 @@ module powerbi.extensibility.visual {
         private updateInternal(resetScrollbarPosition: boolean) {
             let data = ChicletSlicer.converter(
                 this.dataView,
-                this.searchInput.val(),
+                this.$searchInput.val(),
                 this.visualHost);
 
             if (!data) {
                 this.tableView.empty();
 
                 return;
-            }
-
-            if (this.interactivityService) {
-                this.interactivityService.applySelectionStateToData(data.slicerDataPoints);
             }
 
             data.slicerSettings.header.outlineWeight = data.slicerSettings.header.outlineWeight < 0
@@ -683,7 +679,7 @@ module powerbi.extensibility.visual {
             let settings: ChicletSlicerSettings = this.settings,
                 slicerBodyViewport: IViewport = this.getSlicerBodyViewport(this.currentViewport);
 
-            let slicerContainer: Selection<any> = d3.select(this.root.get(0))
+            let slicerContainer: Selection<any> = d3.select(this.$root.get(0))
                 .append('div')
                 .classed(ChicletSlicer.ContainerSelector.class, true);
 
@@ -999,17 +995,18 @@ module powerbi.extensibility.visual {
         };
 
         private createSearchHeader(container: JQuery): void {
-            this.searchHeader = $("<div>")
+            let counter: number = 0;
+
+            this.$searchHeader = $("<div>")
                 .appendTo(container)
                 .addClass("searchHeader")
                 .addClass("collapsed");
 
-            $("<div>").appendTo(this.searchHeader)
+            $("<div>").appendTo(this.$searchHeader)
                 .attr("title", "Search")
                 .addClass("search");
 
-            let counter = 0;
-            this.searchInput = $("<input>").appendTo(this.searchHeader)
+            this.$searchInput = $("<input>").appendTo(this.$searchHeader)
                 .attr("type", "text")
                 .attr("drag-resize-disabled", "true")
                 .addClass("searchInput")
@@ -1025,8 +1022,8 @@ module powerbi.extensibility.visual {
         }
 
         private updateSearchHeader(): void {
-            this.searchHeader.toggleClass("show", this.slicerData.slicerSettings.general.selfFilterEnabled);
-            this.searchHeader.toggleClass("collapsed", !this.slicerData.slicerSettings.general.selfFilterEnabled);
+            this.$searchHeader.toggleClass("show", this.slicerData.slicerSettings.general.selfFilterEnabled);
+            this.$searchHeader.toggleClass("collapsed", !this.slicerData.slicerSettings.general.selfFilterEnabled);
         }
 
         private onLoadMoreData(): void {

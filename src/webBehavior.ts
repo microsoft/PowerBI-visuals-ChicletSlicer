@@ -104,7 +104,6 @@ module powerbi.extensibility.visual {
                 if (!dataPoint.selectable) {
                     return;
                 }
-
                 (d3.event as MouseEvent).preventDefault();
 
                 let settings: ChicletSlicerSettings = this.slicerSettings;
@@ -145,14 +144,12 @@ module powerbi.extensibility.visual {
 
                     selectionHandler.handleClearSelection();
 
-                    for (let i = selIndex; i <= index; i++) {
+                    for (let i: number = selIndex; i <= index; i++) {
                         selectionHandler.handleSelection(this.dataPoints[i], true /* isMultiSelect */);
                     }
-                }
-                else if (((d3.event as MouseEvent).ctrlKey || (d3.event as MouseEvent).metaKey) && settings.general.multiselect) {
+                } else if (((d3.event as MouseEvent).ctrlKey || (d3.event as MouseEvent).metaKey) && settings.general.multiselect) {
                     selectionHandler.handleSelection(dataPoint, true /* isMultiSelect */);
-                }
-                else {
+                } else {
                     selectionHandler.handleSelection(dataPoint, false /* isMultiSelect */);
                 }
 
@@ -200,7 +197,7 @@ module powerbi.extensibility.visual {
             if (savedSelectionIds.length) {
                 let selectedDataPoints = this.dataPoints.filter(d => savedSelectionIds.some(x => (d.identity as any).getKey() === x));
                 selectedDataPoints.forEach(x => selectionHandler.handleSelection(x, true));
-                // selectionHandler.persistSelectionFilter(chicletSlicerProps.filterPropertyIdentifier); // selectionHandler doesn't support cross-filtering for now.
+                //selectionHandler.persistSelectionFilter(chicletSlicerProps.filterPropertyIdentifier); // selectionHandler doesn't support cross-filtering for now.
             }
         }
 
@@ -212,18 +209,18 @@ module powerbi.extensibility.visual {
             let selectors: Selector[] = [],
                 filter: ISemanticFilter;
 
-            // if (selectedIds.length > 0) {
-            //     selectors = _.chain(selectedIds)
-            //         .filter((value: ISelectionId) => value.hasIdentity())
-            //         .map((value: ISelectionId) => value.getSelector())
-            //         .value();
-            // }
-
-            // if (selectors.length) {
-            //     filter = Selector.filterFromSelector(selectors, isSelectionModeInverted);
-            // } else if (identityFields) {
-            //     filter = SemanticFilter.getAnyValueFilter(<ISQExpr[]>identityFields);
-            // }
+             if (selectedIds.length > 0) {
+                 selectors = _.chain(selectedIds)
+                     .filter((value: powerbi.visuals.ISelectionId) => value.hasIdentity())
+                     .map((value: powerbi.visuals.ISelectionId) => value.getSelector())
+                     .value();
+            }
+            /*
+            if (selectors.length) {
+                 filter = Selector.filterFromSelector(selectors, isSelectionModeInverted);
+            } else if (identityFields) {
+                 filter = SemanticFilter.getAnyValueFilter(<ISQExpr[]>identityFields);
+            }*/
 
             return filter;
         }

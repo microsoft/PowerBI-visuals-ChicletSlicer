@@ -12,7 +12,8 @@
   },
   "devDependencies": {
     "powerbi-visuals-tools": "git+https://github.com/Microsoft/PowerBI-visuals-tools.git",
-    "typings": "1.4.0"
+    "typings": "1.4.0",
+    "tslint": "^3.15.1"
   },
   "dependencies": {
     "@powerbi-visuals-utils/arrayextensions": "git+https://github.com/vtkalek/powerbi-visuals-utils-arrayextensions.git",
@@ -44,6 +45,7 @@
   "scripts": {
     "postinstall": "typings install && pbiviz update 1.2.0",
     "typings": "node node_modules/typings/dist/bin.js i",
-    "pbiviz": "node node_modules/powerbi-visuals-tools/bin/pbiviz.js"
+    "pbiviz": "node node_modules/powerbi-visuals-tools/bin/pbiviz.js",
+    "lint": "node node_modules/tslint/bin/tslint \"src/**/*.ts\""
   }
 }

@@ -84,7 +84,7 @@ module powerbi.extensibility.visual {
                     if (!this.identityFields) {
                         return;
                     }
-                    // let filter: SemanticFilter = <SemanticFilter>objects.general.filter;
+                    let filter: SemanticFilter = <SemanticFilter>objects.general.filter;
 
                     /*
                     let scopeIds = SQExprConverter.asScopeIdsContainer(filter, this.identityFields);
