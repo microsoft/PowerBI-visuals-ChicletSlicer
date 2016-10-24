@@ -66,12 +66,12 @@ module powerbi.extensibility.visual {
         public dataPoints: ChicletSlicerDataPoint[];
 
         public bindEvents(options: ChicletSlicerBehaviorOptions, selectionHandler: ISelectionHandler): void {
-            var slicers = this.slicers = options.slicerItemContainers;
+            let slicers = this.slicers = options.slicerItemContainers;
 
             this.slicerItemLabels = options.slicerItemLabels;
             this.slicerItemInputs = options.slicerItemInputs;
 
-            var slicerClear = options.slicerClear;
+            let slicerClear = options.slicerClear;
 
             this.dataPoints = options.dataPoints;
             this.interactivityService = options.interactivityService;
@@ -107,9 +107,9 @@ module powerbi.extensibility.visual {
 
                 (d3.event as MouseEvent).preventDefault();
 
-                var settings: ChicletSlicerSettings = this.slicerSettings;
+                let settings: ChicletSlicerSettings = this.slicerSettings;
 
-                var selectedIndexes: number[] = jQuery.map(
+                let selectedIndexes: number[] = jQuery.map(
                     this.dataPoints,
                     (dataPoint: ChicletSlicerDataPoint, index: number) => {
                         if (dataPoint.selected) {
@@ -118,19 +118,19 @@ module powerbi.extensibility.visual {
                     });
 
                 if ((d3.event as MouseEvent).altKey && settings.general.multiselect) {
-                    var selIndex = selectedIndexes.length > 0
+                    let selIndex = selectedIndexes.length > 0
                         ? (selectedIndexes[selectedIndexes.length - 1])
                         : 0;
 
                     if (selIndex > index) {
-                        var temp = index;
+                        let temp = index;
                         index = selIndex;
                         selIndex = temp;
                     }
 
                     selectionHandler.handleClearSelection();
 
-                    for (var i = selIndex; i <= index; i++) {
+                    for (let i = selIndex; i <= index; i++) {
                         selectionHandler.handleSelection(this.dataPoints[i], true /* isMultiSelect */);
                     }
                 }
@@ -152,9 +152,9 @@ module powerbi.extensibility.visual {
 
         public loadSelection(selectionHandler: ISelectionHandler): void {
             selectionHandler.handleClearSelection();
-            var savedSelectionIds = this.slicerSettings.general.getSavedSelection();
+            let savedSelectionIds = this.slicerSettings.general.getSavedSelection();
             if (savedSelectionIds.length) {
-                var selectedDataPoints = this.dataPoints.filter(d => savedSelectionIds.some(x => (d.identity as any).getKey() === x));
+                let selectedDataPoints = this.dataPoints.filter(d => savedSelectionIds.some(x => (d.identity as any).getKey() === x));
                 selectedDataPoints.forEach(x => selectionHandler.handleSelection(x, true));
                 // selectionHandler.persistSelectionFilter(chicletSlicerProps.filterPropertyIdentifier); // selectionHandler doesn't support cross-filtering for now.
             }
@@ -165,7 +165,7 @@ module powerbi.extensibility.visual {
             isSelectionModeInverted: boolean,
             identityFields: ISQExpr | ISQExpr[]): ISemanticFilter {
 
-            var selectors: Selector[] = [],
+            let selectors: Selector[] = [],
                 filter: ISemanticFilter;
 
             // if (selectedIds.length > 0) {
@@ -185,7 +185,7 @@ module powerbi.extensibility.visual {
         }
 
         public saveSelection(selectionHandler: ISelectionHandler): void {
-            var filter: ISemanticFilter,
+            let filter: ISemanticFilter,
                 selectedIds: ISelectionId[],
                 selectionIdKeys: string[],
                 identityFields: ISQExpr[];
@@ -230,8 +230,8 @@ module powerbi.extensibility.visual {
         }
 
         public styleSlicerInputs(slicers: Selection<any>, hasSelection: boolean) {
-            var settings = this.slicerSettings;
-            var selectedItems = [];
+            let settings = this.slicerSettings;
+            let selectedItems = [];
             slicers.each(function (d: ChicletSlicerDataPoint) {
                 // get selected items
                 if (d.selectable && d.selected) {

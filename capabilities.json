@@ -188,6 +188,10 @@
                     "displayName": "Outline Weight",
                     "type": { "numeric": true }
                 },
+                "padding": {
+                    "displayName": "Padding",
+                    "type": { "numeric": true }
+                },
                 "borderStyle": {
                     "displayName": "Outline Style",
                     "type": { "enumeration": [

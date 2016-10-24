@@ -15,7 +15,7 @@
     "email": "pbicvsupport@microsoft.com"
   },
   "assets": {
-    "icon": "assets/icon.svg"
+    "icon": "assets/icon.png"
   },
   "externalJS": [
     "node_modules/@powerbi-visuals-utils/external-loader/lib/index.js",

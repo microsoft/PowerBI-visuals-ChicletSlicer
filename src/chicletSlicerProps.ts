@@ -27,7 +27,7 @@
 module powerbi.extensibility.visual {
 
     // TODO: Generate these from above, defining twice just introduces potential for error
-    export var chicletSlicerProps = {
+    export let chicletSlicerProps = {
         general: {
             orientation: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'orientation' },
             columns: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'columns' },
@@ -61,6 +61,7 @@ module powerbi.extensibility.visual {
             outline: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'outline' },
             outlineColor: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'outlineColor' },
             outlineWeight: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'outlineWeight' },
+            padding: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'padding' },
             borderStyle: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'borderStyle' },
         },
         images: {
