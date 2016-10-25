@@ -41,6 +41,8 @@ module powerbi.extensibility.visual {
 
         public numberOfCategoriesSelectedInData: number;
         public dataPoints: ChicletSlicerDataPoint[];
+        public hasHighlights: boolean;
+
         private host: IVisualHost;
         public hasSelectionOverride: boolean;
 
@@ -113,6 +115,7 @@ module powerbi.extensibility.visual {
                 let formatStringProp = chicletSlicerProps.formatString;
                 let value: number = -Infinity;
                 let imageURL: string = '';
+                this.hasHighlights = false;
 
                 for (let categoryIndex: number = 0, categoryCount = this.categoryValues.length; categoryIndex < categoryCount; categoryIndex++) {
                     //let categoryIdentity = this.category.identity ? this.category.identity[categoryIndex] : null;
@@ -153,6 +156,7 @@ module powerbi.extensibility.visual {
                                 value = <number>seriesData.values[categoryIndex];
                                 if (seriesData.highlights) {
                                     selectable = !(seriesData.highlights[categoryIndex] === null);
+                                    this.hasHighlights = true;
                                 }
                                 if (seriesData.source.groupName && seriesData.source.groupName !== '') {
                                     imageURL = converterHelper.getFormattedLegendLabel(seriesData.source, dataViewCategorical.values, formatStringProp);

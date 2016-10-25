@@ -121,6 +121,7 @@ module powerbi.extensibility.visual {
         slicerDataPoints: ChicletSlicerDataPoint[];
         slicerSettings: ChicletSlicerSettings;
         hasSelectionOverride?: boolean;
+        hasHighlights: boolean;
         identityFields: ISQExpr[];
     }
 
@@ -393,7 +394,8 @@ module powerbi.extensibility.visual {
                 formatString: valueFormatter.getFormatString(categories.source, chicletSlicerProps.formatString),
                 slicerSettings: defaultSettings,
                 slicerDataPoints: converter.dataPoints,
-                identityFields: converter.identityFields
+                identityFields: converter.identityFields,
+                hasHighlights: converter.hasHighlights
             };
 
             // Override hasSelection if a objects contained more scopeIds than selections we found in the data
@@ -959,7 +961,12 @@ module powerbi.extensibility.visual {
                 }
 
                 if (this.interactivityService && this.slicerBody) {
-                    this.interactivityService.applySelectionStateToData(data.slicerDataPoints);
+
+                    if (data.hasHighlights) {
+                        this.behavior.clearSelection();
+                    } else {
+                        this.interactivityService.applySelectionStateToData(data.slicerDataPoints);
+                    }
 
                     let slicerBody: Selection<any> = this.slicerBody.attr('width', this.currentViewport.width),
                         slicerItemContainers: Selection<any> = slicerBody.selectAll(ChicletSlicer.ItemContainerSelector.selector),
@@ -978,7 +985,6 @@ module powerbi.extensibility.visual {
                         isSelectionLoaded: this.isSelectionLoaded,
                         identityFields: data.identityFields
                     };
-
                     this.interactivityService.bind(data.slicerDataPoints, this.behavior, behaviorOptions, {
                         overrideSelectionFromData: true,
                         hasSelectionOverride: data.hasSelectionOverride,

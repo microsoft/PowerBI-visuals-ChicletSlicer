@@ -59,6 +59,7 @@ module powerbi.extensibility.visual {
         private interactivityService: IInteractivityService;
         private slicerSettings: ChicletSlicerSettings;
         private options: ChicletSlicerBehaviorOptions;
+        private selectionHandler: ISelectionHandler;
 
         /**
          * Public for testability.
@@ -78,8 +79,10 @@ module powerbi.extensibility.visual {
             this.slicerSettings = options.slicerSettings;
             this.options = options;
 
+            this.selectionHandler = selectionHandler;
+
             if (!this.options.isSelectionLoaded) {
-                this.loadSelection(selectionHandler);
+                this.loadSelection();
             }
 
             slicers.on("mouseover", (d: ChicletSlicerDataPoint) => {
@@ -153,50 +156,25 @@ module powerbi.extensibility.visual {
                     selectionHandler.handleSelection(dataPoint, false /* isMultiSelect */);
                 }
 
-                this.saveSelection(selectionHandler);
+                this.saveSelection();
             });
 
             slicerClear.on("click", (d: SelectableDataPoint) => {
                 selectionHandler.handleClearSelection();
-                this.saveSelection(selectionHandler);
+                this.saveSelection();
             });
-
-            this.forceSelection(selectionHandler);
         }
 
-        public forceSelection(selectionHandler: ISelectionHandler): void {
-            if (!this.slicerSettings.general.forcedSelection) {
-                return;
-            }
-
-            var selectedIndexes: number[] = jQuery.map(
-                this.dataPoints,
-                (dataPoint: ChicletSlicerDataPoint, index: number) => {
-                    if (dataPoint.selected) {
-                        return index;
-                    };
-                });
-
-            if (selectedIndexes.length === 0) {
-                for (var i = 0; i < this.dataPoints.length; i++) {
-                    var dataPoint: ChicletSlicerDataPoint = this.dataPoints[i];
-
-                    if (dataPoint.selectable && !dataPoint.filtered) {
-                        selectionHandler.handleSelection(dataPoint, false);
-                        this.saveSelection(selectionHandler);
-
-                        break;
-                    }
-                }
-            }
+        public clearSelection(): void {
+            this.interactivityService.clearSelection();
         }
 
-        public loadSelection(selectionHandler: ISelectionHandler): void {
-            selectionHandler.handleClearSelection();
+        public loadSelection(): void {
             let savedSelectionIds = this.slicerSettings.general.getSavedSelection();
             if (savedSelectionIds.length) {
+                this.selectionHandler.handleClearSelection();
                 let selectedDataPoints = this.dataPoints.filter(d => savedSelectionIds.some(x => (d.identity as any).getKey() === x));
-                selectedDataPoints.forEach(x => selectionHandler.handleSelection(x, true));
+                selectedDataPoints.forEach(x => this.selectionHandler.handleSelection(x, true));
                 //selectionHandler.persistSelectionFilter(chicletSlicerProps.filterPropertyIdentifier); // selectionHandler doesn't support cross-filtering for now.
             }
         }
@@ -225,13 +203,13 @@ module powerbi.extensibility.visual {
             return filter;
         }
 
-        public saveSelection(selectionHandler: ISelectionHandler): void {
+        public saveSelection(): void {
             let filter: ISemanticFilter,
                 selectedIds: ISelectionId[],
                 selectionIdKeys: string[],
                 identityFields: ISQExpr[];
 
-            selectedIds = <ISelectionId[]>(<any>selectionHandler).selectedIds;
+            selectedIds = <ISelectionId[]>(<any>this.selectionHandler).selectedIds;
 
             identityFields = this.options ? this.options.identityFields : [];
 
