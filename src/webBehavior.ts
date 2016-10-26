@@ -160,9 +160,33 @@ module powerbi.extensibility.visual {
             });
 
             slicerClear.on("click", (d: SelectableDataPoint) => {
+                const settings: ChicletSlicerSettings = this.slicerSettings;
+                if (settings.general.forcedSelection) {
+                    return false;
+                }
                 selectionHandler.handleClearSelection();
                 this.saveSelection();
             });
+
+            this.forceSelection();
+        }
+
+        private forceSelection(): void {
+            if (!this.slicerSettings.general.forcedSelection) {
+                return;
+            }
+            const isSelected: boolean = _.some(this.dataPoints, (dataPoint: ChicletSlicerDataPoint) => dataPoint.selected);
+
+            if (!isSelected) {
+                for (let i: number = 0; i < this.dataPoints.length; i++) {
+                    let dataPoint: ChicletSlicerDataPoint = this.dataPoints[i];
+                    if (dataPoint.selectable && !dataPoint.filtered) {
+                        this.selectionHandler.handleSelection(dataPoint, false);
+                        this.saveSelection();
+                        break;
+                    }
+                 }
+             }
         }
 
         public loadSelection(): void {
