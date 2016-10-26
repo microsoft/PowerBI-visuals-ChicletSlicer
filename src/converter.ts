@@ -46,8 +46,8 @@ module powerbi.extensibility.visual {
         private host: IVisualHost;
         public hasSelectionOverride: boolean;
 
-        public constructor(dataView: DataView, host: IVisualHost/*, interactivityService: IInteractivityService*/) {
-            let dataViewCategorical = dataView.categorical;
+        public constructor(dataView: DataView, host: IVisualHost) {
+            const dataViewCategorical: DataViewCategorical = dataView.categorical;
             this.dataViewCategorical = dataViewCategorical;
             this.dataViewMetadata = dataView.metadata;
             this.host = host;
@@ -79,7 +79,7 @@ module powerbi.extensibility.visual {
             if (this.categoryValues) {
                 let objects = this.dataViewMetadata ? <any>this.dataViewMetadata.objects : undefined;
 
-                let isInvertedSelectionMode = undefined;
+                let isInvertedSelectionMode: boolean = false;
                 let numberOfScopeIds: number;
 
                 if (objects && objects.general && objects.general.filter) {
@@ -87,16 +87,6 @@ module powerbi.extensibility.visual {
                         return;
                     }
                     let filter: SemanticFilter = <SemanticFilter>objects.general.filter;
-
-                    /*
-                    let scopeIds = SQExprConverter.asScopeIdsContainer(filter, this.identityFields);
-                    if (scopeIds) {
-                        isInvertedSelectionMode = scopeIds.isNot;
-                        numberOfScopeIds = scopeIds.scopeIds ? scopeIds.scopeIds.length : 0;
-                    }
-                    else {
-                        isInvertedSelectionMode = false;
-                    }*/
                 }
 
                 let hasSelection: boolean = undefined;
@@ -118,8 +108,7 @@ module powerbi.extensibility.visual {
                 this.hasHighlights = false;
 
                 for (let categoryIndex: number = 0, categoryCount = this.categoryValues.length; categoryIndex < categoryCount; categoryIndex++) {
-                    //let categoryIdentity = this.category.identity ? this.category.identity[categoryIndex] : null;
-                    let categoryIsSelected = this.isCategoryColumnSelected(chicletSlicerProps.selectedPropertyIdentifier, this.category, categoryIndex);
+                    let categoryIsSelected: boolean = this.isCategoryColumnSelected(chicletSlicerProps.selectedPropertyIdentifier, this.category, categoryIndex);
                     let selectable: boolean = true;
 
                     if (hasSelection != null) {
@@ -129,11 +118,10 @@ module powerbi.extensibility.visual {
 
                             if (categoryIsSelected != null) {
                                 categoryIsSelected = hasSelection;
-                            }
-                            else if (categoryIsSelected == null)
+                            } else if (categoryIsSelected == null) {
                                 categoryIsSelected = !hasSelection;
-                        }
-                        else {
+                            }
+                        } else {
                             if (categoryIsSelected == null) {
                                 categoryIsSelected = !hasSelection;
                             }
@@ -144,14 +132,14 @@ module powerbi.extensibility.visual {
                         this.numberOfCategoriesSelectedInData++;
                     }
 
-                    let categoryValue = this.categoryValues[categoryIndex];
-                    let categoryLabel = valueFormatter.format(categoryValue, this.categoryFormatString);
+                    let categoryValue: any = this.categoryValues[categoryIndex];
+                    let categoryLabel: string = valueFormatter.format(categoryValue, this.categoryFormatString);
 
                     if (this.dataViewCategorical.values) {
 
                         // Series are either measures in the multi-measure case, or the single series otherwise
                         for (let seriesIndex: number = 0; seriesIndex < this.dataViewCategorical.values.length; seriesIndex++) {
-                            let seriesData = dataViewCategorical.values[seriesIndex];
+                            let seriesData: any = dataViewCategorical.values[seriesIndex];
                             if (seriesData.values[categoryIndex] != null) {
                                 value = <number>seriesData.values[categoryIndex];
                                 if (seriesData.highlights) {

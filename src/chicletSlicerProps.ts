@@ -26,7 +26,6 @@
 
 module powerbi.extensibility.visual {
 
-    // TODO: Generate these from above, defining twice just introduces potential for error
     export let chicletSlicerProps = {
         general: {
             orientation: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'orientation' },

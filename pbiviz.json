@@ -2,9 +2,9 @@
   "visual": {
     "name": "chicletSlicer",
     "displayName": "ChicletSlicer",
-    "guid": "PBI_CV_A54044DF_A7E8_431E_9C89_640003DD3079",
+    "guid": "ChicletSlicer1448559807354",
     "visualClassName": "ChicletSlicer",
-    "version": "2.0.2",
+    "version": "2.0.3",
     "description": "Use this slicer to display image and/or text buttons that act as an in-canvas filter. Define additional properties for the layout & selection to customize this slicer to meet your specific needs",
     "supportUrl": "http://community.powerbi.com",
     "gitHubUrl": "https://github.com/Microsoft/PowerBI-visuals-ChicletSlicer"

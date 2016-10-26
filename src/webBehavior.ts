@@ -67,12 +67,12 @@ module powerbi.extensibility.visual {
         public dataPoints: ChicletSlicerDataPoint[];
 
         public bindEvents(options: ChicletSlicerBehaviorOptions, selectionHandler: ISelectionHandler): void {
-            let slicers = this.slicers = options.slicerItemContainers;
+            let slicers: Selection<any> = this.slicers = options.slicerItemContainers;
 
             this.slicerItemLabels = options.slicerItemLabels;
             this.slicerItemInputs = options.slicerItemInputs;
 
-            let slicerClear = options.slicerClear;
+            let slicerClear: Selection<any> = options.slicerClear;
 
             this.dataPoints = options.dataPoints;
             this.interactivityService = options.interactivityService;
@@ -140,9 +140,7 @@ module powerbi.extensibility.visual {
                         : 0;
 
                     if (selIndex > index) {
-                        let temp = index;
-                        index = selIndex;
-                        selIndex = temp;
+                       [index, selIndex] = [selIndex, index];
                     }
 
                     selectionHandler.handleClearSelection();
@@ -190,12 +188,11 @@ module powerbi.extensibility.visual {
         }
 
         public loadSelection(): void {
-            let savedSelectionIds = this.slicerSettings.general.getSavedSelection();
+            let savedSelectionIds: string[] = this.slicerSettings.general.getSavedSelection();
             if (savedSelectionIds.length) {
                 this.selectionHandler.handleClearSelection();
                 let selectedDataPoints = this.dataPoints.filter(d => savedSelectionIds.some(x => (d.identity as any).getKey() === x));
                 selectedDataPoints.forEach(x => this.selectionHandler.handleSelection(x, true));
-                //selectionHandler.persistSelectionFilter(chicletSlicerProps.filterPropertyIdentifier); // selectionHandler doesn't support cross-filtering for now.
             }
         }
 
@@ -213,12 +210,6 @@ module powerbi.extensibility.visual {
                      .map((value: powerbi.visuals.ISelectionId) => value.getSelector())
                      .value();
             }
-            /*
-            if (selectors.length) {
-                 filter = Selector.filterFromSelector(selectors, isSelectionModeInverted);
-            } else if (identityFields) {
-                 filter = SemanticFilter.getAnyValueFilter(<ISQExpr[]>identityFields);
-            }*/
 
             return filter;
         }
@@ -255,14 +246,16 @@ module powerbi.extensibility.visual {
         private renderMouseover(): void {
             this.slicerItemLabels.style({
                 'color': (d: ChicletSlicerDataPoint) => {
-                    if (d.mouseOver)
+                    if (d.mouseOver) {
                         return this.slicerSettings.slicerText.hoverColor;
+                    }
 
                     if (d.mouseOut) {
-                        if (d.selected)
+                        if (d.selected) {
                             return this.slicerSettings.slicerText.fontColor;
-                        else
+                        } else {
                             return this.slicerSettings.slicerText.fontColor;
+                        }
                     }
                 }
             });
@@ -270,13 +263,8 @@ module powerbi.extensibility.visual {
 
         public styleSlicerInputs(slicers: Selection<any>, hasSelection: boolean) {
             let settings = this.slicerSettings;
-            let selectedItems = [];
-            slicers.each(function (d: ChicletSlicerDataPoint) {
-                // get selected items
-                if (d.selectable && d.selected) {
-                    selectedItems.push(d);
-                }
 
+            slicers.each(function (d: ChicletSlicerDataPoint) {
                 d3.select(this).style({
                     'background': d.selectable ? (d.selected ? settings.slicerText.selectedColor : settings.slicerText.unselectedColor)
                         : settings.slicerText.disabledColor

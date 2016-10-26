@@ -61,25 +61,11 @@ module powerbi.extensibility.visual {
 
     import ISemanticFilter = data.ISemanticFilter;
     import ISQExpr = data.ISQExpr;
-    /*
-     // powerbi.data
-     import SemanticFilter = powerbi.data.SemanticFilter;
-     import SQExprConverter = powerbi.data.SQExprConverter;
-     import Selector = powerbi.data.Selector;
-     import SQExpr = powerbi.data.SQExpr;
-
-
-     import IVisualHostServices = powerbi.IVisualHostServices;
-     import SelectEventArgs = powerbi.SelectEventArgs;
-     import VisualUpdateOptions = powerbi.VisualUpdateOptions;
-     import DataViewAnalysis = powerbi.DataViewAnalysis;*/
 
     // powerbi.visuals
     import SelectableDataPoint = powerbi.visuals.SelectableDataPoint;
     import IInteractivityService = powerbi.visuals.IInteractivityService;
     import createInteractivityService = powerbi.visuals.createInteractivityService;
-    // import IInteractiveBehavior = powerbi.visuals.IInteractiveBehavior;
-    // import ISelectionHandler = powerbi.visuals.ISelectionHandler;
 
     module ChicletBorderStyle {
         export let ROUNDED: string = 'Rounded';
@@ -218,16 +204,22 @@ module powerbi.extensibility.visual {
         public static DefaultFontFamily: string = "'Segoe UI', 'wf_segoe-ui_normal', helvetica, arial, sans-serif";
         public static DefaultFontSizeInPt: number = 11;
 
-        private static cellTotalInnerPaddings: number = 8;
-        private static cellTotalInnerBorders: number = 2;
-        private static chicletTotalInnerRightLeftPaddings: number = 14;
+        private static СellTotalInnerPaddings: number = 8;
+        private static СellTotalInnerBorders: number = 2;
+        private static СhicletTotalInnerRightLeftPaddings: number = 14;
 
         public static MinImageSplit: number = 0;
+        public static MinImageSplitToHide: number = 10;
         public static MaxImageSplit: number = 100;
+        public static MaxImageSplitToHide: number = 90;
+        public static MaxImageWidth: number = 100;
+
+        public static MaxTransparency: number = 100;
 
         private static MaxCellPadding: number = 20;
 
         private static MinSizeOfViewport: number = 0;
+        private static MinColumns: number = 1;
 
         private static WidthOfScrollbar: number = 17;
 
@@ -336,7 +328,7 @@ module powerbi.extensibility.visual {
                 return;
             }
 
-            let converter = new ChicletSlicerConverter(dataView, visualHost);
+            let converter: ChicletSlicerConverter = new ChicletSlicerConverter(dataView, visualHost);
             converter.convert();
 
             let slicerData: ChicletSlicerData,
@@ -430,13 +422,14 @@ module powerbi.extensibility.visual {
                 this.initContainer();
             }
 
-            let existingDataView = this.dataView;
+            let existingDataView: DataView = this.dataView;
             this.dataView = options.dataViews[0];
 
             let resetScrollbarPosition: boolean = true;
+            /*
             if (existingDataView) {
-                //  resetScrollbarPosition = !DataViewAnalysis.hasSameCategoryIdentity(existingDataView, this.dataView);
-            }
+                resetScrollbarPosition = !DataViewAnalysis.hasSameCategoryIdentity(existingDataView, this.dataView);
+            }*/
 
             if (options.viewport.height === this.currentViewport.height
                 && options.viewport.width === this.currentViewport.width) {
@@ -449,16 +442,11 @@ module powerbi.extensibility.visual {
             this.updateInternal(resetScrollbarPosition);
         }
 
-        public onResizing(finalViewport: IViewport): void {
-            this.currentViewport = finalViewport;
-            this.updateInternal(false /* resetScrollbarPosition */);
-        }
-
         public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions): VisualObjectInstanceEnumeration {
             let data: ChicletSlicerData = this.slicerData;
 
             if (!data) {
-                return;
+                return [];
             }
 
             switch (options.objectName) {
@@ -470,6 +458,8 @@ module powerbi.extensibility.visual {
                     return this.enumerateGeneral(data);
                 case 'images':
                     return this.enumerateImages(data);
+                default:
+                    return [];
             }
         }
 
@@ -659,9 +649,9 @@ module powerbi.extensibility.visual {
 
             let height: number = this.settings.slicerText.height;
 
-            if (height === 0) {
-                let extraSpaceForCell = ChicletSlicer.cellTotalInnerPaddings + ChicletSlicer.cellTotalInnerBorders,
-                    textProperties = ChicletSlicer.getChicletTextProperties(this.settings.slicerText.textSize);
+            if (height === ChicletSlicer.MinImageSplit) {
+                let extraSpaceForCell = ChicletSlicer.СellTotalInnerPaddings + ChicletSlicer.СellTotalInnerBorders,
+                    textProperties: TextProperties = ChicletSlicer.getChicletTextProperties(this.settings.slicerText.textSize);
 
                 height = TextMeasurementService.estimateSvgTextHeight(textProperties) +
                     TextMeasurementService.estimateSvgTextBaselineDelta(textProperties) +
@@ -672,7 +662,7 @@ module powerbi.extensibility.visual {
                 });
 
                 if (hasImage) {
-                    height += 100;
+                    height += ChicletSlicer.MaxImageSplit;
                 }
             }
 
@@ -727,15 +717,15 @@ module powerbi.extensibility.visual {
                 .append('div')
                 .classed(ChicletSlicer.BodySelector.class, true)
                 .classed(
-                ChicletSlicer.SlicerBodyHorizontalSelector.class,
-                settings.general.orientation === Orientation.HORIZONTAL)
+                    ChicletSlicer.SlicerBodyHorizontalSelector.class,
+                    settings.general.orientation === Orientation.HORIZONTAL)
                 .classed(
-                ChicletSlicer.SlicerBodyVerticalSelector.class,
-                settings.general.orientation === Orientation.VERTICAL
+                    ChicletSlicer.SlicerBodyVerticalSelector.class,
+                    settings.general.orientation === Orientation.VERTICAL
                 )
                 .style({
                     'height': PixelConverter.toString(slicerBodyViewport.height),
-                    'width': '100%',
+                    'width': `${ChicletSlicer.MaxImageWidth}%`,
                 });
 
             let rowEnter = (rowSelection: Selection<any>) => {
@@ -759,7 +749,6 @@ module powerbi.extensibility.visual {
                 enter: rowEnter,
                 exit: rowExit,
                 update: rowUpdate,
-                loadMoreData: () => this.onLoadMoreData(),
                 scrollEnabled: true,
                 viewport: this.getSlicerBodyViewport(this.currentViewport),
                 baseContainer: this.slicerBody,
@@ -771,7 +760,7 @@ module powerbi.extensibility.visual {
         private enterSelection(rowSelection: Selection<any>): void {
             let settings: ChicletSlicerSettings = this.settings;
 
-            let ulItemElement = rowSelection
+            let ulItemElement: UpdateSelection<any> = rowSelection
                 .selectAll('ul')
                 .data((dataPoint: ChicletSlicerDataPoint) => {
                     return [dataPoint];
@@ -785,7 +774,7 @@ module powerbi.extensibility.visual {
                 .exit()
                 .remove();
 
-            let listItemElement = ulItemElement
+            let listItemElement: UpdateSelection<any> = ulItemElement
                 .selectAll(ChicletSlicer.ItemContainerSelector.selector)
                 .data((dataPoint: ChicletSlicerDataPoint) => {
                     return [dataPoint];
@@ -878,11 +867,11 @@ module powerbi.extensibility.visual {
 
                 this.slicerBody
                     .classed(
-                    ChicletSlicer.SlicerBodyHorizontalSelector.class,
-                    settings.general.orientation === Orientation.HORIZONTAL)
+                        ChicletSlicer.SlicerBodyHorizontalSelector.class,
+                        settings.general.orientation === Orientation.HORIZONTAL)
                     .classed(
-                    ChicletSlicer.SlicerBodyVerticalSelector.class,
-                    settings.general.orientation === Orientation.VERTICAL);
+                        ChicletSlicer.SlicerBodyVerticalSelector.class,
+                        settings.general.orientation === Orientation.VERTICAL);
 
                 let slicerText: Selection<any> = rowSelection.selectAll(ChicletSlicer.LabelTextSelector.selector),
                     textProperties: TextProperties = ChicletSlicer.getChicletTextProperties(settings.slicerText.textSize),
@@ -896,17 +885,17 @@ module powerbi.extensibility.visual {
                     if (this.settings.slicerText.width === 0) {
                         let slicerBodyViewport: IViewport = this.getSlicerBodyViewport(this.currentViewport);
 
-                        maxWidth = (slicerBodyViewport.width / (this.tableView.computedColumns || 1)) -
-                            ChicletSlicer.chicletTotalInnerRightLeftPaddings -
-                            ChicletSlicer.cellTotalInnerBorders -
+                        maxWidth = (slicerBodyViewport.width / (this.tableView.computedColumns || ChicletSlicer.MinColumns)) -
+                            ChicletSlicer.СhicletTotalInnerRightLeftPaddings -
+                            ChicletSlicer.СellTotalInnerBorders -
                             settings.slicerText.outlineWeight;
 
                         return TextMeasurementService.getTailoredTextOrDefault(textProperties, maxWidth);
                     }
                     else {
                         maxWidth = this.settings.slicerText.width -
-                            ChicletSlicer.chicletTotalInnerRightLeftPaddings -
-                            ChicletSlicer.cellTotalInnerBorders -
+                            ChicletSlicer.СhicletTotalInnerRightLeftPaddings -
+                            ChicletSlicer.СellTotalInnerBorders -
                             settings.slicerText.outlineWeight;
 
                         return TextMeasurementService.getTailoredTextOrDefault(textProperties, maxWidth);
@@ -932,7 +921,7 @@ module powerbi.extensibility.visual {
                                 return true;
                             }
 
-                            if (settings.images.imageSplit < 10) {
+                            if (settings.images.imageSplit < ChicletSlicer.MinImageSplitToHide) {
                                 return true;
                             }
                         },
@@ -944,13 +933,15 @@ module powerbi.extensibility.visual {
                     });
 
                 rowSelection.selectAll(ChicletSlicer.SlicerTextWrapperSelector.selector)
-                    .style('height', (d: ChicletSlicerDataPoint) => {
-                        return d.imageURL
-                            ? (100 - settings.images.imageSplit) + '%'
-                            : '100%';
+                    .style('height', (d: ChicletSlicerDataPoint): string => {
+                        let height: number = ChicletSlicer.MaxImageSplit;
+                        if (d.imageURL) {
+                            height -= settings.images.imageSplit;
+                        }
+                        return `${height}%`;
                     })
                     .classed('hidden', (d: ChicletSlicerDataPoint) => {
-                        if (settings.images.imageSplit > 90) {
+                        if (settings.images.imageSplit > ChicletSlicer.MaxImageSplitToHide) {
                             return true;
                         }
                     });
@@ -967,7 +958,7 @@ module powerbi.extensibility.visual {
                 if (settings.slicerText.background) {
                     let backgroundColor: string = hexToRGBString(
                         settings.slicerText.background,
-                        (100 - settings.slicerText.transparency) / 100);
+                        (ChicletSlicer.MaxTransparency - settings.slicerText.transparency) / ChicletSlicer.MaxTransparency);
 
                     this.slicerBody.style('background-color', backgroundColor);
                 }
@@ -1048,13 +1039,6 @@ module powerbi.extensibility.visual {
             this.$searchHeader.toggleClass("collapsed", !this.slicerData.slicerSettings.general.selfFilterEnabled);
         }
 
-        private onLoadMoreData(): void {
-            if (!this.waitingForData && this.dataView.metadata && this.dataView.metadata.segment) {
-                // this.hostServices.loadMoreData();
-                this.waitingForData = true;
-            }
-        }
-
         private getSlicerBodyViewport(currentViewport: IViewport): IViewport {
             let settings: ChicletSlicerSettings = this.settings,
                 headerHeight: number = (settings.header.show) ? this.getHeaderHeight() : 0,
@@ -1073,7 +1057,7 @@ module powerbi.extensibility.visual {
             this.slicerBody
                 .style({
                     'height': PixelConverter.toString(slicerViewport.height),
-                    'width': '100%',
+                    'width': `${ChicletSlicer.MaxImageWidth}%`,
                 });
         }
 

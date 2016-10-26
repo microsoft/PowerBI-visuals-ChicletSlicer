@@ -56,7 +56,6 @@ module powerbi.extensibility.visual {
         enter: (selection: Selection<any>) => void;
         exit: (selection: Selection<any>) => void;
         update: (selection: Selection<any>) => void;
-        loadMoreData: () => void;
         baseContainer: Selection<any>;
         rowHeight: number;
         columnWidth: number;
@@ -212,15 +211,15 @@ module powerbi.extensibility.visual {
         }
 
         private getGroupedData(): TableViewGroupedData {
-            var options = this.options,
+            var options: TableViewViewOptions = this.options,
                 groupedData: any[] = [],
-                totalRows = options.rows,
-                totalColumns = options.columns,
+                totalRows: number = options.rows,
+                totalColumns: number = options.columns,
                 totalItems: number = this._data.length,
-                totalRows = options.rows > totalItems
+                totalRows: number = options.rows > totalItems
                     ? totalItems
                     : options.rows,
-                totalColumns = options.columns > totalItems
+                totalColumns: number = options.columns > totalItems
                     ? totalItems
                     : options.columns;
 
@@ -239,7 +238,7 @@ module powerbi.extensibility.visual {
             }
 
             if (this.options.orientation === Orientation.VERTICAL) {
-                var n = totalRows;
+                let n: number = totalRows;
 
                 totalRows = totalColumns;
                 totalColumns = n;
@@ -256,7 +255,7 @@ module powerbi.extensibility.visual {
             var m: number = 0,
                 k: number = 0;
 
-            for (var i: number = 0; i < totalRows; i++) {
+            for (let i: number = 0; i < totalRows; i++) {
                 if (this.options.orientation === Orientation.VERTICAL
                     && options.rows === 0
                     && totalItems % options.columns > 0
@@ -287,7 +286,7 @@ module powerbi.extensibility.visual {
                         k = k + Math.floor(totalItems / options.rows);
                     }
                 } else {
-                    var k: number = i * totalColumns;
+                    let k: number = i * totalColumns;
 
                     this.addDataToArray(groupedData, this._data, k, k + totalColumns);
                 }
