@@ -165,10 +165,6 @@ module powerbi.extensibility.visual {
             });
         }
 
-        public clearSelection(): void {
-            this.interactivityService.clearSelection();
-        }
-
         public loadSelection(): void {
             let savedSelectionIds = this.slicerSettings.general.getSavedSelection();
             if (savedSelectionIds.length) {

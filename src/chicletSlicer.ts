@@ -148,6 +148,7 @@ module powerbi.extensibility.visual {
             selfFilterEnabled: boolean;
             getSavedSelection?: () => string[];
             setSavedSelection?: (filter: ISemanticFilter, selectionIds: string[]) => void;
+            removeSavedSelection?: () => void;
         };
         margin: IMargin;
         header: {
@@ -613,6 +614,20 @@ module powerbi.extensibility.visual {
                 });
             };
 
+            data.slicerSettings.general.removeSavedSelection = (): void => {
+                this.isSelectionSaved = true;
+                this.visualHost.persistProperties(<VisualObjectInstancesToPersist>{
+                    replace: [{
+                        objectName: "general",
+                        selector: null,
+                        properties: {
+                            filter: null,
+                            selection: ""
+                        }
+                    }]
+                });
+            };
+
             if (this.slicerData) {
                 if (this.isSelectionSaved) {
                     this.isSelectionLoaded = true;
@@ -963,7 +978,8 @@ module powerbi.extensibility.visual {
                 if (this.interactivityService && this.slicerBody) {
 
                     if (data.hasHighlights) {
-                        this.behavior.clearSelection();
+                        this.interactivityService.clearSelection();
+                        this.slicerData.slicerSettings.general.removeSavedSelection();
                     } else {
                         this.interactivityService.applySelectionStateToData(data.slicerDataPoints);
                     }
@@ -982,7 +998,7 @@ module powerbi.extensibility.visual {
                         slicerClear: slicerClear,
                         interactivityService: this.interactivityService,
                         slicerSettings: data.slicerSettings,
-                        isSelectionLoaded: this.isSelectionLoaded,
+                        isSelectionLoaded: this.isSelectionLoaded || data.hasHighlights,
                         identityFields: data.identityFields
                     };
                     this.interactivityService.bind(data.slicerDataPoints, this.behavior, behaviorOptions, {
