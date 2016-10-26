@@ -24,32 +24,45 @@
     "node_modules/lodash/lodash.min.js",
     "node_modules/globalize/lib/globalize.js",
     "node_modules/globalize/lib/cultures/globalize.cultures.js",
+
+    "node_modules/@powerbi-visuals-utils/arrayextensions/lib/index.js",
+
     "node_modules/@powerbi-visuals-utils/colorutility/lib/index.js",
     "node_modules/@powerbi-visuals-utils/converterhelper/lib/index.js",
     "node_modules/@powerbi-visuals-utils/cssconstants/lib/index.js",
-    "node_modules/@powerbi-visuals-utils/datarolehelper/lib/index.js",
+
     "node_modules/@powerbi-visuals-utils/dataviewobjects/lib/index.js",
+    "node_modules/@powerbi-visuals-utils/datarolehelper/lib/index.js",
     "node_modules/@powerbi-visuals-utils/datetimesequence/lib/index.js",
-    "node_modules/@powerbi-visuals-utils/double/lib/index.js",
     "node_modules/@powerbi-visuals-utils/displayunitsystem/lib/index.js",
     "node_modules/@powerbi-visuals-utils/displayunitsystemtype/lib/index.js",
+    "node_modules/@powerbi-visuals-utils/double/lib/index.js",
+
     "node_modules/@powerbi-visuals-utils/enumextensions/lib/index.js",
     "node_modules/@powerbi-visuals-utils/enumtype/lib/index.js",
+
     "node_modules/@powerbi-visuals-utils/formatting/lib/index.js",
     "node_modules/@powerbi-visuals-utils/formattingservice/lib/index.js",
+
     "node_modules/@powerbi-visuals-utils/imargin/lib/index.js",
+    "node_modules/@powerbi-visuals-utils/interactivityservice/lib/index.js",
+
     "node_modules/@powerbi-visuals-utils/localstorageservice/lib/index.js",
+
     "node_modules/@powerbi-visuals-utils/pixelconverter/lib/index.js",
     "node_modules/@powerbi-visuals-utils/prototype/lib/index.js",
-    "node_modules/@powerbi-visuals-utils/textmeasurementservice/lib/index.js",
+
+    "node_modules/@powerbi-visuals-utils/rect/lib/index.js",
     "node_modules/@powerbi-visuals-utils/regexpextensions/lib/index.js",
+
+    "node_modules/@powerbi-visuals-utils/shapes/lib/index.js",
     "node_modules/@powerbi-visuals-utils/stringextensions/lib/index.js",
+
+    "node_modules/@powerbi-visuals-utils/textmeasurementservice/lib/index.js",
+
     "node_modules/@powerbi-visuals-utils/valuetype/lib/index.js",
     "node_modules/@powerbi-visuals-utils/valueformatter/lib/index.js",
-    "node_modules/@powerbi-visuals-utils/wordbreaker/lib/index.js",
-    "node_modules/@powerbi-visuals-utils/arrayextensions/lib/index.js",
-    "node_modules/@powerbi-visuals-utils/shapes/lib/index.js",
-    "node_modules/@powerbi-visuals-utils/interactivityservice/lib/index.js"
+    "node_modules/@powerbi-visuals-utils/wordbreaker/lib/index.js"
   ],
   "style": "style/chicletSlicer.less",
   "capabilities": "capabilities.json",
