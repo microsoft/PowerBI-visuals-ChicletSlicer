@@ -366,7 +366,7 @@
             }
         }
     },
-    "supportsHighlight": true,
+    "supportsHighlight": false,
     "suppressDefaultTitle": true,
     "sorting": {
         "default": {}
