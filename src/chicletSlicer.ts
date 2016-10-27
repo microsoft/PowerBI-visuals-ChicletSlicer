@@ -201,7 +201,7 @@ module powerbi.extensibility.visual {
         private isSelectionLoaded: boolean;
         private isSelectionSaved: boolean;
 
-        public static DefaultFontFamily: string = "'Segoe UI', 'wf_segoe-ui_normal', helvetica, arial, sans-serif";
+        public static DefaultFontFamily: string = "helvetica, arial, sans-serif";
         public static DefaultFontSizeInPt: number = 11;
 
         private static СellTotalInnerPaddings: number = 8;
