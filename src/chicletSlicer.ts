@@ -422,14 +422,14 @@ module powerbi.extensibility.visual {
                 this.initContainer();
             }
 
-            let existingDataView: DataView = this.dataView;
+            const existingDataView = this.dataView;
             this.dataView = options.dataViews[0];
 
             let resetScrollbarPosition: boolean = true;
-            /*
+
             if (existingDataView) {
-                resetScrollbarPosition = !DataViewAnalysis.hasSameCategoryIdentity(existingDataView, this.dataView);
-            }*/
+                resetScrollbarPosition = !ChicletSlicer.hasSameCategoryIdentity(existingDataView, this.dataView);
+            }
 
             if (options.viewport.height === this.currentViewport.height
                 && options.viewport.width === this.currentViewport.width) {
@@ -440,6 +440,49 @@ module powerbi.extensibility.visual {
             }
 
             this.updateInternal(resetScrollbarPosition);
+        }
+
+        private static hasSameCategoryIdentity(dataView1: DataView, dataView2: DataView): boolean {
+            if (!dataView1 ||
+                !dataView2 ||
+                !dataView1.categorical ||
+                !dataView2.categorical) {
+                return false;
+            }
+
+            let dv1Categories: DataViewCategoricalColumn[] = dataView1.categorical.categories;
+            let dv2Categories: DataViewCategoricalColumn[] = dataView2.categorical.categories;
+
+            if (!dv1Categories ||
+                !dv2Categories ||
+                dv1Categories.length !== dv2Categories.length) {
+                return false;
+            }
+
+            for (let i: number = 0, len: number = dv1Categories.length; i < len; i++) {
+                let dv1Identity: DataViewScopeIdentity[] = (<DataViewCategoryColumn>dv1Categories[i]).identity;
+                let dv2Identity: DataViewScopeIdentity[] = (<DataViewCategoryColumn>dv2Categories[i]).identity;
+
+                let dv1Length: number = this.getLengthOptional(dv1Identity);
+                if ((dv1Length < 1) || dv1Length !== this.getLengthOptional(dv2Identity)) {
+                    return false;
+                }
+
+                for (let j: number = 0; j < dv1Length; j++) {
+                    if (!_.isEqual(dv1Identity[j].key, dv2Identity[j].key)) {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        private static getLengthOptional(identity: DataViewScopeIdentity[]): number {
+            if (identity) {
+                return identity.length;
+            }
+            return 0;
         }
 
         public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions): VisualObjectInstanceEnumeration {
@@ -607,7 +650,7 @@ module powerbi.extensibility.visual {
             data.slicerSettings.general.removeSavedSelection = (): void => {
                 this.isSelectionSaved = true;
                 this.visualHost.persistProperties(<VisualObjectInstancesToPersist>{
-                    replace: [{
+                    merge: [{
                         objectName: "general",
                         selector: null,
                         properties: {
