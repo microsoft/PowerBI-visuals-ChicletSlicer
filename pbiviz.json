@@ -23,7 +23,7 @@
     "node_modules/jquery/dist/jquery.min.js",
     "node_modules/lodash/lodash.min.js",
     "node_modules/globalize/lib/globalize.js",
-    "node_modules/globalize/lib/cultures/globalize.cultures.js",
+    "node_modules/globalize/lib/cultures/globalize.culture.es-US.js",
 
     "node_modules/@powerbi-visuals-utils/arrayextensions/lib/index.js",
 
