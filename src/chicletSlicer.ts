@@ -234,6 +234,7 @@ module powerbi.extensibility.visual {
         public static HeaderSelector: ClassAndSelector = createClassAndSelector('slicerHeader');
         public static InputSelector: ClassAndSelector = createClassAndSelector('slicerCheckbox');
         public static ClearSelector: ClassAndSelector = createClassAndSelector('clear');
+        public static SearchSelector: ClassAndSelector = createClassAndSelector('searchToggle');
         public static BodySelector: ClassAndSelector = createClassAndSelector('slicerBody');
 
         public static DefaultStyleProperties(): ChicletSlicerSettings {
@@ -743,6 +744,12 @@ module powerbi.extensibility.visual {
                 .attr('title', 'Clear');
 
             this.slicerHeader
+                .append('span')
+                .classed(ChicletSlicer.SearchSelector.class, true)
+                .attr('title', 'Search')
+                .on('click', () => this.toggleSearch());
+
+            this.slicerHeader
                 .append('div')
                 .classed(ChicletSlicer.HeaderTextSelector.class, true)
                 .style({
@@ -798,6 +805,23 @@ module powerbi.extensibility.visual {
             };
 
             this.tableView = TableViewFactory.createTableView(tableViewOptions);
+        }
+
+        private toggleSearch(): void {
+            if (!this.slicerData ||
+                !this.slicerData.slicerSettings ||
+                !this.slicerData.slicerSettings.general) {
+                    return;
+                }
+            this.visualHost.persistProperties(<VisualObjectInstancesToPersist>{
+                merge: [{
+                    objectName: "general",
+                    selector: null,
+                    properties: {
+                        selfFilterEnabled: !this.slicerData.slicerSettings.general.selfFilterEnabled
+                    }
+                }]
+            });
         }
 
         private enterSelection(rowSelection: Selection<any>): void {

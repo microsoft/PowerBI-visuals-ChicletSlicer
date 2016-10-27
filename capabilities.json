@@ -138,6 +138,11 @@
                         "bool": true
                     }
                 },
+                "selfFilterEnabled": {
+                    "type": {
+                        "bool": true
+                    }
+                },
                 "formatString": {
                     "type": {
                         "formatting": {
