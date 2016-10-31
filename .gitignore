@@ -1,0 +1,7 @@
+.*
+!.gitignore
+!.npmignore
+!.vscode
+node_modules/
+typings
+dist
