@@ -101,14 +101,18 @@ module powerbi.extensibility.visual {
                     }
                 }
 
-                let dataViewCategorical = this.dataViewCategorical;
-                let formatStringProp = chicletSlicerProps.formatString;
-                let value: number = -Infinity;
-                let imageURL: string = '';
+                let dataViewCategorical = this.dataViewCategorical,
+                    formatStringProp = chicletSlicerProps.formatString,
+                    value: number = -Infinity;
+
                 this.hasHighlights = false;
 
                 for (let categoryIndex: number = 0, categoryCount = this.categoryValues.length; categoryIndex < categoryCount; categoryIndex++) {
-                    let categoryIsSelected: boolean = this.isCategoryColumnSelected(chicletSlicerProps.selectedPropertyIdentifier, this.category, categoryIndex);
+                    let categoryIsSelected: boolean = this.isCategoryColumnSelected(
+                        chicletSlicerProps.selectedPropertyIdentifier,
+                        this.category,
+                        categoryIndex);
+
                     let selectable: boolean = true;
 
                     if (hasSelection != null) {
@@ -132,8 +136,9 @@ module powerbi.extensibility.visual {
                         this.numberOfCategoriesSelectedInData++;
                     }
 
-                    let categoryValue: any = this.categoryValues[categoryIndex];
-                    let categoryLabel: string = valueFormatter.format(categoryValue, this.categoryFormatString);
+                    let categoryValue: any = this.categoryValues[categoryIndex],
+                        categoryLabel: string = valueFormatter.format(categoryValue, this.categoryFormatString),
+                        imageURL: string = '';
 
                     if (this.dataViewCategorical.values) {
 
