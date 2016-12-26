@@ -25,10 +25,15 @@
  */
 
 module powerbi.extensibility.visual {
-    import valueFormatter = powerbi.visuals.valueFormatter;
-    import converterHelper = powerbi.visuals.converterHelper;
-    import ISQExpr = data.ISQExpr;
-    import SemanticFilter = data.ISemanticFilter;
+    // powerbi.data
+    import ISQExpr = powerbi.data.ISQExpr;
+    import SemanticFilter = powerbi.data.ISemanticFilter;
+
+    // powerbi.extensibility.utils.formatting
+    import valueFormatter = powerbi.extensibility.utils.formatting.valueFormatter;
+
+    // powerbi.extensibility.utils.dataview
+    import DataViewObjectsModule = powerbi.extensibility.utils.dataview.DataViewObjects;
 
     export class ChicletSlicerConverter {
         private dataViewCategorical: DataViewCategorical;
@@ -57,7 +62,7 @@ module powerbi.extensibility.visual {
                 this.categoryIdentities = this.category.identity;
                 this.categoryValues = this.category.values;
                 this.identityFields = <ISQExpr[]>this.category.identityFields;
-                this.categoryFormatString = valueFormatter.getFormatString(this.category.source, chicletSlicerProps.formatString);
+                this.categoryFormatString = valueFormatter.getFormatStringByColumn(this.category.source);
             }
 
             this.dataPoints = [];
@@ -68,7 +73,7 @@ module powerbi.extensibility.visual {
         private isCategoryColumnSelected(propertyId: DataViewObjectPropertyIdentifier, categories: DataViewCategoricalColumn, idx: number): boolean {
             return categories.objects != null
                 && categories.objects[idx]
-                && DataViewObjects.getValue<boolean>(categories.objects[idx], propertyId);
+                && DataViewObjectsModule.getValue<boolean>(categories.objects[idx], propertyId);
         }
 
         public convert(): void {
@@ -102,7 +107,6 @@ module powerbi.extensibility.visual {
                 }
 
                 let dataViewCategorical = this.dataViewCategorical,
-                    formatStringProp = chicletSlicerProps.formatString,
                     value: number = -Infinity;
 
                 this.hasHighlights = false;
@@ -152,7 +156,8 @@ module powerbi.extensibility.visual {
                                     this.hasHighlights = true;
                                 }
                                 if (seriesData.source.groupName && seriesData.source.groupName !== '') {
-                                    imageURL = converterHelper.getFormattedLegendLabel(seriesData.source, dataViewCategorical.values, formatStringProp);
+                                    imageURL = converterHelper.getFormattedLegendLabel(seriesData.source, dataViewCategorical.values);
+
                                     if (!/^(ftp|http|https):\/\/[^ "]+$/.test(imageURL)) {
                                         imageURL = undefined;
                                     }

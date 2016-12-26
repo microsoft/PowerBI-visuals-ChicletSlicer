@@ -25,12 +25,13 @@
  */
 
 module powerbi.extensibility.visual {
-
-    // jsCommon
-    import ClassAndSelector = jsCommon.CssConstants.ClassAndSelector;
-    import createClassAndSelector = jsCommon.CssConstants.createClassAndSelector;
+    // d3
     import Selection = d3.Selection;
     import UpdateSelection = d3.selection.Update;
+
+    // powerbi.extensibility.utils.svg
+    import ClassAndSelector = powerbi.extensibility.utils.svg.CssConstants.ClassAndSelector;
+    import createClassAndSelector = powerbi.extensibility.utils.svg.CssConstants.createClassAndSelector;
 
     export interface ITableView {
         data(data: any[], dataIdFunction: (d) => {}, dataAppended: boolean): ITableView;
