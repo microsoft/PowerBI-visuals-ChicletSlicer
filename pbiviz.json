@@ -4,12 +4,12 @@
     "displayName": "ChicletSlicer",
     "guid": "ChicletSlicer1448559807354",
     "visualClassName": "ChicletSlicer",
-    "version": "2.0.6",
+    "version": "2.0.8",
     "description": "Use this slicer to display image and/or text buttons that act as an in-canvas filter. Define additional properties for the layout & selection to customize this slicer to meet your specific needs",
     "supportUrl": "http://community.powerbi.com",
     "gitHubUrl": "https://github.com/Microsoft/PowerBI-visuals-ChicletSlicer"
   },
-  "apiVersion": "1.2.0",
+  "apiVersion": "1.3.0",
   "author": {
     "name": "Microsoft",
     "email": "pbicvsupport@microsoft.com"
@@ -18,51 +18,17 @@
     "icon": "assets/icon.png"
   },
   "externalJS": [
-    "node_modules/@powerbi-visuals-utils/external-loader/lib/index.js",
-    "node_modules/d3/d3.min.js",
     "node_modules/jquery/dist/jquery.min.js",
+    "node_modules/d3/d3.min.js",
     "node_modules/lodash/lodash.min.js",
     "node_modules/globalize/lib/globalize.js",
-    "node_modules/globalize/lib/cultures/globalize.culture.es-US.js",
-
-    "node_modules/@powerbi-visuals-utils/arrayextensions/lib/index.js",
-
-    "node_modules/@powerbi-visuals-utils/colorutility/lib/index.js",
-    "node_modules/@powerbi-visuals-utils/converterhelper/lib/index.js",
-    "node_modules/@powerbi-visuals-utils/cssconstants/lib/index.js",
-
-    "node_modules/@powerbi-visuals-utils/dataviewobjects/lib/index.js",
-    "node_modules/@powerbi-visuals-utils/datarolehelper/lib/index.js",
-    "node_modules/@powerbi-visuals-utils/datetimesequence/lib/index.js",
-    "node_modules/@powerbi-visuals-utils/displayunitsystem/lib/index.js",
-    "node_modules/@powerbi-visuals-utils/displayunitsystemtype/lib/index.js",
-    "node_modules/@powerbi-visuals-utils/double/lib/index.js",
-
-    "node_modules/@powerbi-visuals-utils/enumextensions/lib/index.js",
-    "node_modules/@powerbi-visuals-utils/enumtype/lib/index.js",
-
-    "node_modules/@powerbi-visuals-utils/formatting/lib/index.js",
-    "node_modules/@powerbi-visuals-utils/formattingservice/lib/index.js",
-
-    "node_modules/@powerbi-visuals-utils/imargin/lib/index.js",
-    "node_modules/@powerbi-visuals-utils/interactivityservice/lib/index.js",
-
-    "node_modules/@powerbi-visuals-utils/localstorageservice/lib/index.js",
-
-    "node_modules/@powerbi-visuals-utils/pixelconverter/lib/index.js",
-    "node_modules/@powerbi-visuals-utils/prototype/lib/index.js",
-
-    "node_modules/@powerbi-visuals-utils/rect/lib/index.js",
-    "node_modules/@powerbi-visuals-utils/regexpextensions/lib/index.js",
-
-    "node_modules/@powerbi-visuals-utils/shapes/lib/index.js",
-    "node_modules/@powerbi-visuals-utils/stringextensions/lib/index.js",
-
-    "node_modules/@powerbi-visuals-utils/textmeasurementservice/lib/index.js",
-
-    "node_modules/@powerbi-visuals-utils/valuetype/lib/index.js",
-    "node_modules/@powerbi-visuals-utils/valueformatter/lib/index.js",
-    "node_modules/@powerbi-visuals-utils/wordbreaker/lib/index.js"
+    "node_modules/globalize/lib/cultures/globalize.culture.en-US.js",
+    "node_modules/powerbi-visuals-utils-dataviewutils/lib/index.js",
+    "node_modules/powerbi-visuals-utils-typeutils/lib/index.js",
+    "node_modules/powerbi-visuals-utils-svgutils/lib/index.js",
+    "node_modules/powerbi-visuals-utils-formattingutils/lib/index.js",
+    "node_modules/powerbi-visuals-utils-interactivityutils/lib/index.js",
+    "node_modules/powerbi-visuals-utils-colorutils/lib/index.js"
   ],
   "style": "style/chicletSlicer.less",
   "capabilities": "capabilities.json",

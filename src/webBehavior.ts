@@ -28,17 +28,17 @@ module powerbi.extensibility.visual {
     // d3
     import Selection = d3.Selection;
     import UpdateSelection = d3.selection.Update;
-    import ISemanticFilter = data.ISemanticFilter;
 
     // powerbi.data
-    import Selector = powerbi.data.Selector;
     import ISQExpr = powerbi.data.ISQExpr;
+    import Selector = powerbi.data.Selector;
+    import ISemanticFilter = data.ISemanticFilter;
 
-    // powerbi.visuals
-    import IInteractiveBehavior = powerbi.visuals.IInteractiveBehavior;
-    import SelectableDataPoint = powerbi.visuals.SelectableDataPoint;
-    import IInteractivityService = powerbi.visuals.IInteractivityService;
-    import ISelectionHandler = powerbi.visuals.ISelectionHandler;
+    // powerbi.extensibility.utils.interactivity
+    import ISelectionHandler = powerbi.extensibility.utils.interactivity.ISelectionHandler;
+    import SelectableDataPoint = powerbi.extensibility.utils.interactivity.SelectableDataPoint;
+    import IInteractiveBehavior = powerbi.extensibility.utils.interactivity.IInteractiveBehavior;
+    import IInteractivityService = powerbi.extensibility.utils.interactivity.IInteractivityService;
 
     export interface ChicletSlicerBehaviorOptions {
         slicerItemContainers: Selection<SelectableDataPoint>;
@@ -140,7 +140,7 @@ module powerbi.extensibility.visual {
                         : 0;
 
                     if (selIndex > index) {
-                       [index, selIndex] = [selIndex, index];
+                        [index, selIndex] = [selIndex, index];
                     }
 
                     selectionHandler.handleClearSelection();
@@ -183,8 +183,8 @@ module powerbi.extensibility.visual {
                         this.saveSelection();
                         break;
                     }
-                 }
-             }
+                }
+            }
         }
 
         public loadSelection(): void {
@@ -204,11 +204,11 @@ module powerbi.extensibility.visual {
             let selectors: Selector[] = [],
                 filter: ISemanticFilter;
 
-             if (selectedIds.length > 0) {
-                 selectors = _.chain(selectedIds)
-                     .filter((value: powerbi.visuals.ISelectionId) => value.hasIdentity())
-                     .map((value: powerbi.visuals.ISelectionId) => value.getSelector())
-                     .value();
+            if (selectedIds.length > 0) {
+                selectors = _.chain(selectedIds)
+                    .filter((value: powerbi.visuals.ISelectionId) => value.hasIdentity())
+                    .map((value: powerbi.visuals.ISelectionId) => value.getSelector())
+                    .value();
             }
 
             return filter;
@@ -266,7 +266,10 @@ module powerbi.extensibility.visual {
 
             slicers.each(function (d: ChicletSlicerDataPoint) {
                 d3.select(this).style({
-                    'background': d.selectable ? (d.selected ? settings.slicerText.selectedColor : settings.slicerText.unselectedColor)
+                    'background': d.selectable
+                        ? (d.selected
+                            ? settings.slicerText.selectedColor
+                            : settings.slicerText.unselectedColor)
                         : settings.slicerText.disabledColor
                 });
 
