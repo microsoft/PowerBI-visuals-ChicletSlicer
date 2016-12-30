@@ -192,7 +192,7 @@ module powerbi.extensibility.visual {
         }
 
         private setTotalRows(): void {
-            var count: number = this._data.length,
+            let count: number = this._data.length,
                 rows: number = Math.min(this.options.rows, count),
                 columns: number = Math.min(this.options.columns, count);
 
@@ -212,10 +212,8 @@ module powerbi.extensibility.visual {
         }
 
         private getGroupedData(): TableViewGroupedData {
-            var options: TableViewViewOptions = this.options,
+            let options: TableViewViewOptions = this.options,
                 groupedData: any[] = [],
-                totalRows: number = options.rows,
-                totalColumns: number = options.columns,
                 totalItems: number = this._data.length,
                 totalRows: number = options.rows > totalItems
                     ? totalItems
@@ -253,7 +251,7 @@ module powerbi.extensibility.visual {
                 }
             }
 
-            var m: number = 0,
+            let m: number = 0,
                 k: number = 0;
 
             for (let i: number = 0; i < totalRows; i++) {
@@ -307,7 +305,7 @@ module powerbi.extensibility.visual {
                 return;
             }
 
-            var elements: any[] = data.slice(start, end);
+            let elements: any[] = data.slice(start, end);
 
             if (elements && elements.length > 0) {
                 array.push(elements);
@@ -315,15 +313,15 @@ module powerbi.extensibility.visual {
         }
 
         private getComputedOptions(data: any[], orientation: string): TableViewComputedOptions {
-            var rows: number,
+            let rows: number,
                 columns: number = 0;
 
             rows = data
                 ? data.length
                 : 0;
 
-            for (var i: number = 0; i < rows; i++) {
-                var currentRow: any[] = data[i];
+            for (let i: number = 0; i < rows; i++) {
+                let currentRow: any[] = data[i];
 
                 if (currentRow && currentRow.length > columns) {
                     columns = currentRow.length;
@@ -344,7 +342,7 @@ module powerbi.extensibility.visual {
         }
 
         public render(): void {
-            var options: TableViewViewOptions = this.options,
+            let options: TableViewViewOptions = this.options,
                 visibleGroupContainer: Selection<any> = this.visibleGroupContainer,
                 rowHeight: number = options.rowHeight || TableView.defaultRowHeight,
                 groupedData: TableViewGroupedData = this.getGroupedData(),
@@ -384,9 +382,9 @@ module powerbi.extensibility.visual {
             });
 
             if (this.options.orientation === Orientation.VERTICAL) {
-                var realColumnNumber: number = 0;
+                let realColumnNumber: number = 0;
 
-                for (var i: number = 0; i < groupedData.data.length; i++) {
+                for (let i: number = 0; i < groupedData.data.length; i++) {
                     if (groupedData.data[i].length !== 0)
                         realColumnNumber = i + 1;
                 }

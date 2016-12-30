@@ -180,15 +180,23 @@ module powerbi.extensibility.visual {
         private slicerBody: Selection<any>;
         private tableView: ITableView;
         private slicerData: ChicletSlicerData;
-        private settings: ChicletSlicerSettings;
 
         private interactivityService: IInteractivityService;
-        private behavior: ChicletSlicerWebBehavior;
         private visualHost: IVisualHost;
 
         private waitingForData: boolean;
         private isSelectionLoaded: boolean;
         private isSelectionSaved: boolean;
+
+        /**
+         * It's public for testability.
+         */
+        public behavior: ChicletSlicerWebBehavior;
+
+        /**
+         * It's public for testability.
+         */
+        public settings: ChicletSlicerSettings;
 
         public static DefaultFontFamily: string = "helvetica, arial, sans-serif";
         public static DefaultFontSizeInPt: number = 11;
