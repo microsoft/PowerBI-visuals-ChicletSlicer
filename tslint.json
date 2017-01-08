@@ -21,8 +21,8 @@
             "check-whitespace"
         ],
         "quotemark": [
-            true,
-            "single"
+            false,
+            "double"
         ],
         "semicolon": [
             true,

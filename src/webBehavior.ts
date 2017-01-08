@@ -120,7 +120,7 @@ module powerbi.extensibility.visual {
                     });
 
                 if (settings.general.forcedSelection && selectedIndexes.length === 1) {
-                    var availableDataPoints: ChicletSlicerDataPoint[] = jQuery.map(
+                    let availableDataPoints: ChicletSlicerDataPoint[] = jQuery.map(
                         this.dataPoints,
                         (dataPoint: ChicletSlicerDataPoint, index: number) => {
                             if (!dataPoint.filtered) {
