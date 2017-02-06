@@ -31,7 +31,6 @@ module powerbi.extensibility.visual.test {
     import VisualBuilderBase = powerbi.extensibility.utils.test.VisualBuilderBase;
 
     // ChicletSlicer1448559807354
-    import VisualPlugin = powerbi.visuals.plugins.ChicletSlicer1448559807354;
     import VisualClass = powerbi.extensibility.visual.ChicletSlicer1448559807354.ChicletSlicer;
     import ChicletSlicerDataPoint = powerbi.extensibility.visual.ChicletSlicer1448559807354.ChicletSlicerDataPoint;
 
@@ -42,7 +41,7 @@ module powerbi.extensibility.visual.test {
 
     export class ChicletSlicerBuilder extends VisualBuilderBase<VisualClass> {
         constructor(width: number, height: number) {
-            super(width, height, VisualPlugin.name);
+            super(width, height, "ChicletSlicer1448559807354");
         }
 
         protected build(options: VisualConstructorOptions): VisualClass {
