@@ -44,9 +44,11 @@ module powerbi.extensibility.visual.test {
 
     // powerbi.extensibility.utils.test
     import RgbColor = powerbi.extensibility.utils.test.helpers.color.RgbColor;
+    import MockIVisualHost = powerbi.extensibility.utils.test.mocks.MockIVisualHost;
     import renderTimeout = powerbi.extensibility.utils.test.helpers.renderTimeout;
     import ClickEventType = powerbi.extensibility.utils.test.helpers.ClickEventType;
     import assertColorsMatch = powerbi.extensibility.utils.test.helpers.color.assertColorsMatch;
+    import MockISelectionManager = powerbi.extensibility.utils.test.mocks.MockISelectionManager;
 
     // ChicletSlicer1448559807354
     import TableView = powerbi.extensibility.visual.ChicletSlicer1448559807354.TableView;
@@ -58,6 +60,10 @@ module powerbi.extensibility.visual.test {
         let visualBuilder: ChicletSlicerBuilder,
             defaultDataViewBuilder: ChicletSlicerData,
             dataView: DataView;
+
+        beforeAll(() => {
+            (MockISelectionManager as any).prototype.applySelectionFilter = () => { };
+        });
 
         beforeEach(() => {
             visualBuilder = new ChicletSlicerBuilder(1000, 500);
@@ -389,27 +395,9 @@ module powerbi.extensibility.visual.test {
             });
 
             describe("Selection", () => {
-                let selectionId: any[] = [{
+                const selectionId: any[] = [{
                     "selector": { "data": [] }
                 }];
-
-                // The current version of the visual doesn't support this ability.
-                xit("chiclet selection is loaded", (done) => {
-                    visualBuilder.updateRenderTimeout(dataView, () => {
-                        const selectedItems: JQuery = visualBuilder
-                            .slicerItemContainers
-                            .first()
-                            .click();
-
-                        visualBuilder.updateRenderTimeout(dataView, () => {
-                            const savedSelectedItems: ChicletSlicerDataPoint[] = visualBuilder.getSelectedPoints();
-
-                            expect(savedSelectedItems.length).toBe(selectedItems.length);
-
-                            done();
-                        });
-                    });
-                });
 
                 it("saved chiclet selection is received", (done) => {
                     dataView.metadata.objects = {
