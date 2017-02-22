@@ -44,6 +44,6 @@
     "powerbi-visuals-utils-testutils": "0.2.2",
     "powerbi-visuals-utils-typeutils": "0.2.1",
     "tslint": "^4.4.2",
-    "tslint-microsoft-contrib": "^4.0.0",
+    "tslint-microsoft-contrib": "^4.0.0"
   }
 }
