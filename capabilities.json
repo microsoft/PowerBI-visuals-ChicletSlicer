@@ -138,9 +138,23 @@
                         "bool": true
                     }
                 },
+                "filter": {
+                    "type": {
+                        "filter": true
+                    }
+                },
+                "selfFilter": {
+                    "type": {
+                        "filter": {
+                            "selfFilter": true
+                        }
+                    }
+                },
                 "selfFilterEnabled": {
                     "type": {
-                        "bool": true
+                        "operations": {
+                            "searchEnabled": true
+                        }
                     }
                 },
                 "formatString": {
@@ -366,7 +380,7 @@
             }
         }
     },
-    "supportsHighlight": false,
+    "supportsHighlight": true,
     "suppressDefaultTitle": true,
     "sorting": {
         "default": {}
