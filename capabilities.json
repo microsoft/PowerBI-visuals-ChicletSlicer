@@ -68,6 +68,7 @@
     "objects": {
         "general": {
             "displayName": "General",
+            "displayNameKey": "formattingGeneral",
             "properties": {
                 "selection": {
                     "displayName": "Selection",
@@ -77,58 +78,62 @@
                 },
                 "orientation": {
                     "displayName": "Orientation",
+                    "displayNameKey": "formattingGeneralOrientation",
                     "type": {
-                        "enumeration": [
-                            {
-                                "value": "Horizontal",
-                                "displayName": "Horizontal"
-                            },
-                            {
-                                "value": "Vertical",
-                                "displayName": "Vertical"
-                            }
-                        ]
+                        "enumeration": [{
+                            "value": "Horizontal",
+                            "displayNameKey": "formattingGeneralOrientationHorizontal",
+                            "displayName": "Horizontal"
+                        }, {
+                            "value": "Vertical",
+                            "displayNameKey": "formattingGeneralOrientationVertical",
+                            "displayName": "Vertical"
+                        }]
                     }
                 },
                 "columns": {
                     "displayName": "Columns",
+                    "displayNameKey": "formattingGeneralColumns",
                     "type": {
                         "numeric": true
                     }
                 },
                 "rows": {
                     "displayName": "Rows",
+                    "displayNameKey": "formattingGeneralRows",
                     "type": {
                         "numeric": true
                     }
                 },
                 "showDisabled": {
                     "displayName": "Show Disabled",
+                    "displayNameKey": "formattingGeneralShowDisabled",
                     "type": {
-                        "enumeration": [
-                            {
-                                "value": "Inplace",
-                                "displayName": "Inplace"
-                            },
-                            {
-                                "value": "Bottom",
-                                "displayName": "Bottom"
-                            },
-                            {
-                                "value": "Hide",
-                                "displayName": "Hide"
-                            }
-                        ]
+                        "enumeration": [{
+                            "value": "Inplace",
+                            "displayName": "Inplace",
+                            "displayNameKey": "formattingGeneralShowDisabledInplace"
+                        }, {
+                            "value": "Bottom",
+                            "displayName": "Bottom",
+                            "displayNameKey": "formattingGeneralShowDisabledBottom"
+                        }, {
+                            "value": "Hide",
+                            "displayName": "Hide",
+                            "displayNameKey": "formattingGeneralShowDisabledHide"
+                        }]
                     }
                 },
                 "multiselect": {
                     "displayName": "Multiple selection",
+                    "displayNameKey": "formattingGeneralMultipleSelection",
                     "type": {
                         "bool": true
                     }
                 },
                 "forcedSelection": {
                     "displayName": "Forced selection",
+                    "displayNameKey": "formattingGeneralForcedSelection",
                     "type": {
                         "bool": true
                     }
@@ -168,6 +173,7 @@
         },
         "header": {
             "displayName": "Header",
+            "displayNameKey": "formattingHeader",
             "properties": {
                 "show": {
                     "displayName": "Show",
@@ -177,12 +183,14 @@
                 },
                 "title": {
                     "displayName": "Title",
+                    "displayNameKey": "formattingHeaderTitle",
                     "type": {
                         "text": true
                     }
                 },
                 "fontColor": {
                     "displayName": "Font color",
+                    "displayNameKey": "formattingHeaderFontColor",
                     "type": {
                         "fill": {
                             "solid": {
@@ -193,6 +201,7 @@
                 },
                 "background": {
                     "displayName": "Background",
+                    "displayNameKey": "formattingHeaderBackground",
                     "type": {
                         "fill": {
                             "solid": {
@@ -203,12 +212,14 @@
                 },
                 "textSize": {
                     "displayName": "Text Size",
+                    "displayNameKey": "formattingHeaderTextSize",
                     "type": {
                         "numeric": true
                     }
                 },
                 "outlineColor": {
                     "displayName": "Outline Color",
+                    "displayNameKey": "formattingHeaderOutlineColor",
                     "type": {
                         "fill": {
                             "solid": {
@@ -219,6 +230,7 @@
                 },
                 "outlineWeight": {
                     "displayName": "Outline Weight",
+                    "displayNameKey": "formattingHeaderOutlineWeight",
                     "type": {
                         "numeric": true
                     }
@@ -227,9 +239,11 @@
         },
         "rows": {
             "displayName": "Chiclets",
+            "displayNameKey": "formattingChiclets",
             "properties": {
                 "fontColor": {
                     "displayName": "Text color",
+                    "displayNameKey": "formattingChicletsTextColor",
                     "type": {
                         "fill": {
                             "solid": {
@@ -240,24 +254,28 @@
                 },
                 "textSize": {
                     "displayName": "Text Size",
+                    "displayNameKey": "formattingChicletsTextSize",
                     "type": {
                         "numeric": true
                     }
                 },
                 "height": {
                     "displayName": "Height",
+                    "displayNameKey": "formattingChicletsHeight",
                     "type": {
                         "numeric": true
                     }
                 },
                 "width": {
                     "displayName": "Width",
+                    "displayNameKey": "formattingChicletsWidth",
                     "type": {
                         "numeric": true
                     }
                 },
                 "selectedColor": {
                     "displayName": "Selected Color",
+                    "displayNameKey": "formattingChicletsSelectedColor",
                     "type": {
                         "fill": {
                             "solid": {
@@ -268,6 +286,7 @@
                 },
                 "hoverColor": {
                     "displayName": "Hover Color",
+                    "displayNameKey": "formattingChicletsHoverColor",
                     "type": {
                         "fill": {
                             "solid": {
@@ -278,6 +297,7 @@
                 },
                 "unselectedColor": {
                     "displayName": "Unselected Color",
+                    "displayNameKey": "formattingChicletsUnselectedColor",
                     "type": {
                         "fill": {
                             "solid": {
@@ -288,6 +308,7 @@
                 },
                 "disabledColor": {
                     "displayName": "Disabled Color",
+                    "displayNameKey": "formattingChicletsDisabledColor",
                     "type": {
                         "fill": {
                             "solid": {
@@ -298,6 +319,7 @@
                 },
                 "background": {
                     "displayName": "Background",
+                    "displayNameKey": "formattingChicletsBackground",
                     "type": {
                         "fill": {
                             "solid": {
@@ -308,6 +330,7 @@
                 },
                 "transparency": {
                     "displayName": "Transparency",
+                    "displayNameKey": "formattingChicletsTransparancy",
                     "description": "Set transparency for background color",
                     "type": {
                         "numeric": true
@@ -315,6 +338,7 @@
                 },
                 "outlineColor": {
                     "displayName": "Outline Color",
+                    "displayNameKey": "formattingChicletsOutlineColor",
                     "type": {
                         "fill": {
                             "solid": {
@@ -325,54 +349,60 @@
                 },
                 "outlineWeight": {
                     "displayName": "Outline Weight",
+                    "displayNameKey": "formattingChicletsOutlineWeight",
                     "type": {
                         "numeric": true
                     }
                 },
                 "padding": {
                     "displayName": "Padding",
+                    "displayNameKey": "formattingChicletsPadding",
                     "type": {
                         "numeric": true
                     }
                 },
                 "borderStyle": {
                     "displayName": "Outline Style",
+                    "displayNameKey": "formattingChicletsOutlineStyle",
                     "type": {
-                        "enumeration": [
-                            {
-                                "value": "Rounded",
-                                "displayName": "Rounded"
-                            },
-                            {
-                                "value": "Cut",
-                                "displayName": "Cut"
-                            },
-                            {
-                                "value": "Square",
-                                "displayName": "Square"
-                            }
-                        ]
+                        "enumeration": [{
+                            "value": "Rounded",
+                            "displayNameKey": "formattingChicletsOutlineStyleRounded",
+                            "displayName": "Rounded"
+                        }, {
+                            "value": "Cut",
+                            "displayNameKey": "formattingChicletsOutlineStyleCut",
+                            "displayName": "Cut"
+                        }, {
+                            "value": "Square",
+                            "displayNameKey": "formattingChicletsOutlineStyleSquare",
+                            "displayName": "Square"
+                        }]
                     }
                 }
             }
         },
         "images": {
             "displayName": "Images",
+            "displayNameKey": "formattingImages",
             "properties": {
                 "imageSplit": {
                     "displayName": "Image Split",
+                    "displayNameKey": "formattingImagesSplit",
                     "type": {
                         "numeric": true
                     }
                 },
                 "stretchImage": {
                     "displayName": "Stretch image",
+                    "displayNameKey": "formattingImagesStrech",
                     "type": {
                         "bool": true
                     }
                 },
                 "bottomImage": {
                     "displayName": "Bottom image",
+                    "displayNameKey": "formattingImagesBottom",
                     "type": {
                         "bool": true
                     }
