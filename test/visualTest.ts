@@ -407,7 +407,7 @@ module powerbi.extensibility.visual.test {
                     };
 
                     visualBuilder.updateRenderTimeout(dataView, () => {
-                        const selection: string[] = visualBuilder.getSavedSelection();
+                        const selection: ISelectionId[] = visualBuilder.getSavedSelection();
 
                         expect(selection).toBeDefined();
                         expect(selection).toEqual(selectionId);
