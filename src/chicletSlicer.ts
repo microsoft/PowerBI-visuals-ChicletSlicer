@@ -1007,13 +1007,7 @@ module powerbi.extensibility.visual {
                 }
 
                 if (this.interactivityService && this.slicerBody) {
-
-                    if (data.hasHighlights) {
-                        this.interactivityService.clearSelection();
-                        this.slicerData.slicerSettings.general.removeSavedSelection();
-                    } else {
-                        this.interactivityService.applySelectionStateToData(data.slicerDataPoints);
-                    }
+                    this.interactivityService.applySelectionStateToData(data.slicerDataPoints);
 
                     let slicerBody: Selection<any> = this.slicerBody.attr('width', this.currentViewport.width),
                         slicerItemContainers: Selection<any> = slicerBody.selectAll(ChicletSlicer.ItemContainerSelector.selector),
@@ -1032,8 +1026,8 @@ module powerbi.extensibility.visual {
                         isSelectionLoaded: this.isSelectionLoaded || data.hasHighlights,
                         identityFields: data.identityFields
                     };
+
                     this.interactivityService.bind(data.slicerDataPoints, this.behavior, behaviorOptions, {
-                        overrideSelectionFromData: true,
                         hasSelectionOverride: data.hasSelectionOverride,
                     });
 

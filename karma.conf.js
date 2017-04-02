@@ -54,7 +54,7 @@ module.exports = (config) => {
         reporters: [
             'progress',
             'coverage',
-            // 'karma-remap-istanbul' // TODO: We have to turn it on later because I have no idea why it doesn't work right now
+            'karma-remap-istanbul'
         ],
         singleRun: true,
         files: [
