@@ -1,6 +1,6 @@
 {
   "name": "powerbi-visuals-chicletslicer",
-  "version": "1.3.1",
+  "version": "1.4.0",
   "author": {
     "name": "Microsoft",
     "email": "pbicvsupport@microsoft.com"
@@ -11,7 +11,7 @@
     "url": "git+https://github.com/Microsoft/PowerBI-visuals-ChicletSlicer.git"
   },
   "scripts": {
-    "postinstall": "pbiviz update 1.5.0",
+    "postinstall": "pbiviz update 1.6.0",
     "pbiviz": "pbiviz",
     "start": "pbiviz start",
     "package": "pbiviz package",
@@ -35,7 +35,7 @@
     "karma-sourcemap-loader": "0.3.7",
     "karma-typescript-preprocessor": "0.3.1",
     "lodash": "4.16.2",
-    "powerbi-visuals-tools": "1.5.0",
+    "powerbi-visuals-tools": "^1.6.1",
     "powerbi-visuals-utils-colorutils": "0.2.1",
     "powerbi-visuals-utils-dataviewutils": "1.0.1",
     "powerbi-visuals-utils-formattingutils": "0.4.0",
@@ -45,6 +45,7 @@
     "powerbi-visuals-utils-typeutils": "0.2.1",
     "typescript": "2.1.4",
     "tslint": "^4.4.2",
-    "tslint-microsoft-contrib": "^4.0.0"
+    "tslint-microsoft-contrib": "^4.0.0",
+    "typescript": "2.1.4"
   }
 }
