@@ -743,6 +743,13 @@ module powerbi.extensibility.visual.test {
                     expect(visualBuilder.slicerHeaderText.text()).toBe(title);
                 });
 
+                it("title default", () => {
+                    (dataView.metadata.objects as any).header.title = "";
+                    visualBuilder.updateFlushAllD3Transitions(dataView);
+
+                    expect(visualBuilder.slicerHeaderText.text()).toBe(ChicletSlicerData.ColumnCategory);
+                });
+
                 it("font color", () => {
                     const color: string = "#123456";
 

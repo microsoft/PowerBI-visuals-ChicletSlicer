@@ -670,6 +670,7 @@ module powerbi.extensibility.visual {
 
             this.slicerData = data;
             this.settings = this.slicerData.slicerSettings;
+            this.settings.header.title = this.settings.header.title.trim() || this.slicerData.categorySourceName;
 
             this.updateSlicerBodyDimensions();
 
@@ -893,9 +894,7 @@ module powerbi.extensibility.visual {
 
                 this.slicerHeader
                     .select(ChicletSlicer.HeaderTextSelector.selector)
-                    .text(settings.header.title.trim() !== ""
-                        ? settings.header.title.trim()
-                        : this.slicerData.categorySourceName)
+                    .text(settings.header.title.trim())
                     .style({
                         'border-style': this.getBorderStyle(settings.header.outline),
                         'border-color': settings.header.outlineColor,
