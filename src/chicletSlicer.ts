@@ -674,15 +674,7 @@ module powerbi.extensibility.visual {
             this.updateSlicerBodyDimensions();
 
             if (this.settings.general.showDisabled === ChicletSlicerShowDisabled.BOTTOM) {
-                data.slicerDataPoints.sort(function (a, b) {
-                    if (a.selectable === b.selectable) {
-                        return 0;
-                    } else if (a.selectable && !b.selectable) {
-                        return -1;
-                    } else {
-                        return 1;
-                    }
-                });
+                data.slicerDataPoints = _.sortBy(data.slicerDataPoints, [x => !x.selectable]);
             } else if (this.settings.general.showDisabled === ChicletSlicerShowDisabled.HIDE) {
                 data.slicerDataPoints = data.slicerDataPoints.filter(x => x.selectable);
             }
