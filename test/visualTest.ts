@@ -210,30 +210,7 @@ module powerbi.extensibility.visual.test {
                     }
                 };
 
-                visualBuilder.update(dataView);
-
-                const chicletTotalRows: number = visualBuilder
-                    .visibleGroup
-                    .children("div.row")
-                    .first()
-                    .children(".cell")
-                    .length;
-
-                (dataView.metadata.objects as any).general.orientation = "Vertical";
-                (dataView.metadata.objects as any).general.rows = 0;
-
-                visualBuilder.updateRenderTimeout(dataView, () => {
-                    const chicletTotalRows0: number = visualBuilder
-                        .visibleGroup
-                        .children("div.row")
-                        .first()
-                        .children(".cell")
-                        .length;
-
-                    expect(chicletTotalRows).toEqual(chicletTotalRows0);
-
-                    done();
-                });
+                checkRowsNumber(dataView, "Vertical", 0, done);
             });
 
             it("negative chiclet rows number should behave like 0 rows (auto) when orientation is horizontal", (done) => {
@@ -244,6 +221,32 @@ module powerbi.extensibility.visual.test {
                     }
                 };
 
+                checkRowsNumber(dataView, "Horizontal", 0, done);
+            });
+
+            it("chiclet rows number > 1000 should behave like 1000 rows (auto) when orientation is vertical", (done) => {
+                dataView.metadata.objects = {
+                    general: {
+                        orientation: "Vertical",
+                        rows: 10000
+                    }
+                };
+
+                checkRowsNumber(dataView, "Vertical", 1000, done);
+            });
+
+            it("chiclet rows number > 1000 should behave like 1000 rows (auto) when orientation is horizontal", (done) => {
+                dataView.metadata.objects = {
+                    general: {
+                        orientation: "Horizontal",
+                        rows: 10000
+                    }
+                };
+
+                checkRowsNumber(dataView, "Horizontal", 1000, done);
+            });
+
+            function checkRowsNumber(dataView, orientation, expectedNumber, done) {
                 visualBuilder.update(dataView);
 
                 const chicletTotalRows: number = visualBuilder
@@ -251,8 +254,8 @@ module powerbi.extensibility.visual.test {
                     .children("div.row")
                     .length;
 
-                (dataView.metadata.objects as any).general.orientation = "Horizontal";
-                (dataView.metadata.objects as any).general.rows = 0;
+                (dataView.metadata.objects as any).general.orientation = orientation;
+                (dataView.metadata.objects as any).general.rows = expectedNumber;
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     const chicletTotalRows0: number = visualBuilder
@@ -264,46 +267,53 @@ module powerbi.extensibility.visual.test {
 
                     done();
                 });
-            });
+            }
 
             it("negative chiclet columns number should behave like 0 columns (auto) when orientation is vertical", (done) => {
                 dataView.metadata.objects = {
                     general: {
                         orientation: "Vertical",
-                        сolumns: -1
+                        columns: -1
                     }
                 };
 
-                visualBuilder.update(dataView);
-
-                const chicletTotalColumns: number = visualBuilder
-                    .visibleGroup
-                    .children("div.row")
-                    .length;
-
-                (dataView.metadata.objects as any).general.orientation = "Vertical";
-                (dataView.metadata.objects as any).general.сolumns = 0;
-
-                visualBuilder.updateRenderTimeout(dataView, () => {
-                    const chicletTotalColumns0: number = visualBuilder
-                        .visibleGroup
-                        .children("div.row")
-                        .length;
-
-                    expect(chicletTotalColumns).toEqual(chicletTotalColumns0);
-
-                    done();
-                });
+                checkColumnsNumber(dataView, "Vertical", 0, done);
             });
 
             it("negative chiclet columns number should behave like 0 columns (auto) when orientation is horizontal", (done) => {
                 dataView.metadata.objects = {
                     general: {
-                        orientation: "Vertical",
-                        сolumns: -1
+                        orientation: "Horizontal",
+                        columns: -1
                     }
                 };
 
+                checkColumnsNumber(dataView, "Horizontal", 0, done);
+            });
+
+            it("chiclet columns number > 1000 should behave like 1000 columns (auto) when orientation is vertical", (done) => {
+                dataView.metadata.objects = {
+                    general: {
+                        orientation: "Vertical",
+                        columns: 10000
+                    }
+                };
+
+                checkColumnsNumber(dataView, "Vertical", 1000, done);
+            });
+
+            it("chiclet columns number > 1000 should behave like 1000 columns (auto) when orientation is horizontal", (done) => {
+                dataView.metadata.objects = {
+                    general: {
+                        orientation: "Horizontal",
+                        columns: 10000
+                    }
+                };
+
+                checkColumnsNumber(dataView, "Horizontal", 1000, done);
+            });
+
+            function checkColumnsNumber(dataView, orientation, expectedNumber, done) {
                 visualBuilder.update(dataView);
 
                 const chicletTotalColumns: number = visualBuilder
@@ -313,8 +323,8 @@ module powerbi.extensibility.visual.test {
                     .children(".cell")
                     .length;
 
-                (dataView.metadata.objects as any).general.orientation = "Vertical";
-                (dataView.metadata.objects as any).general.сolumns = 0;
+                (dataView.metadata.objects as any).general.orientation = orientation;
+                (dataView.metadata.objects as any).general.сolumns = expectedNumber;
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     const chicletTotalColumns0: number = visualBuilder
@@ -328,7 +338,7 @@ module powerbi.extensibility.visual.test {
 
                     done();
                 });
-            });
+            }
 
             it("negative chiclet width should behave like 0 width (auto)", (done) => {
                 dataView.metadata.objects = {

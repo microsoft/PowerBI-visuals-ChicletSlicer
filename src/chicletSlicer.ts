@@ -215,8 +215,13 @@ module powerbi.extensibility.visual {
 
         private static MaxCellPadding: number = 20;
 
+
+
         private static MinSizeOfViewport: number = 0;
         private static MinColumns: number = 1;
+
+        private static MaxColumns: number = 1000;
+        private static MaxRows: number = 1000;
 
         private static WidthOfScrollbar: number = 17;
 
@@ -618,8 +623,16 @@ module powerbi.extensibility.visual {
                 ? 0
                 : data.slicerSettings.general.columns;
 
+            data.slicerSettings.general.columns = data.slicerSettings.general.columns > ChicletSlicer.MaxColumns
+                ? ChicletSlicer.MaxColumns
+                : data.slicerSettings.general.columns;
+
             data.slicerSettings.general.rows = data.slicerSettings.general.rows < 0
                 ? 0
+                : data.slicerSettings.general.rows;
+
+            data.slicerSettings.general.rows = data.slicerSettings.general.rows > ChicletSlicer.MaxRows
+                ? ChicletSlicer.MaxRows
                 : data.slicerSettings.general.rows;
 
             data.slicerSettings.general.getSavedSelection = () => {
