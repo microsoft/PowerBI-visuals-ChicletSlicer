@@ -1004,15 +1004,44 @@ module powerbi.extensibility.visual.test {
 
                     visualBuilder.updateFlushAllD3Transitions(dataView);
 
-                    visualBuilder.visibleGroupCells
-                        .children("ul")
-                        .children("li")
-                        .children("div.slicer-text-wrapper")
-                        .children("span.slicerText")
+                    visualBuilder.slicerTextElements
                         .toArray()
                         .forEach((element: Element) => {
                             assertColorsMatch($(element).css("color"), color);
                         });
+                });
+
+                it("text color after hover", (done) => {
+                    const firstColor: string = "#123234";
+                    const secondColor: string = "#234512";
+
+                    dataView.metadata.objects = {
+                        rows: {
+                            fontColor: getSolidColorStructuralObject(firstColor)
+                        }
+                    };
+
+                    visualBuilder.updateFlushAllD3Transitions(dataView);
+
+                    let firstItem: JQuery = visualBuilder.slicerItemContainers.first();
+                    firstItem[0].dispatchEvent(new Event("mouseover"));
+
+                    visualBuilder.updateFlushAllD3Transitions(dataView);
+
+                    firstItem[0].dispatchEvent(new Event("mouseout"));
+
+                    dataView.metadata.objects = {
+                        rows: {
+                            fontColor: getSolidColorStructuralObject(secondColor)
+                        }
+                    };
+
+                    visualBuilder.updateFlushAllD3Transitions(dataView);
+
+                    let firstTextItem: JQuery = visualBuilder.slicerTextElements.first();
+                    assertColorsMatch($(firstTextItem).css("color"), secondColor);
+
+                    done();
                 });
 
                 it("outline style", () => {
