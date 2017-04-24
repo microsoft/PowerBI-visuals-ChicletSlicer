@@ -835,6 +835,15 @@ module powerbi.extensibility.visual.test {
                         });
                 });
 
+                it("default height in settings", (done) => {
+
+                    visualBuilder.updateRenderTimeout(dataView, () => {
+                        expect(visualBuilder.visual.settings.slicerText.height).not.toEqual(0);
+                        done();
+                    });
+
+                });
+
                 it("width", () => {
                     const width: number = 50;
 
@@ -851,6 +860,15 @@ module powerbi.extensibility.visual.test {
                         .forEach((element: Element) => {
                             expect($(element).css("width")).toBe(`${width}px`);
                         });
+                });
+
+                it("default width in settings", (done) => {
+
+                    visualBuilder.updateRenderTimeout(dataView, () => {
+                        expect(visualBuilder.visual.settings.slicerText.width).not.toEqual(0);
+                        done();
+                    });
+
                 });
 
                 it("background", () => {
