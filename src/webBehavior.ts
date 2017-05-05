@@ -109,6 +109,7 @@ module powerbi.extensibility.visual {
                 (d3.event as MouseEvent).preventDefault();
 
                 let settings: ChicletSlicerSettings = this.slicerSettings;
+                let multiselect: boolean = settings.general.multiselect;
 
                 let selectedIndexes: number[] = jQuery.map(
                     this.dataPoints,
@@ -133,7 +134,7 @@ module powerbi.extensibility.visual {
                     }
                 }
 
-                if ((d3.event as MouseEvent).altKey && settings.general.multiselect) {
+                if ((d3.event as MouseEvent).altKey && multiselect) {
                     let selIndex: number = selectedIndexes.length > 0
                         ? (selectedIndexes[selectedIndexes.length - 1])
                         : 0;
@@ -147,7 +148,7 @@ module powerbi.extensibility.visual {
                     for (let i: number = selIndex; i <= index; i++) {
                         selectionHandler.handleSelection(this.dataPoints[i], true /* isMultiSelect */);
                     }
-                } else if (((d3.event as MouseEvent).ctrlKey || (d3.event as MouseEvent).metaKey) && settings.general.multiselect) {
+                } else if ((((d3.event as MouseEvent).ctrlKey || (d3.event as MouseEvent).metaKey) && !multiselect) || multiselect) {
                     selectionHandler.handleSelection(dataPoint, true /* isMultiSelect */);
                 } else {
                     selectionHandler.handleSelection(dataPoint, false /* isMultiSelect */);
