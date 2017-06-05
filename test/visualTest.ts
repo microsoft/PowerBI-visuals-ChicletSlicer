@@ -651,6 +651,38 @@ module powerbi.extensibility.visual.test {
                     done();
                 });
 
+                it("height of slicerBody must consider height of header and height of search", (done) => {
+                    dataView.metadata.objects = {
+                        general: {
+                            columns: 1,
+                            rows: 0,
+                            orientation: "Vertical",
+                            selfFilterEnabled: true
+                        },
+                        header: {
+                            show: true,
+                            outlineWeight: 1,
+                            borderBottomWidth: 1
+                        }
+                    };
+
+                    visualBuilder.update(dataView);
+
+                    const searchHeader: HTMLElement = visualBuilder.searchHeader;
+                    const slicerHeaderText: HTMLElement = visualBuilder.slicerHeaderText;
+
+                    const actualValue = visualBuilder.viewport.height -
+                        (searchHeader.height() +
+                        slicerHeaderText.height() +
+                        dataView.metadata.objects.header.outlineWeight +
+                        dataView.metadata.objects.header.borderBottomWidth);
+
+                    const expectedValue = visualBuilder.slicerBody.height();
+
+                    expect(actualValue).toEqual(expectedValue);
+                    done();
+                });
+
                 describe("Multi selection", () => {
                     beforeEach(() => {
                         dataView.metadata.objects = {

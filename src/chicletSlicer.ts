@@ -671,6 +671,7 @@ module powerbi.extensibility.visual {
             this.slicerData = data;
             this.settings = this.slicerData.slicerSettings;
 
+            this.updateSearchHeader();
             this.updateSlicerBodyDimensions();
 
             if (this.settings.general.showDisabled === ChicletSlicerShowDisabled.BOTTOM) {
@@ -718,8 +719,6 @@ module powerbi.extensibility.visual {
                 resetScrollbarPosition)
                 .viewport(this.getSlicerBodyViewport(this.currentViewport))
                 .render();
-
-            this.updateSearchHeader();
         }
 
         private initContainer() {
@@ -1073,11 +1072,18 @@ module powerbi.extensibility.visual {
             this.$searchHeader.toggleClass("collapsed", !this.slicerData.slicerSettings.general.selfFilterEnabled);
         }
 
+        private getSearchHeaderHeight(): number {
+            return this.$searchHeader && this.$searchHeader.hasClass('show')
+                ? this.$searchHeader.height()
+                : 0;
+        }
+
         private getSlicerBodyViewport(currentViewport: IViewport): IViewport {
             let settings: ChicletSlicerSettings = this.settings,
                 headerHeight: number = (settings.header.show) ? this.getHeaderHeight() : 0,
+                searchHeight: number = (settings.general.selfFilterEnabled) ? this.getSearchHeaderHeight() : 0,
                 borderHeight: number = settings.header.outlineWeight,
-                height: number = currentViewport.height - (headerHeight + borderHeight + settings.header.borderBottomWidth),
+                height: number = currentViewport.height - (headerHeight + searchHeight + borderHeight + settings.header.borderBottomWidth),
                 width: number = currentViewport.width - ChicletSlicer.WidthOfScrollbar;
 
             return {
