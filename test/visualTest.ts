@@ -1246,6 +1246,39 @@ module powerbi.extensibility.visual.test {
                         expect(dataPoint.imageURL).not.toBe(firstUrl);
                     });
             });
+
+            describe("imageURL after convert", () => {
+                describe("imageURL mustn't have 'undefined' value", () => {
+                    let dataViewBuilder: ChicletSlicerData;
+                    beforeEach(() => {
+                        dataViewBuilder = new ChicletSlicerData();
+                        dataViewBuilder.valuesImage = dataViewBuilder.valuesImage.slice(0, 1);
+                    });
+                    it("image value is link", () => {
+                        const linkToImage: string = dataViewBuilder.valuesImage[0];
+
+                        checkImageValue(linkToImage);
+                    });
+
+                    it("image value is base64 image", () => {
+                        const dataImage: string = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+                        dataViewBuilder.valuesImage[0] = dataImage;
+
+                        checkImageValue(dataImage);
+                    });
+
+                    function checkImageValue(value) {
+
+                        let chicletSlicerConverter: ChicletSlicerConverter = new ChicletSlicerConverter(
+                            dataViewBuilder.getDataView(),
+                            visualBuilder.visualHost);
+
+                        chicletSlicerConverter.convert();
+
+                        expect(chicletSlicerConverter.dataPoints[0].imageURL).toBe(value);
+                    }
+                });
+            });
         });
     });
 }
