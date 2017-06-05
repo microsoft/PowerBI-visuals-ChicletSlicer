@@ -560,8 +560,7 @@ module powerbi.extensibility.visual {
                     rows: slicerSettings.general.rows,
                     showDisabled: slicerSettings.general.showDisabled,
                     multiselect: slicerSettings.general.multiselect,
-                    forcedSelection: slicerSettings.general.forcedSelection,
-                    selfFilterEnabled: slicerSettings.general.selfFilterEnabled
+                    forcedSelection: slicerSettings.general.forcedSelection
                 }
             }];
         }
