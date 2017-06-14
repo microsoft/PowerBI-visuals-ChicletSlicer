@@ -859,6 +859,7 @@ module powerbi.extensibility.visual {
 
             labelTextSelection.style({
                 'font-size': PixelConverter.fromPoint(settings.slicerText.textSize),
+                'color': settings.slicerText.fontColor
             });
 
             labelTextSelection
