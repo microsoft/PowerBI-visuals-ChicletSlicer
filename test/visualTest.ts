@@ -644,6 +644,42 @@ module powerbi.extensibility.visual.test {
                         highlightedColor);
                 });
 
+                it( `categories data without disabled elements must be in same sequence after switching to
+                    'Bottom' in 'Show disabled' setting`, (done) => {
+                    let valuesCategoryData: string[] = [
+                        "Alabama",
+                        "Alaska",
+                        "Arizona",
+                        "Arkansas",
+                        "California",
+                        "Colorado",
+                        "Connecticut",
+                        "Delaware",
+                        "Florida",
+                        "Georgia",
+                        "Hawaii"
+                    ];
+
+                    dataView.categorical.categories[0].values = valuesCategoryData;
+                    dataView.metadata.objects = {
+                        general: {
+                            columns: 3,
+                            orientation: "Horizontal",
+                            showDisabled: "Bottom"
+                        }
+                    };
+
+                    visualBuilder.updateFlushAllD3Transitions(dataView);
+
+                    const slicerTextElements: JQuery = visualBuilder.slicerTextElements;
+
+                    for (let i: number = 0, length: number = slicerTextElements.length; i < length; i++) {
+                        expect(slicerTextElements[i].textContent).toEqual(valuesCategoryData[i]);
+                    }
+
+                    done();
+                });
+
                 it("search header is visible", (done) => {
                     dataView.metadata.objects = {
                         general: {
@@ -658,6 +694,38 @@ module powerbi.extensibility.visual.test {
                     expect(searchHeader.getBoundingClientRect().width).toBeGreaterThan(0);
                     expect(searchHeader.getBoundingClientRect().height).toBeGreaterThan(0);
 
+                    done();
+                });
+
+                it("height of slicerBody must consider height of header and height of search", (done) => {
+                    dataView.metadata.objects = {
+                        general: {
+                            columns: 1,
+                            rows: 0,
+                            orientation: "Vertical",
+                            selfFilterEnabled: true
+                        },
+                        header: {
+                            show: true,
+                            outlineWeight: 1,
+                            borderBottomWidth: 1
+                        }
+                    };
+
+                    visualBuilder.update(dataView);
+
+                    const searchHeader: HTMLElement = visualBuilder.searchHeader;
+                    const slicerHeaderText: HTMLElement = visualBuilder.slicerHeaderText;
+
+                    const actualValue = visualBuilder.viewport.height -
+                        (searchHeader.height() +
+                        slicerHeaderText.height() +
+                        dataView.metadata.objects.header.outlineWeight +
+                        dataView.metadata.objects.header.borderBottomWidth);
+
+                    const expectedValue = visualBuilder.slicerBody.height();
+
+                    expect(actualValue).toEqual(expectedValue);
                     done();
                 });
 
@@ -751,6 +819,13 @@ module powerbi.extensibility.visual.test {
                     visualBuilder.updateFlushAllD3Transitions(dataView);
 
                     expect(visualBuilder.slicerHeaderText.text()).toBe(title);
+                });
+
+                it("title default", () => {
+                    (dataView.metadata.objects as any).header.title = "";
+                    visualBuilder.updateFlushAllD3Transitions(dataView);
+
+                    expect(visualBuilder.slicerHeaderText.text()).toBe(ChicletSlicerData.ColumnCategory);
                 });
 
                 it("font color", () => {
@@ -1014,15 +1089,44 @@ module powerbi.extensibility.visual.test {
 
                     visualBuilder.updateFlushAllD3Transitions(dataView);
 
-                    visualBuilder.visibleGroupCells
-                        .children("ul")
-                        .children("li")
-                        .children("div.slicer-text-wrapper")
-                        .children("span.slicerText")
+                    visualBuilder.slicerTextElements
                         .toArray()
                         .forEach((element: Element) => {
                             assertColorsMatch($(element).css("color"), color);
                         });
+                });
+
+                it("text color after hover", (done) => {
+                    const firstColor: string = "#123234";
+                    const secondColor: string = "#234512";
+
+                    dataView.metadata.objects = {
+                        rows: {
+                            fontColor: getSolidColorStructuralObject(firstColor)
+                        }
+                    };
+
+                    visualBuilder.updateFlushAllD3Transitions(dataView);
+
+                    let firstItem: JQuery = visualBuilder.slicerItemContainers.first();
+                    firstItem[0].dispatchEvent(new Event("mouseover"));
+
+                    visualBuilder.updateFlushAllD3Transitions(dataView);
+
+                    firstItem[0].dispatchEvent(new Event("mouseout"));
+
+                    dataView.metadata.objects = {
+                        rows: {
+                            fontColor: getSolidColorStructuralObject(secondColor)
+                        }
+                    };
+
+                    visualBuilder.updateFlushAllD3Transitions(dataView);
+
+                    let firstTextItem: JQuery = visualBuilder.slicerTextElements.first();
+                    assertColorsMatch($(firstTextItem).css("color"), secondColor);
+
+                    done();
                 });
 
                 it("outline style", () => {
@@ -1248,6 +1352,39 @@ module powerbi.extensibility.visual.test {
                     .forEach((dataPoint: ChicletSlicerDataPoint) => {
                         expect(dataPoint.imageURL).not.toBe(firstUrl);
                     });
+            });
+
+            describe("imageURL after convert", () => {
+                describe("imageURL mustn't have 'undefined' value", () => {
+                    let dataViewBuilder: ChicletSlicerData;
+                    beforeEach(() => {
+                        dataViewBuilder = new ChicletSlicerData();
+                        dataViewBuilder.valuesImage = dataViewBuilder.valuesImage.slice(0, 1);
+                    });
+                    it("image value is link", () => {
+                        const linkToImage: string = dataViewBuilder.valuesImage[0];
+
+                        checkImageValue(linkToImage);
+                    });
+
+                    it("image value is base64 image", () => {
+                        const dataImage: string = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+                        dataViewBuilder.valuesImage[0] = dataImage;
+
+                        checkImageValue(dataImage);
+                    });
+
+                    function checkImageValue(value) {
+
+                        let chicletSlicerConverter: ChicletSlicerConverter = new ChicletSlicerConverter(
+                            dataViewBuilder.getDataView(),
+                            visualBuilder.visualHost);
+
+                        chicletSlicerConverter.convert();
+
+                        expect(chicletSlicerConverter.dataPoints[0].imageURL).toBe(value);
+                    }
+                });
             });
         });
     });

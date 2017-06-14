@@ -565,8 +565,7 @@ module powerbi.extensibility.visual {
                     rows: slicerSettings.general.rows,
                     showDisabled: slicerSettings.general.showDisabled,
                     multiselect: slicerSettings.general.multiselect,
-                    forcedSelection: slicerSettings.general.forcedSelection,
-                    selfFilterEnabled: slicerSettings.general.selfFilterEnabled
+                    forcedSelection: slicerSettings.general.forcedSelection
                 }
             }];
         }
@@ -683,19 +682,13 @@ module powerbi.extensibility.visual {
 
             this.slicerData = data;
             this.settings = this.slicerData.slicerSettings;
+            this.settings.header.title = this.settings.header.title.trim() || this.slicerData.categorySourceName;
 
+            this.updateSearchHeader();
             this.updateSlicerBodyDimensions();
 
             if (this.settings.general.showDisabled === ChicletSlicerShowDisabled.BOTTOM) {
-                data.slicerDataPoints.sort(function (a, b) {
-                    if (a.selectable === b.selectable) {
-                        return 0;
-                    } else if (a.selectable && !b.selectable) {
-                        return -1;
-                    } else {
-                        return 1;
-                    }
-                });
+                data.slicerDataPoints = _.sortBy(data.slicerDataPoints, [x => !x.selectable]);
             } else if (this.settings.general.showDisabled === ChicletSlicerShowDisabled.HIDE) {
                 data.slicerDataPoints = data.slicerDataPoints.filter(x => x.selectable);
             }
@@ -731,8 +724,6 @@ module powerbi.extensibility.visual {
                 resetScrollbarPosition)
                 .viewport(this.getSlicerBodyViewport(this.currentViewport))
                 .render();
-
-            this.updateSearchHeader();
         }
 
         private initContainer() {
@@ -881,6 +872,7 @@ module powerbi.extensibility.visual {
 
             labelTextSelection.style({
                 'font-size': PixelConverter.fromPoint(settings.slicerText.textSize),
+                'color': settings.slicerText.fontColor
             });
 
             labelTextSelection
@@ -906,9 +898,7 @@ module powerbi.extensibility.visual {
 
                 this.slicerHeader
                     .select(ChicletSlicer.HeaderTextSelector.selector)
-                    .text(settings.header.title.trim() !== ""
-                        ? settings.header.title.trim()
-                        : this.slicerData.categorySourceName)
+                    .text(settings.header.title.trim())
                     .style({
                         'border-style': this.getBorderStyle(settings.header.outline),
                         'border-color': settings.header.outlineColor,
@@ -1086,11 +1076,18 @@ module powerbi.extensibility.visual {
             this.$searchHeader.toggleClass("collapsed", !this.slicerData.slicerSettings.general.selfFilterEnabled);
         }
 
+        private getSearchHeaderHeight(): number {
+            return this.$searchHeader && this.$searchHeader.hasClass('show')
+                ? this.$searchHeader.height()
+                : 0;
+        }
+
         private getSlicerBodyViewport(currentViewport: IViewport): IViewport {
             let settings: ChicletSlicerSettings = this.settings,
                 headerHeight: number = (settings.header.show) ? this.getHeaderHeight() : 0,
+                searchHeight: number = (settings.general.selfFilterEnabled) ? this.getSearchHeaderHeight() : 0,
                 borderHeight: number = settings.header.outlineWeight,
-                height: number = currentViewport.height - (headerHeight + borderHeight + settings.header.borderBottomWidth),
+                height: number = currentViewport.height - (headerHeight + searchHeight + borderHeight + settings.header.borderBottomWidth),
                 width: number = currentViewport.width - ChicletSlicer.WidthOfScrollbar;
 
             return {
