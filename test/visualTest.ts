@@ -687,6 +687,38 @@ module powerbi.extensibility.visual.test {
                     done();
                 });
 
+                it("height of slicerBody must consider height of header and height of search", (done) => {
+                    dataView.metadata.objects = {
+                        general: {
+                            columns: 1,
+                            rows: 0,
+                            orientation: "Vertical",
+                            selfFilterEnabled: true
+                        },
+                        header: {
+                            show: true,
+                            outlineWeight: 1,
+                            borderBottomWidth: 1
+                        }
+                    };
+
+                    visualBuilder.update(dataView);
+
+                    const searchHeader: HTMLElement = visualBuilder.searchHeader;
+                    const slicerHeaderText: HTMLElement = visualBuilder.slicerHeaderText;
+
+                    const actualValue = visualBuilder.viewport.height -
+                        (searchHeader.height() +
+                        slicerHeaderText.height() +
+                        dataView.metadata.objects.header.outlineWeight +
+                        dataView.metadata.objects.header.borderBottomWidth);
+
+                    const expectedValue = visualBuilder.slicerBody.height();
+
+                    expect(actualValue).toEqual(expectedValue);
+                    done();
+                });
+
                 describe("Multi selection", () => {
                     beforeEach(() => {
                         dataView.metadata.objects = {
@@ -777,6 +809,13 @@ module powerbi.extensibility.visual.test {
                     visualBuilder.updateFlushAllD3Transitions(dataView);
 
                     expect(visualBuilder.slicerHeaderText.text()).toBe(title);
+                });
+
+                it("title default", () => {
+                    (dataView.metadata.objects as any).header.title = "";
+                    visualBuilder.updateFlushAllD3Transitions(dataView);
+
+                    expect(visualBuilder.slicerHeaderText.text()).toBe(ChicletSlicerData.ColumnCategory);
                 });
 
                 it("font color", () => {
@@ -1274,6 +1313,39 @@ module powerbi.extensibility.visual.test {
                     .forEach((dataPoint: ChicletSlicerDataPoint) => {
                         expect(dataPoint.imageURL).not.toBe(firstUrl);
                     });
+            });
+
+            describe("imageURL after convert", () => {
+                describe("imageURL mustn't have 'undefined' value", () => {
+                    let dataViewBuilder: ChicletSlicerData;
+                    beforeEach(() => {
+                        dataViewBuilder = new ChicletSlicerData();
+                        dataViewBuilder.valuesImage = dataViewBuilder.valuesImage.slice(0, 1);
+                    });
+                    it("image value is link", () => {
+                        const linkToImage: string = dataViewBuilder.valuesImage[0];
+
+                        checkImageValue(linkToImage);
+                    });
+
+                    it("image value is base64 image", () => {
+                        const dataImage: string = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+                        dataViewBuilder.valuesImage[0] = dataImage;
+
+                        checkImageValue(dataImage);
+                    });
+
+                    function checkImageValue(value) {
+
+                        let chicletSlicerConverter: ChicletSlicerConverter = new ChicletSlicerConverter(
+                            dataViewBuilder.getDataView(),
+                            visualBuilder.visualHost);
+
+                        chicletSlicerConverter.convert();
+
+                        expect(chicletSlicerConverter.dataPoints[0].imageURL).toBe(value);
+                    }
+                });
             });
         });
     });
