@@ -634,6 +634,42 @@ module powerbi.extensibility.visual.test {
                         highlightedColor);
                 });
 
+                it( `categories data without disabled elements must be in same sequence after switching to
+                    'Bottom' in 'Show disabled' setting`, (done) => {
+                    let valuesCategoryData: string[] = [
+                        "Alabama",
+                        "Alaska",
+                        "Arizona",
+                        "Arkansas",
+                        "California",
+                        "Colorado",
+                        "Connecticut",
+                        "Delaware",
+                        "Florida",
+                        "Georgia",
+                        "Hawaii"
+                    ];
+
+                    dataView.categorical.categories[0].values = valuesCategoryData;
+                    dataView.metadata.objects = {
+                        general: {
+                            columns: 3,
+                            orientation: "Horizontal",
+                            showDisabled: "Bottom"
+                        }
+                    };
+
+                    visualBuilder.updateFlushAllD3Transitions(dataView);
+
+                    const slicerTextElements: JQuery = visualBuilder.slicerTextElements;
+
+                    for (let i: number = 0, length: number = slicerTextElements.length; i < length; i++) {
+                        expect(slicerTextElements[i].textContent).toEqual(valuesCategoryData[i]);
+                    }
+
+                    done();
+                });
+
                 it("search header is visible", (done) => {
                     dataView.metadata.objects = {
                         general: {
