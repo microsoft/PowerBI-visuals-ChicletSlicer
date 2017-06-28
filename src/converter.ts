@@ -158,7 +158,8 @@ module powerbi.extensibility.visual {
                                 if (seriesData.source.groupName && seriesData.source.groupName !== '') {
                                     imageURL = converterHelper.getFormattedLegendLabel(seriesData.source, dataViewCategorical.values);
 
-                                    if (!/^(ftp|http|https):\/\/[^ "]+$/.test(imageURL)) {
+                                    if (!/^(ftp|http|https):\/\/[^ "]+$/.test(imageURL) &&
+                                        !/^data:image/.test(imageURL)) {
                                         imageURL = undefined;
                                     }
                                 }
