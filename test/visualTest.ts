@@ -210,30 +210,7 @@ module powerbi.extensibility.visual.test {
                     }
                 };
 
-                visualBuilder.update(dataView);
-
-                const chicletTotalRows: number = visualBuilder
-                    .visibleGroup
-                    .children("div.row")
-                    .first()
-                    .children(".cell")
-                    .length;
-
-                (dataView.metadata.objects as any).general.orientation = "Vertical";
-                (dataView.metadata.objects as any).general.rows = 0;
-
-                visualBuilder.updateRenderTimeout(dataView, () => {
-                    const chicletTotalRows0: number = visualBuilder
-                        .visibleGroup
-                        .children("div.row")
-                        .first()
-                        .children(".cell")
-                        .length;
-
-                    expect(chicletTotalRows).toEqual(chicletTotalRows0);
-
-                    done();
-                });
+                checkRowsNumber(dataView, "Vertical", 0, done);
             });
 
             it("negative chiclet rows number should behave like 0 rows (auto) when orientation is horizontal", (done) => {
@@ -244,6 +221,32 @@ module powerbi.extensibility.visual.test {
                     }
                 };
 
+                checkRowsNumber(dataView, "Horizontal", 0, done);
+            });
+
+            it("chiclet rows number > 1000 should behave like 1000 rows (auto) when orientation is vertical", (done) => {
+                dataView.metadata.objects = {
+                    general: {
+                        orientation: "Vertical",
+                        rows: 10000
+                    }
+                };
+
+                checkRowsNumber(dataView, "Vertical", 1000, done);
+            });
+
+            it("chiclet rows number > 1000 should behave like 1000 rows (auto) when orientation is horizontal", (done) => {
+                dataView.metadata.objects = {
+                    general: {
+                        orientation: "Horizontal",
+                        rows: 10000
+                    }
+                };
+
+                checkRowsNumber(dataView, "Horizontal", 1000, done);
+            });
+
+            function checkRowsNumber(dataView, orientation, expectedNumber, done) {
                 visualBuilder.update(dataView);
 
                 const chicletTotalRows: number = visualBuilder
@@ -251,8 +254,8 @@ module powerbi.extensibility.visual.test {
                     .children("div.row")
                     .length;
 
-                (dataView.metadata.objects as any).general.orientation = "Horizontal";
-                (dataView.metadata.objects as any).general.rows = 0;
+                (dataView.metadata.objects as any).general.orientation = orientation;
+                (dataView.metadata.objects as any).general.rows = expectedNumber;
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     const chicletTotalRows0: number = visualBuilder
@@ -264,46 +267,53 @@ module powerbi.extensibility.visual.test {
 
                     done();
                 });
-            });
+            }
 
             it("negative chiclet columns number should behave like 0 columns (auto) when orientation is vertical", (done) => {
                 dataView.metadata.objects = {
                     general: {
                         orientation: "Vertical",
-                        сolumns: -1
+                        columns: -1
                     }
                 };
 
-                visualBuilder.update(dataView);
-
-                const chicletTotalColumns: number = visualBuilder
-                    .visibleGroup
-                    .children("div.row")
-                    .length;
-
-                (dataView.metadata.objects as any).general.orientation = "Vertical";
-                (dataView.metadata.objects as any).general.сolumns = 0;
-
-                visualBuilder.updateRenderTimeout(dataView, () => {
-                    const chicletTotalColumns0: number = visualBuilder
-                        .visibleGroup
-                        .children("div.row")
-                        .length;
-
-                    expect(chicletTotalColumns).toEqual(chicletTotalColumns0);
-
-                    done();
-                });
+                checkColumnsNumber(dataView, "Vertical", 0, done);
             });
 
             it("negative chiclet columns number should behave like 0 columns (auto) when orientation is horizontal", (done) => {
                 dataView.metadata.objects = {
                     general: {
-                        orientation: "Vertical",
-                        сolumns: -1
+                        orientation: "Horizontal",
+                        columns: -1
                     }
                 };
 
+                checkColumnsNumber(dataView, "Horizontal", 0, done);
+            });
+
+            it("chiclet columns number > 1000 should behave like 1000 columns (auto) when orientation is vertical", (done) => {
+                dataView.metadata.objects = {
+                    general: {
+                        orientation: "Vertical",
+                        columns: 10000
+                    }
+                };
+
+                checkColumnsNumber(dataView, "Vertical", 1000, done);
+            });
+
+            it("chiclet columns number > 1000 should behave like 1000 columns (auto) when orientation is horizontal", (done) => {
+                dataView.metadata.objects = {
+                    general: {
+                        orientation: "Horizontal",
+                        columns: 10000
+                    }
+                };
+
+                checkColumnsNumber(dataView, "Horizontal", 1000, done);
+            });
+
+            function checkColumnsNumber(dataView, orientation, expectedNumber, done) {
                 visualBuilder.update(dataView);
 
                 const chicletTotalColumns: number = visualBuilder
@@ -313,8 +323,8 @@ module powerbi.extensibility.visual.test {
                     .children(".cell")
                     .length;
 
-                (dataView.metadata.objects as any).general.orientation = "Vertical";
-                (dataView.metadata.objects as any).general.сolumns = 0;
+                (dataView.metadata.objects as any).general.orientation = orientation;
+                (dataView.metadata.objects as any).general.сolumns = expectedNumber;
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     const chicletTotalColumns0: number = visualBuilder
@@ -328,7 +338,7 @@ module powerbi.extensibility.visual.test {
 
                     done();
                 });
-            });
+            }
 
             it("negative chiclet width should behave like 0 width (auto)", (done) => {
                 dataView.metadata.objects = {
@@ -634,6 +644,42 @@ module powerbi.extensibility.visual.test {
                         highlightedColor);
                 });
 
+                it( `categories data without disabled elements must be in same sequence after switching to
+                    'Bottom' in 'Show disabled' setting`, (done) => {
+                    let valuesCategoryData: string[] = [
+                        "Alabama",
+                        "Alaska",
+                        "Arizona",
+                        "Arkansas",
+                        "California",
+                        "Colorado",
+                        "Connecticut",
+                        "Delaware",
+                        "Florida",
+                        "Georgia",
+                        "Hawaii"
+                    ];
+
+                    dataView.categorical.categories[0].values = valuesCategoryData;
+                    dataView.metadata.objects = {
+                        general: {
+                            columns: 3,
+                            orientation: "Horizontal",
+                            showDisabled: "Bottom"
+                        }
+                    };
+
+                    visualBuilder.updateFlushAllD3Transitions(dataView);
+
+                    const slicerTextElements: JQuery = visualBuilder.slicerTextElements;
+
+                    for (let i: number = 0, length: number = slicerTextElements.length; i < length; i++) {
+                        expect(slicerTextElements[i].textContent).toEqual(valuesCategoryData[i]);
+                    }
+
+                    done();
+                });
+
                 it("search header is visible", (done) => {
                     dataView.metadata.objects = {
                         general: {
@@ -648,6 +694,38 @@ module powerbi.extensibility.visual.test {
                     expect(searchHeader.getBoundingClientRect().width).toBeGreaterThan(0);
                     expect(searchHeader.getBoundingClientRect().height).toBeGreaterThan(0);
 
+                    done();
+                });
+
+                it("height of slicerBody must consider height of header and height of search", (done) => {
+                    dataView.metadata.objects = {
+                        general: {
+                            columns: 1,
+                            rows: 0,
+                            orientation: "Vertical",
+                            selfFilterEnabled: true
+                        },
+                        header: {
+                            show: true,
+                            outlineWeight: 1,
+                            borderBottomWidth: 1
+                        }
+                    };
+
+                    visualBuilder.update(dataView);
+
+                    const searchHeader: HTMLElement = visualBuilder.searchHeader;
+                    const slicerHeaderText: HTMLElement = visualBuilder.slicerHeaderText;
+
+                    const actualValue = visualBuilder.viewport.height -
+                        (searchHeader.height() +
+                        slicerHeaderText.height() +
+                        dataView.metadata.objects.header.outlineWeight +
+                        dataView.metadata.objects.header.borderBottomWidth);
+
+                    const expectedValue = visualBuilder.slicerBody.height();
+
+                    expect(actualValue).toEqual(expectedValue);
                     done();
                 });
 
@@ -741,6 +819,13 @@ module powerbi.extensibility.visual.test {
                     visualBuilder.updateFlushAllD3Transitions(dataView);
 
                     expect(visualBuilder.slicerHeaderText.text()).toBe(title);
+                });
+
+                it("title default", () => {
+                    (dataView.metadata.objects as any).header.title = "";
+                    visualBuilder.updateFlushAllD3Transitions(dataView);
+
+                    expect(visualBuilder.slicerHeaderText.text()).toBe(ChicletSlicerData.ColumnCategory);
                 });
 
                 it("font color", () => {
@@ -1022,15 +1107,44 @@ module powerbi.extensibility.visual.test {
 
                     visualBuilder.updateFlushAllD3Transitions(dataView);
 
-                    visualBuilder.visibleGroupCells
-                        .children("ul")
-                        .children("li")
-                        .children("div.slicer-text-wrapper")
-                        .children("span.slicerText")
+                    visualBuilder.slicerTextElements
                         .toArray()
                         .forEach((element: Element) => {
                             assertColorsMatch($(element).css("color"), color);
                         });
+                });
+
+                it("text color after hover", (done) => {
+                    const firstColor: string = "#123234";
+                    const secondColor: string = "#234512";
+
+                    dataView.metadata.objects = {
+                        rows: {
+                            fontColor: getSolidColorStructuralObject(firstColor)
+                        }
+                    };
+
+                    visualBuilder.updateFlushAllD3Transitions(dataView);
+
+                    let firstItem: JQuery = visualBuilder.slicerItemContainers.first();
+                    firstItem[0].dispatchEvent(new Event("mouseover"));
+
+                    visualBuilder.updateFlushAllD3Transitions(dataView);
+
+                    firstItem[0].dispatchEvent(new Event("mouseout"));
+
+                    dataView.metadata.objects = {
+                        rows: {
+                            fontColor: getSolidColorStructuralObject(secondColor)
+                        }
+                    };
+
+                    visualBuilder.updateFlushAllD3Transitions(dataView);
+
+                    let firstTextItem: JQuery = visualBuilder.slicerTextElements.first();
+                    assertColorsMatch($(firstTextItem).css("color"), secondColor);
+
+                    done();
                 });
 
                 it("outline style", () => {
@@ -1256,6 +1370,39 @@ module powerbi.extensibility.visual.test {
                     .forEach((dataPoint: ChicletSlicerDataPoint) => {
                         expect(dataPoint.imageURL).not.toBe(firstUrl);
                     });
+            });
+
+            describe("imageURL after convert", () => {
+                describe("imageURL mustn't have 'undefined' value", () => {
+                    let dataViewBuilder: ChicletSlicerData;
+                    beforeEach(() => {
+                        dataViewBuilder = new ChicletSlicerData();
+                        dataViewBuilder.valuesImage = dataViewBuilder.valuesImage.slice(0, 1);
+                    });
+                    it("image value is link", () => {
+                        const linkToImage: string = dataViewBuilder.valuesImage[0];
+
+                        checkImageValue(linkToImage);
+                    });
+
+                    it("image value is base64 image", () => {
+                        const dataImage: string = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+                        dataViewBuilder.valuesImage[0] = dataImage;
+
+                        checkImageValue(dataImage);
+                    });
+
+                    function checkImageValue(value) {
+
+                        let chicletSlicerConverter: ChicletSlicerConverter = new ChicletSlicerConverter(
+                            dataViewBuilder.getDataView(),
+                            visualBuilder.visualHost);
+
+                        chicletSlicerConverter.convert();
+
+                        expect(chicletSlicerConverter.dataPoints[0].imageURL).toBe(value);
+                    }
+                });
             });
         });
     });
