@@ -268,7 +268,7 @@ module powerbi.extensibility.visual {
                     title: '',
                 },
                 headerText: {
-                    marginLeft: 8,
+                    marginLeft: 5,
                     marginTop: 0
                 },
                 slicerText: {
@@ -280,7 +280,7 @@ module powerbi.extensibility.visual {
                     selectedColor: '#BDD7EE',
                     unselectedColor: '#ffffff',
                     disabledColor: 'grey',
-                    marginLeft: 8,
+                    marginLeft: 5,
                     outline: 'Frame',
                     background: null,
                     transparency: 0,
