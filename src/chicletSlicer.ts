@@ -918,12 +918,11 @@ module powerbi.extensibility.visual {
                     textProperties: TextProperties = ChicletSlicer.getChicletTextProperties(settings.slicerText.textSize),
                     formatString: string = data.formatString;
 
+                let slicerBodyViewport: IViewport = this.getSlicerBodyViewport(this.currentViewport);
                 slicerText.text((d: ChicletSlicerDataPoint) => {
                     textProperties.text = valueFormatter.format(d.category, formatString);
 
                     if (this.settings.slicerText.width === 0) {
-                        let slicerBodyViewport: IViewport = this.getSlicerBodyViewport(this.currentViewport);
-
                         this.settings.slicerText.width = Math.round(
                             slicerBodyViewport.width / (this.tableView.computedColumns || ChicletSlicer.MinColumns)
                         );
