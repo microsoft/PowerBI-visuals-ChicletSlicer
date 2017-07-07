@@ -1,6 +1,9 @@
 {
     "locale": "ru-RU",
     "values": {
+        "Role_Category": "Категория",
+        "Role_Values": "Значения",
+        "Role_Image": "Иконка",
         "Visual_General": "Общие настройки",
         "Visual_Orientation": "Ориентация",
         "Visual_Orientation_Vertical": "Вертикальная",
