@@ -2,16 +2,19 @@
     "dataRoles": [
         {
             "displayName": "Category",
+            "displayNameKey": "Role_Category",
             "name": "Category",
             "kind": "Grouping"
         },
         {
             "displayName": "Values",
+            "displayNameKey": "Role_Values",
             "name": "Values",
             "kind": "Measure"
         },
         {
             "displayName": "Image",
+            "displayNameKey": "Role_Image",
             "name": "Image",
             "kind": "Grouping"
         }
