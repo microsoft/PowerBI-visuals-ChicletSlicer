@@ -220,6 +220,37 @@
                         "numeric": true
                     }
                 },
+                "outline": {
+                    "displayName": "Outline Type",
+                    "displayNameKey": "formattingHeaderOutlineType",
+                    "type": {
+                        "enumeration": [{
+                            "value": "None",
+                            "displayNameKey": "formattingHeaderOutlineTypeNone",
+                            "displayName": "None"
+                        }, {
+                            "value": "BottomOnly",
+                            "displayNameKey": "formattingHeaderOutlineTypeBottomOnly",
+                            "displayName": "Bottom only"
+                        }, {
+                            "value": "TopOnly",
+                            "displayNameKey": "formattingHeaderOutlineTypeTopOnly",
+                            "displayName": "Top only"
+                        }, {
+                            "value": "TopBottom",
+                            "displayNameKey": "formattingHeaderOutlineTypeTopBottom",
+                            "displayName": "Top Bottom"
+                        }, {
+                            "value": "LeftRight",
+                            "displayNameKey": "formattingHeaderOutlineTypeLeftRight",
+                            "displayName": "Left Right"
+                        }, {
+                            "value": "Frame",
+                            "displayNameKey": "formattingHeaderOutlineTypeFrame",
+                            "displayName": "Frame"
+                        }]
+                    }
+                },
                 "outlineColor": {
                     "displayName": "Outline Color",
                     "displayNameKey": "Visual_OutlineColor",
