@@ -202,6 +202,18 @@ module powerbi.extensibility.visual.test {
                     .css("height");
             }
 
+            it("chiclet rows number must be equal 1 when rows = 0 and columns = 0 and orientation is horizontal", (done) => {
+                dataView.metadata.objects = {
+                    general: {
+                        orientation: "Horizontal",
+                        columns: 0,
+                        rows: 0
+                    }
+                };
+
+                checkRowsNumber(dataView, "Horizontal", 1, done);
+            });
+
             it("negative chiclet rows number should behave like 0 rows (auto) when orientation is vertical", (done) => {
                 dataView.metadata.objects = {
                     general: {
@@ -258,6 +270,7 @@ module powerbi.extensibility.visual.test {
                 (dataView.metadata.objects as any).general.rows = expectedNumber;
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
+
                     const chicletTotalRows0: number = visualBuilder
                         .visibleGroup
                         .children("div.row")
@@ -268,6 +281,18 @@ module powerbi.extensibility.visual.test {
                     done();
                 });
             }
+
+            it("chiclet columns number must be equal 1 when rows = 0 and columns = 0 and orientation is vertical", (done) => {
+                dataView.metadata.objects = {
+                    general: {
+                        orientation: "Vertical",
+                        columns: 0,
+                        rows: 0
+                    }
+                };
+
+                checkColumnsNumber(dataView, "Vertical", 1, done);
+            });
 
             it("negative chiclet columns number should behave like 0 columns (auto) when orientation is vertical", (done) => {
                 dataView.metadata.objects = {
@@ -300,6 +325,7 @@ module powerbi.extensibility.visual.test {
                 };
 
                 checkColumnsNumber(dataView, "Vertical", 1000, done);
+
             });
 
             it("chiclet columns number > 1000 should behave like 1000 columns (auto) when orientation is horizontal", (done) => {

@@ -618,17 +618,16 @@ module powerbi.extensibility.visual {
 
             data.slicerSettings.images.imageSplit = ChicletSlicer.getValidImageSplit(data.slicerSettings.images.imageSplit);
 
-            data.slicerSettings.general.columns = data.slicerSettings.general.columns < 0
-                ? 0
-                : data.slicerSettings.general.columns;
+            const columns: number = data.slicerSettings.general.columns;
+            const rows: number = data.slicerSettings.general.rows;
 
-            data.slicerSettings.general.columns = data.slicerSettings.general.columns > ChicletSlicer.MaxColumns
-                ? ChicletSlicer.MaxColumns
-                : data.slicerSettings.general.columns;
+            data.slicerSettings.general.columns = columns <= 0
+                ? +(data.slicerSettings.general.orientation === Orientation.VERTICAL && rows <= 0)
+                : columns;
 
-            data.slicerSettings.general.rows = data.slicerSettings.general.rows < 0
-                ? 0
-                : data.slicerSettings.general.rows;
+            data.slicerSettings.general.rows = rows <= 0
+                ? +(data.slicerSettings.general.orientation === Orientation.HORIZONTAL && columns <= 0)
+                : rows;
 
             data.slicerSettings.general.rows = data.slicerSettings.general.rows > ChicletSlicer.MaxRows
                 ? ChicletSlicer.MaxRows
