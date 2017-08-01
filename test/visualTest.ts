@@ -764,12 +764,25 @@ module powerbi.extensibility.visual.test {
                         };
                     });
 
-                    it("multi selection should work when ctrlKey is pressed", (done) => {
+                    it("multi selection should work when ctrlKey is pressed and multi select is turned off", (done) => {
+                        dataView.metadata.objects.general.multiselect = false;
+
                         testMultiSelection(
                             dataView,
                             visualBuilder,
                             ClickEventType.CtrlKey,
                             defaultDataViewBuilder.valuesCategory.length,
+                            () => true,
+                            done);
+                    });
+
+                    it("multi selection should work when multi select is turned on", (done) => {
+                        testMultiSelection(
+                            dataView,
+                            visualBuilder,
+                            null,
+                            defaultDataViewBuilder.valuesCategory.length,
+                            () => true,
                             done);
                     });
 
@@ -779,6 +792,17 @@ module powerbi.extensibility.visual.test {
                             visualBuilder,
                             ClickEventType.MetaKey,
                             defaultDataViewBuilder.valuesCategory.length,
+                            () => true,
+                            done);
+                    });
+
+                    it("multi selection should work when altKey is pressed", (done) => {
+                        testMultiSelection(
+                            dataView,
+                            visualBuilder,
+                            ClickEventType.AltKey,
+                            defaultDataViewBuilder.valuesCategory.length,
+                            index => !index || index === defaultDataViewBuilder.valuesCategory.length - 1,
                             done);
                     });
 
@@ -787,11 +811,15 @@ module powerbi.extensibility.visual.test {
                         visualBuilder: ChicletSlicerBuilder,
                         clickEventType: ClickEventType,
                         lengthOfCategoryValues: number,
+                        filter: (index: number) => boolean,
                         callback: () => void) {
 
                         visualBuilder.updateRenderTimeout(dataView, () => {
                             visualBuilder
                                 .slicerItemContainers
+                                .filter((index) => {
+                                    return filter(index);
+                                })
                                 .d3Click(0, 0, clickEventType);
 
                             checkSelection(
