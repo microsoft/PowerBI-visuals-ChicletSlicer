@@ -45,16 +45,16 @@
         background-repeat: no-repeat;
         background-position: center;
         width: 13px;
-        height: 12px;
-        margin: 4px 2px;
+        height: 13px;
+        margin: 0 2px;
         float: right;
         cursor: pointer;
     }
 
     .searchToggle {
         width: 13px;
-        height: 12px;
-        margin: 4px 2px;
+        height: 13px;
+        margin: 0px 2px;
         float: right;
         cursor: pointer;
 
@@ -175,9 +175,10 @@
             display: flex; // Opera, Firefox
             justify-content: space-between;
             -webkit-align-items: center;
-            width: ~"calc(100% - 10px)";
+            width: ~"calc(100% - 2px)";
             border: 1px solid @neutralDarkColor;
             height: 20px;
+            padding: 5px 0;
         }
 
         .search {
@@ -198,6 +199,7 @@
             -webkit-flex: 1 1 0px;
             border-style:none;
             min-width: 0px;
+            height: inherit;
             padding: 0; // Override parent style
 
             &:focus {
