@@ -215,8 +215,13 @@ module powerbi.extensibility.visual {
 
         private static MaxCellPadding: number = 20;
 
+
+
         private static MinSizeOfViewport: number = 0;
         private static MinColumns: number = 1;
+
+        private static MaxColumns: number = 1000;
+        private static MaxRows: number = 1000;
 
         private static WidthOfScrollbar: number = 17;
 
@@ -263,7 +268,7 @@ module powerbi.extensibility.visual {
                     title: '',
                 },
                 headerText: {
-                    marginLeft: 8,
+                    marginLeft: 5,
                     marginTop: 0
                 },
                 slicerText: {
@@ -275,7 +280,7 @@ module powerbi.extensibility.visual {
                     selectedColor: '#BDD7EE',
                     unselectedColor: '#ffffff',
                     disabledColor: 'grey',
-                    marginLeft: 8,
+                    marginLeft: 5,
                     outline: 'Frame',
                     background: null,
                     transparency: 0,
@@ -560,8 +565,7 @@ module powerbi.extensibility.visual {
                     rows: slicerSettings.general.rows,
                     showDisabled: slicerSettings.general.showDisabled,
                     multiselect: slicerSettings.general.multiselect,
-                    forcedSelection: slicerSettings.general.forcedSelection,
-                    selfFilterEnabled: slicerSettings.general.selfFilterEnabled
+                    forcedSelection: slicerSettings.general.forcedSelection
                 }
             }];
         }
@@ -618,8 +622,16 @@ module powerbi.extensibility.visual {
                 ? 0
                 : data.slicerSettings.general.columns;
 
+            data.slicerSettings.general.columns = data.slicerSettings.general.columns > ChicletSlicer.MaxColumns
+                ? ChicletSlicer.MaxColumns
+                : data.slicerSettings.general.columns;
+
             data.slicerSettings.general.rows = data.slicerSettings.general.rows < 0
                 ? 0
+                : data.slicerSettings.general.rows;
+
+            data.slicerSettings.general.rows = data.slicerSettings.general.rows > ChicletSlicer.MaxRows
+                ? ChicletSlicer.MaxRows
                 : data.slicerSettings.general.rows;
 
             data.slicerSettings.general.getSavedSelection = () => {
@@ -670,30 +682,22 @@ module powerbi.extensibility.visual {
 
             this.slicerData = data;
             this.settings = this.slicerData.slicerSettings;
+            this.settings.header.title = this.settings.header.title.trim() || this.slicerData.categorySourceName;
 
+            this.updateSearchHeader();
             this.updateSlicerBodyDimensions();
 
             if (this.settings.general.showDisabled === ChicletSlicerShowDisabled.BOTTOM) {
-                data.slicerDataPoints.sort(function (a, b) {
-                    if (a.selectable === b.selectable) {
-                        return 0;
-                    } else if (a.selectable && !b.selectable) {
-                        return -1;
-                    } else {
-                        return 1;
-                    }
-                });
+                data.slicerDataPoints = _.sortBy(data.slicerDataPoints, [x => !x.selectable]);
             } else if (this.settings.general.showDisabled === ChicletSlicerShowDisabled.HIDE) {
                 data.slicerDataPoints = data.slicerDataPoints.filter(x => x.selectable);
             }
 
-            let height: number = this.settings.slicerText.height;
-
-            if (height === ChicletSlicer.MinImageSplit) {
+            if (this.settings.slicerText.height === ChicletSlicer.MinImageSplit) {
                 let extraSpaceForCell = ChicletSlicer.СellTotalInnerPaddings + ChicletSlicer.СellTotalInnerBorders,
                     textProperties: TextProperties = ChicletSlicer.getChicletTextProperties(this.settings.slicerText.textSize);
 
-                height = textMeasurementService.estimateSvgTextHeight(textProperties) +
+                this.settings.slicerText.height = textMeasurementService.estimateSvgTextHeight(textProperties) +
                     textMeasurementService.estimateSvgTextBaselineDelta(textProperties) +
                     extraSpaceForCell;
 
@@ -702,12 +706,12 @@ module powerbi.extensibility.visual {
                 });
 
                 if (hasImage) {
-                    height += ChicletSlicer.MaxImageSplit;
+                    this.settings.slicerText.height += ChicletSlicer.MaxImageSplit;
                 }
             }
 
             this.tableView
-                .rowHeight(height)
+                .rowHeight(this.settings.slicerText.height)
                 .columnWidth(this.settings.slicerText.width)
                 .orientation(this.settings.general.orientation)
                 .rows(this.settings.general.rows)
@@ -718,8 +722,6 @@ module powerbi.extensibility.visual {
                 resetScrollbarPosition)
                 .viewport(this.getSlicerBodyViewport(this.currentViewport))
                 .render();
-
-            this.updateSearchHeader();
         }
 
         private initContainer() {
@@ -868,6 +870,7 @@ module powerbi.extensibility.visual {
 
             labelTextSelection.style({
                 'font-size': PixelConverter.fromPoint(settings.slicerText.textSize),
+                'color': settings.slicerText.fontColor
             });
 
             labelTextSelection
@@ -893,9 +896,7 @@ module powerbi.extensibility.visual {
 
                 this.slicerHeader
                     .select(ChicletSlicer.HeaderTextSelector.selector)
-                    .text(settings.header.title.trim() !== ""
-                        ? settings.header.title.trim()
-                        : this.slicerData.categorySourceName)
+                    .text(settings.header.title.trim())
                     .style({
                         'border-style': this.getBorderStyle(settings.header.outline),
                         'border-color': settings.header.outlineColor,
@@ -917,29 +918,22 @@ module powerbi.extensibility.visual {
                     textProperties: TextProperties = ChicletSlicer.getChicletTextProperties(settings.slicerText.textSize),
                     formatString: string = data.formatString;
 
+                let slicerBodyViewport: IViewport = this.getSlicerBodyViewport(this.currentViewport);
                 slicerText.text((d: ChicletSlicerDataPoint) => {
-                    let maxWidth: number = 0;
-
                     textProperties.text = valueFormatter.format(d.category, formatString);
 
                     if (this.settings.slicerText.width === 0) {
-                        let slicerBodyViewport: IViewport = this.getSlicerBodyViewport(this.currentViewport);
-
-                        maxWidth = (slicerBodyViewport.width / (this.tableView.computedColumns || ChicletSlicer.MinColumns)) -
-                            ChicletSlicer.СhicletTotalInnerRightLeftPaddings -
-                            ChicletSlicer.СellTotalInnerBorders -
-                            settings.slicerText.outlineWeight;
-
-                        return textMeasurementService.getTailoredTextOrDefault(textProperties, maxWidth);
+                        this.settings.slicerText.width = Math.round(
+                            slicerBodyViewport.width / (this.tableView.computedColumns || ChicletSlicer.MinColumns)
+                        );
                     }
-                    else {
-                        maxWidth = this.settings.slicerText.width -
-                            ChicletSlicer.СhicletTotalInnerRightLeftPaddings -
-                            ChicletSlicer.СellTotalInnerBorders -
-                            settings.slicerText.outlineWeight;
 
-                        return textMeasurementService.getTailoredTextOrDefault(textProperties, maxWidth);
-                    }
+                    let maxWidth: number = this.settings.slicerText.width -
+                        ChicletSlicer.СhicletTotalInnerRightLeftPaddings -
+                        ChicletSlicer.СellTotalInnerBorders -
+                        settings.slicerText.outlineWeight;
+
+                    return textMeasurementService.getTailoredTextOrDefault(textProperties, maxWidth);
                 });
 
                 rowSelection
@@ -1073,11 +1067,18 @@ module powerbi.extensibility.visual {
             this.$searchHeader.toggleClass("collapsed", !this.slicerData.slicerSettings.general.selfFilterEnabled);
         }
 
+        private getSearchHeaderHeight(): number {
+            return this.$searchHeader && this.$searchHeader.hasClass('show')
+                ? this.$searchHeader.height()
+                : 0;
+        }
+
         private getSlicerBodyViewport(currentViewport: IViewport): IViewport {
             let settings: ChicletSlicerSettings = this.settings,
                 headerHeight: number = (settings.header.show) ? this.getHeaderHeight() : 0,
+                searchHeight: number = (settings.general.selfFilterEnabled) ? this.getSearchHeaderHeight() : 0,
                 borderHeight: number = settings.header.outlineWeight,
-                height: number = currentViewport.height - (headerHeight + borderHeight + settings.header.borderBottomWidth),
+                height: number = currentViewport.height - (headerHeight + searchHeight + borderHeight + settings.header.borderBottomWidth),
                 width: number = currentViewport.width - ChicletSlicer.WidthOfScrollbar;
 
             return {

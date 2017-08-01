@@ -2,16 +2,19 @@
     "dataRoles": [
         {
             "displayName": "Category",
+            "displayNameKey": "Role_Category",
             "name": "Category",
             "kind": "Grouping"
         },
         {
             "displayName": "Values",
+            "displayNameKey": "Role_Values",
             "name": "Values",
             "kind": "Measure"
         },
         {
             "displayName": "Image",
+            "displayNameKey": "Role_Image",
             "name": "Image",
             "kind": "Grouping"
         }
@@ -68,7 +71,7 @@
     "objects": {
         "general": {
             "displayName": "General",
-            "displayNameKey": "formattingGeneral",
+            "displayNameKey": "Visual_General",
             "properties": {
                 "selection": {
                     "displayName": "Selection",
@@ -78,62 +81,62 @@
                 },
                 "orientation": {
                     "displayName": "Orientation",
-                    "displayNameKey": "formattingGeneralOrientation",
+                    "displayNameKey": "Visual_Orientation",
                     "type": {
                         "enumeration": [{
                             "value": "Horizontal",
-                            "displayNameKey": "formattingGeneralOrientationHorizontal",
+                            "displayNameKey": "Visual_Orientation_Horizontal",
                             "displayName": "Horizontal"
                         }, {
                             "value": "Vertical",
-                            "displayNameKey": "formattingGeneralOrientationVertical",
+                            "displayNameKey": "Visual_Orientation_Vertical",
                             "displayName": "Vertical"
                         }]
                     }
                 },
                 "columns": {
                     "displayName": "Columns",
-                    "displayNameKey": "formattingGeneralColumns",
+                    "displayNameKey": "Visual_Columns",
                     "type": {
                         "numeric": true
                     }
                 },
                 "rows": {
                     "displayName": "Rows",
-                    "displayNameKey": "formattingGeneralRows",
+                    "displayNameKey": "Visual_Rows",
                     "type": {
                         "numeric": true
                     }
                 },
                 "showDisabled": {
                     "displayName": "Show Disabled",
-                    "displayNameKey": "formattingGeneralShowDisabled",
+                    "displayNameKey": "Visual_ShowDisabled",
                     "type": {
                         "enumeration": [{
                             "value": "Inplace",
                             "displayName": "Inplace",
-                            "displayNameKey": "formattingGeneralShowDisabledInplace"
+                            "displayNameKey": "Visual_ShowDisabled_Inplace"
                         }, {
                             "value": "Bottom",
                             "displayName": "Bottom",
-                            "displayNameKey": "formattingGeneralShowDisabledBottom"
+                            "displayNameKey": "Visual_ShowDisabled_Bottom"
                         }, {
                             "value": "Hide",
                             "displayName": "Hide",
-                            "displayNameKey": "formattingGeneralShowDisabledHide"
+                            "displayNameKey": "Visual_ShowDisabled_Hide"
                         }]
                     }
                 },
                 "multiselect": {
                     "displayName": "Multiple selection",
-                    "displayNameKey": "formattingGeneralMultipleSelection",
+                    "displayNameKey": "Visual_MultipleSelection",
                     "type": {
                         "bool": true
                     }
                 },
                 "forcedSelection": {
                     "displayName": "Forced selection",
-                    "displayNameKey": "formattingGeneralForcedSelection",
+                    "displayNameKey": "Visual_ForcedSelection",
                     "type": {
                         "bool": true
                     }
@@ -173,7 +176,7 @@
         },
         "header": {
             "displayName": "Header",
-            "displayNameKey": "formattingHeader",
+            "displayNameKey": "Visual_Header",
             "properties": {
                 "show": {
                     "displayName": "Show",
@@ -183,14 +186,14 @@
                 },
                 "title": {
                     "displayName": "Title",
-                    "displayNameKey": "formattingHeaderTitle",
+                    "displayNameKey": "Visual_Title",
                     "type": {
                         "text": true
                     }
                 },
                 "fontColor": {
                     "displayName": "Font color",
-                    "displayNameKey": "formattingHeaderFontColor",
+                    "displayNameKey": "Visual_FontColor",
                     "type": {
                         "fill": {
                             "solid": {
@@ -201,7 +204,7 @@
                 },
                 "background": {
                     "displayName": "Background",
-                    "displayNameKey": "formattingHeaderBackground",
+                    "displayNameKey": "Visual_Background",
                     "type": {
                         "fill": {
                             "solid": {
@@ -212,14 +215,45 @@
                 },
                 "textSize": {
                     "displayName": "Text Size",
-                    "displayNameKey": "formattingHeaderTextSize",
+                    "displayNameKey": "Visual_TextSize",
                     "type": {
                         "numeric": true
                     }
                 },
+                "outline": {
+                    "displayName": "Outline Type",
+                    "displayNameKey": "formattingHeaderOutlineType",
+                    "type": {
+                        "enumeration": [{
+                            "value": "None",
+                            "displayNameKey": "formattingHeaderOutlineTypeNone",
+                            "displayName": "None"
+                        }, {
+                            "value": "BottomOnly",
+                            "displayNameKey": "formattingHeaderOutlineTypeBottomOnly",
+                            "displayName": "Bottom only"
+                        }, {
+                            "value": "TopOnly",
+                            "displayNameKey": "formattingHeaderOutlineTypeTopOnly",
+                            "displayName": "Top only"
+                        }, {
+                            "value": "TopBottom",
+                            "displayNameKey": "formattingHeaderOutlineTypeTopBottom",
+                            "displayName": "Top Bottom"
+                        }, {
+                            "value": "LeftRight",
+                            "displayNameKey": "formattingHeaderOutlineTypeLeftRight",
+                            "displayName": "Left Right"
+                        }, {
+                            "value": "Frame",
+                            "displayNameKey": "formattingHeaderOutlineTypeFrame",
+                            "displayName": "Frame"
+                        }]
+                    }
+                },
                 "outlineColor": {
                     "displayName": "Outline Color",
-                    "displayNameKey": "formattingHeaderOutlineColor",
+                    "displayNameKey": "Visual_OutlineColor",
                     "type": {
                         "fill": {
                             "solid": {
@@ -230,7 +264,7 @@
                 },
                 "outlineWeight": {
                     "displayName": "Outline Weight",
-                    "displayNameKey": "formattingHeaderOutlineWeight",
+                    "displayNameKey": "Visual_OutlineWeight",
                     "type": {
                         "numeric": true
                     }
@@ -239,11 +273,11 @@
         },
         "rows": {
             "displayName": "Chiclets",
-            "displayNameKey": "formattingChiclets",
+            "displayNameKey": "Visual_Chiclets",
             "properties": {
                 "fontColor": {
                     "displayName": "Text color",
-                    "displayNameKey": "formattingChicletsTextColor",
+                    "displayNameKey": "Visual_TextColor",
                     "type": {
                         "fill": {
                             "solid": {
@@ -254,28 +288,28 @@
                 },
                 "textSize": {
                     "displayName": "Text Size",
-                    "displayNameKey": "formattingChicletsTextSize",
+                    "displayNameKey": "Visual_TextSize",
                     "type": {
                         "numeric": true
                     }
                 },
                 "height": {
                     "displayName": "Height",
-                    "displayNameKey": "formattingChicletsHeight",
+                    "displayNameKey": "Visual_Height",
                     "type": {
                         "numeric": true
                     }
                 },
                 "width": {
                     "displayName": "Width",
-                    "displayNameKey": "formattingChicletsWidth",
+                    "displayNameKey": "Visual_Width",
                     "type": {
                         "numeric": true
                     }
                 },
                 "selectedColor": {
                     "displayName": "Selected Color",
-                    "displayNameKey": "formattingChicletsSelectedColor",
+                    "displayNameKey": "Visual_SelectedColor",
                     "type": {
                         "fill": {
                             "solid": {
@@ -286,7 +320,7 @@
                 },
                 "hoverColor": {
                     "displayName": "Hover Color",
-                    "displayNameKey": "formattingChicletsHoverColor",
+                    "displayNameKey": "Visual_HoverColor",
                     "type": {
                         "fill": {
                             "solid": {
@@ -297,7 +331,7 @@
                 },
                 "unselectedColor": {
                     "displayName": "Unselected Color",
-                    "displayNameKey": "formattingChicletsUnselectedColor",
+                    "displayNameKey": "Visual_UnselectedColor",
                     "type": {
                         "fill": {
                             "solid": {
@@ -308,7 +342,7 @@
                 },
                 "disabledColor": {
                     "displayName": "Disabled Color",
-                    "displayNameKey": "formattingChicletsDisabledColor",
+                    "displayNameKey": "Visual_DisabledColor",
                     "type": {
                         "fill": {
                             "solid": {
@@ -319,7 +353,7 @@
                 },
                 "background": {
                     "displayName": "Background",
-                    "displayNameKey": "formattingChicletsBackground",
+                    "displayNameKey": "Visual_Background",
                     "type": {
                         "fill": {
                             "solid": {
@@ -330,7 +364,7 @@
                 },
                 "transparency": {
                     "displayName": "Transparency",
-                    "displayNameKey": "formattingChicletsTransparancy",
+                    "displayNameKey": "Visual_Transparancy",
                     "description": "Set transparency for background color",
                     "type": {
                         "numeric": true
@@ -338,7 +372,7 @@
                 },
                 "outlineColor": {
                     "displayName": "Outline Color",
-                    "displayNameKey": "formattingChicletsOutlineColor",
+                    "displayNameKey": "Visual_OutlineColor",
                     "type": {
                         "fill": {
                             "solid": {
@@ -349,33 +383,33 @@
                 },
                 "outlineWeight": {
                     "displayName": "Outline Weight",
-                    "displayNameKey": "formattingChicletsOutlineWeight",
+                    "displayNameKey": "Visual_OutlineWeight",
                     "type": {
                         "numeric": true
                     }
                 },
                 "padding": {
                     "displayName": "Padding",
-                    "displayNameKey": "formattingChicletsPadding",
+                    "displayNameKey": "Visual_Padding",
                     "type": {
                         "numeric": true
                     }
                 },
                 "borderStyle": {
                     "displayName": "Outline Style",
-                    "displayNameKey": "formattingChicletsOutlineStyle",
+                    "displayNameKey": "Visual_OutlineStyle",
                     "type": {
                         "enumeration": [{
                             "value": "Rounded",
-                            "displayNameKey": "formattingChicletsOutlineStyleRounded",
+                            "displayNameKey": "Visual_OutlineStyle_Rounded",
                             "displayName": "Rounded"
                         }, {
                             "value": "Cut",
-                            "displayNameKey": "formattingChicletsOutlineStyleCut",
+                            "displayNameKey": "Visual_OutlineStyle_Cut",
                             "displayName": "Cut"
                         }, {
                             "value": "Square",
-                            "displayNameKey": "formattingChicletsOutlineStyleSquare",
+                            "displayNameKey": "Visual_OutlineStyle_Square",
                             "displayName": "Square"
                         }]
                     }
@@ -384,25 +418,25 @@
         },
         "images": {
             "displayName": "Images",
-            "displayNameKey": "formattingImages",
+            "displayNameKey": "Visual_Images",
             "properties": {
                 "imageSplit": {
                     "displayName": "Image Split",
-                    "displayNameKey": "formattingImagesSplit",
+                    "displayNameKey": "Visual_Images_Split",
                     "type": {
                         "numeric": true
                     }
                 },
                 "stretchImage": {
                     "displayName": "Stretch image",
-                    "displayNameKey": "formattingImagesStrech",
+                    "displayNameKey": "Visual_Images_Stretch",
                     "type": {
                         "bool": true
                     }
                 },
                 "bottomImage": {
                     "displayName": "Bottom image",
-                    "displayNameKey": "formattingImagesBottom",
+                    "displayNameKey": "Visual_Images_Bottom",
                     "type": {
                         "bool": true
                     }
