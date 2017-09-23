@@ -62,6 +62,7 @@ You can filter a list of chiclets items by category using string search. For act
 
 ### Images options
 - Image split: Height of Image for chiclet item
+- Round: Shows image as rounded
 - Stretch image: Stretch image to full chiclet item width
 - Bottom image:
   - If this option is turned on image will be in the bottom of chiclet item, under the text

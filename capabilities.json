@@ -427,6 +427,13 @@
                         "numeric": true
                     }
                 },
+                "imageRound": {
+                    "displayName": "Round",
+                    "displayNameKey": "Visual_Images_Round",
+                    "type": {
+                        "bool": true
+                    }
+                },
                 "stretchImage": {
                     "displayName": "Stretch image",
                     "displayNameKey": "Visual_Images_Stretch",

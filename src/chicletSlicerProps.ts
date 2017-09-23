@@ -66,6 +66,7 @@ module powerbi.extensibility.visual {
         },
         images: {
             imageSplit: <DataViewObjectPropertyIdentifier>{ objectName: 'images', propertyName: 'imageSplit' },
+            imageRound: <DataViewObjectPropertyIdentifier>{ objectName: 'images', propertyName: 'imageRound' },
             stretchImage: <DataViewObjectPropertyIdentifier>{ objectName: 'images', propertyName: 'stretchImage' },
             bottomImage: <DataViewObjectPropertyIdentifier>{ objectName: 'images', propertyName: 'bottomImage' },
         },

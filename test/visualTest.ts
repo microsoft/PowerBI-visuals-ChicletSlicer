@@ -1273,6 +1273,31 @@ module powerbi.extensibility.visual.test {
                         });
                 });
 
+                it("image round", () => {
+                    dataView.metadata.objects = {
+                        images: {
+                            imageRound: true
+                        }
+                    };
+
+                    visualBuilder.updateFlushAllD3Transitions(dataView);
+
+                    visualBuilder.slicerItemImages
+                        .toArray()
+                        .forEach((element: Element) => {
+                            expect($(element).is(".imageRound")).toBeTruthy();
+                        });
+
+                    (dataView.metadata.objects as any).images.imageRound = false;
+                    visualBuilder.updateFlushAllD3Transitions(dataView);
+
+                    visualBuilder.slicerItemImages
+                        .toArray()
+                        .forEach((element: Element) => {
+                            expect($(element).is(".imageRound")).toBeFalsy();
+                        });
+                });
+
                 it("stretch image", () => {
                     dataView.metadata.objects = {
                         images: {
