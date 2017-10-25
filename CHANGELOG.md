@@ -1,5 +1,5 @@
 ## 1.4.6
-* Added ability to view images in circular format ala Twitter
+* Added an option to show rounded images like in Twitter
 
 ## 1.4.5
 * Fixed issue: Multi selection doesn't work on mobile devices
