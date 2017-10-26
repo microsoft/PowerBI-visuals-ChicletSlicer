@@ -165,6 +165,7 @@ module powerbi.extensibility.visual {
         };
         images: {
             imageSplit: number;
+            imageRound: boolean;
             stretchImage: boolean;
             bottomImage: boolean;
         };
@@ -297,6 +298,7 @@ module powerbi.extensibility.visual {
                 },
                 images: {
                     imageSplit: 50,
+                    imageRound: false,
                     stretchImage: false,
                     bottomImage: false
                 }
@@ -373,6 +375,7 @@ module powerbi.extensibility.visual {
                 defaultSettings.slicerText.borderStyle = DataViewObjectsModule.getValue<string>(objects, chicletSlicerProps.rows.borderStyle, defaultSettings.slicerText.borderStyle);
 
                 defaultSettings.images.imageSplit = DataViewObjectsModule.getValue<number>(objects, chicletSlicerProps.images.imageSplit, defaultSettings.images.imageSplit);
+                defaultSettings.images.imageRound = DataViewObjectsModule.getValue<boolean>(objects, chicletSlicerProps.images.imageRound, defaultSettings.images.imageRound);
                 defaultSettings.images.stretchImage = DataViewObjectsModule.getValue<boolean>(objects, chicletSlicerProps.images.stretchImage, defaultSettings.images.stretchImage);
                 defaultSettings.images.bottomImage = DataViewObjectsModule.getValue<boolean>(objects, chicletSlicerProps.images.bottomImage, defaultSettings.images.bottomImage);
             }
@@ -578,6 +581,7 @@ module powerbi.extensibility.visual {
                 objectName: 'images',
                 properties: {
                     imageSplit: slicerSettings.images.imageSplit,
+                    imageRound: slicerSettings.images.imageRound,
                     stretchImage: slicerSettings.images.stretchImage,
                     bottomImage: slicerSettings.images.bottomImage,
                 }
@@ -958,6 +962,7 @@ module powerbi.extensibility.visual {
                                 return true;
                             }
                         },
+                        'imageRound': settings.images.imageRound,
                         'stretchImage': settings.images.stretchImage,
                         'bottomImage': settings.images.bottomImage
                     })
