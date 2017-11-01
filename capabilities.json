@@ -75,6 +75,7 @@
             "properties": {
                 "selection": {
                     "displayName": "Selection",
+                    "displayNameKey": "Visual_Selection",
                     "type": {
                         "text": true
                     }
@@ -180,6 +181,7 @@
             "properties": {
                 "show": {
                     "displayName": "Show",
+                    "displayNameKey": "Visual_show",
                     "type": {
                         "bool": true
                     }
