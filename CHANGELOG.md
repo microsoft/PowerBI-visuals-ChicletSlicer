@@ -1,3 +1,6 @@
+## 1.4.7
+* UPD: was added image checking
+
 ## 1.4.6
 * Added an option to show rounded images like in Twitter
 

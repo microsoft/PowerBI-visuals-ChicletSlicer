@@ -51,6 +51,7 @@ module powerbi.extensibility.visual {
 
     // powerbi.extensibility.utils.dataview
     import DataViewObjectsModule = powerbi.extensibility.utils.dataview.DataViewObjects;
+    import ValidationHelper = powerbi.extensibility.utils.dataview.validationHelper;
 
     // powerbi.extensibility.utils.type
     import PixelConverter = powerbi.extensibility.utils.type.PixelConverter;
@@ -695,6 +696,13 @@ module powerbi.extensibility.visual {
             } else if (this.settings.general.showDisabled === ChicletSlicerShowDisabled.HIDE) {
                 data.slicerDataPoints = data.slicerDataPoints.filter(x => x.selectable);
             }
+
+            // Validate image URL
+            data.slicerDataPoints.forEach(x => {
+                if (!ValidationHelper.isImageUrlAllowed(x.imageURL)) {
+                    x.imageURL = '';
+                }
+            });
 
             if (this.settings.slicerText.height === ChicletSlicer.MinImageSplit) {
                 let extraSpaceForCell = ChicletSlicer.СellTotalInnerPaddings + ChicletSlicer.СellTotalInnerBorders,
