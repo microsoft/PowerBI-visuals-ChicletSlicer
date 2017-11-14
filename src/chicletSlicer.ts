@@ -701,12 +701,6 @@ module powerbi.extensibility.visual {
             data.slicerDataPoints.forEach(x => {
                 if (!ValidationHelper.isImageUrlAllowed(x.imageURL)) {
                     x.imageURL = '';
-                } else {
-                    ValidationHelper.isFileImage(x.imageURL, (isImage, contentType) => {
-                         if (!isImage) {
-                            x.imageURL = '';
-                         }
-                    });
                 }
             });
 
