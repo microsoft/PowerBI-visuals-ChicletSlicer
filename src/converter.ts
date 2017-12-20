@@ -39,6 +39,7 @@ module powerbi.extensibility.visual {
         private dataViewCategorical: DataViewCategorical;
         private dataViewMetadata: DataViewMetadata;
         private category: DataViewCategoryColumn;
+        private image: DataViewCategoryColumn;
         private categoryIdentities: DataViewScopeIdentity[];
         private categoryValues: any[];
         private categoryFormatString: string;
@@ -59,6 +60,7 @@ module powerbi.extensibility.visual {
 
             if (dataViewCategorical.categories && dataViewCategorical.categories.length > 0) {
                 this.category = dataViewCategorical.categories[0];
+                this.image = dataViewCategorical.categories[1]; // may be undefined
                 this.categoryIdentities = this.category.identity;
                 this.categoryValues = this.category.values;
                 this.identityFields = <ISQExpr[]>this.category.identityFields;
@@ -155,16 +157,16 @@ module powerbi.extensibility.visual {
                                     selectable = !(seriesData.highlights[categoryIndex] === null);
                                     this.hasHighlights = true;
                                 }
-                                if (seriesData.source.groupName && seriesData.source.groupName !== '') {
-                                    imageURL = converterHelper.getFormattedLegendLabel(seriesData.source, dataViewCategorical.values);
-
-                                    if (!/^(ftp|http|https):\/\/[^ "]+$/.test(imageURL) &&
-                                        !/^data:image/.test(imageURL)) {
-                                        imageURL = undefined;
-                                    }
-                                }
                             }
                         }
+                    }
+
+                    if (this.image) {
+                        if (!/^(ftp|http|https):\/\/[^ "]+$/.test(imageURL) &&
+                            !/^data:image/.test(imageURL)) {
+                            imageURL = undefined;
+                        }
+                        imageURL = this.image.values[categoryIndex] as string;
                     }
 
                     let categorySelectionId: ISelectionId = this.host.createSelectionIdBuilder()

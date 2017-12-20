@@ -1,3 +1,6 @@
+## 1.4.7
+* FIX: Images are shown even if Values bucket is not presented
+
 ## 1.4.6
 * Added an option to show rounded images like in Twitter
 

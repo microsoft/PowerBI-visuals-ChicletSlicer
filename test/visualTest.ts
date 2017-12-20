@@ -106,6 +106,42 @@ module powerbi.extensibility.visual.test {
                 });
             });
 
+            it("show images without values", (done) => {
+                let dataViewCst = defaultDataViewBuilder.getDataViewWithoutValues();
+
+                visualBuilder.updateRenderTimeout(dataViewCst, () => {
+                    expect(dataViewCst.categorical.values).toBeUndefined();
+                    expect(visualBuilder.slicerItemImages.length).toBe(5);
+                    visualBuilder.slicerItemImages
+                    .toArray()
+                    .forEach((element: Element) => {
+                        expect($(element).attr("src").indexOf("https://")).toBe(0);
+                    });
+
+                    done();
+                });
+            });
+
+            it("show images with gaps without values", (done) => {
+                let dataViewCst = defaultDataViewBuilder.getDataViewWithoutValues(null, null, true);
+
+                visualBuilder.updateRenderTimeout(dataViewCst, () => {
+                    expect(visualBuilder.slicerItemImages.length).toBe(5);
+                    visualBuilder.slicerItemImages
+                    .toArray()
+                    .forEach((element: Element, index: number) => {
+                        expect($(element).prop("tagName")).toBe("IMG");
+                        if ([0, 2, 4].indexOf(index) > -1) {
+                            expect($(element).attr("src").indexOf("https://")).toBe(0);
+                        } else {
+                            expect($(element).attr("src")).toBe("");
+                        }
+                    });
+
+                    done();
+                });
+            });
+
             it("fit chiclet height to font size with images", (done) => {
                 dataView.metadata.objects = {
                     rows: {

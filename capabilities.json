@@ -38,9 +38,10 @@
             ],
             "categorical": {
                 "categories": {
-                    "for": {
-                        "in": "Category"
-                    },
+                    "select": [
+                        { "bind": { "to": "Category" } },
+                        { "bind": { "to": "Image" } }
+                    ],
                     "dataReductionAlgorithm": {
                         "top": {
                             "count": 10000
@@ -48,22 +49,14 @@
                     }
                 },
                 "values": {
-                    "group": {
-                        "by": "Image",
-                        "select": [
-                            {
-                                "bind": {
-                                    "to": "Values"
-                                }
-                            }
-                        ],
-                        "dataReductionAlgorithm": {
-                            "top": {
-                                "count": 10000
-                            }
+                    "select": [
+                        { "bind": { "to": "Values" } }
+                    ],
+                    "dataReductionAlgorithm": {
+                        "top": {
+                            "count": 10000
                         }
-                    },
-                    "includeEmptyGroups": true
+                    }                    
                 }
             }
         }
