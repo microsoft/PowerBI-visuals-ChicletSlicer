@@ -51,6 +51,36 @@ module powerbi.extensibility.visual.test {
             "https://powerbi.com/picture5.png"
         ];
 
+        public valuesImageWithGaps: string[] = [
+            "https://powerbi.com/picture1.png",
+            "",
+            "https://powerbi.com/picture3.png",
+            null,
+            "https://powerbi.com/picture5.png"
+        ];
+
+        public getDataViewWithoutValues(columnNames?: string[], customizeColumns?: CustomizeColumnFn, imageGaps?: boolean): DataView {
+            return this.createCategoricalDataViewBuilder([
+                {
+                    source: {
+                        displayName: ChicletSlicerData.ColumnCategory,
+                        roles: { Category: true },
+                        type: this.valuesCategory
+                    },
+                    values: this.valuesCategory
+                },
+                {
+                    source: {
+                        displayName: ChicletSlicerData.ColumnImage,
+                        roles: { Image: true },
+                        type: (imageGaps === true ? this.valuesImageWithGaps : this.valuesImage)
+                    },
+                    values: (imageGaps === true ? this.valuesImageWithGaps : this.valuesImage)
+                }
+            ],
+            [], columnNames, customizeColumns).build();
+        }
+
         public getDataView(columnNames?: string[], customizeColumns?: CustomizeColumnFn): DataView {
             return this.createCategoricalDataViewBuilder([
                 {
@@ -62,11 +92,10 @@ module powerbi.extensibility.visual.test {
                     values: this.valuesCategory
                 },
                 {
-                    isGroup: true,
                     source: {
                         displayName: ChicletSlicerData.ColumnImage,
                         roles: { Image: true },
-                        type: ValueType.fromDescriptor({ text: true })
+                        type: this.valuesImage
                     },
                     values: this.valuesImage
                 }

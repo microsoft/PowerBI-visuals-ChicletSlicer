@@ -18,7 +18,6 @@
     "node_modules/powerbi-visuals-utils-interactivityutils/lib/index.d.ts",
     "node_modules/powerbi-visuals-utils-colorutils/lib/index.d.ts",
     "src/chicletSlicerProps.ts",
-    "src/converterHelper.ts",
     "src/converter.ts",
     "src/tableView.ts",
     "src/webBehavior.ts",

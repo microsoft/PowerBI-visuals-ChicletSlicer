@@ -327,6 +327,9 @@ module powerbi.extensibility.visual {
                 !dataView.categorical ||
                 !dataView.categorical.categories ||
                 !dataView.categorical.categories[0] ||
+                !dataView.categorical.categories[0].source ||
+                !dataView.categorical.categories[0].source.roles ||
+                !dataView.categorical.categories[0].source.roles["Category"] ||
                 !dataView.categorical.categories[0].values ||
                 !(dataView.categorical.categories[0].values.length > 0)) {
                 return;
