@@ -48,7 +48,6 @@ module powerbi.extensibility.visual {
         dataPoints: ChicletSlicerDataPoint[];
         interactivityService: IInteractivityService;
         slicerSettings: ChicletSlicerSettings;
-        isSelectionLoaded: boolean;
         identityFields: ISQExpr[];
     }
 
@@ -79,9 +78,7 @@ module powerbi.extensibility.visual {
 
             this.selectionHandler = selectionHandler;
 
-            if (!this.options.isSelectionLoaded) {
-                this.loadSelection();
-            }
+            this.loadSelection();
 
             slicers.on("mouseover", (dataPoint: ChicletSlicerDataPoint) => {
                 if (dataPoint.selectable) {
@@ -197,23 +194,21 @@ module powerbi.extensibility.visual {
         }
 
         public loadSelection(): void {
-            const savedSelectionIds: ISelectionId[] = this.slicerSettings.general.getSavedSelection();
+            const restoredSelectionIds: visuals.ISelectionId[] = this.slicerSettings.general.getSavedSelection();
 
-            if (savedSelectionIds.length) {
-                this.selectionHandler.handleClearSelection();
+            this.selectionHandler.handleClearSelection();
 
-                this.dataPoints
-                    .filter(dataPoint => {
-                        return savedSelectionIds.some((selectionId: ISelectionId) => {
-                            return (dataPoint.identity as any).getKey() === selectionId;
-                        });
-                    })
-                    .forEach((dataPoint: ChicletSlicerDataPoint) => {
-                        this.selectionHandler.handleSelection(dataPoint, true);
+            this.dataPoints
+                .filter(dataPoint => {
+                    return restoredSelectionIds.some((selectionId: visuals.ISelectionId) => {
+                        const identity: visuals.ISelectionId = dataPoint.identity as visuals.ISelectionId;
+
+                        return identity.equals(selectionId);
                     });
-
-                this.selectionHandler.applySelectionFilter();
-            }
+                })
+                .forEach((dataPoint: ChicletSlicerDataPoint) => {
+                    this.selectionHandler.handleSelection(dataPoint, true);
+                });
         }
 
         public saveSelection(): void {
@@ -233,8 +228,6 @@ module powerbi.extensibility.visual {
             });
 
             this.selectionHandler.applySelectionFilter();
-
-            this.slicerSettings.general.setSavedSelection(filter, selectionIdKeys);
         }
 
         public renderSelection(hasSelection: boolean): void {

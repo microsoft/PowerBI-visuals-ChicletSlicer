@@ -120,10 +120,9 @@ module powerbi.extensibility.visual {
             forcedSelection: boolean;
             showDisabled: string;
             selection: string;
+            filter: any;
             selfFilterEnabled: boolean;
-            getSavedSelection?: () => ISelectionId[];
-            setSavedSelection?: (filter: ISemanticFilter, selectionIds: string[]) => void;
-            removeSavedSelection?: () => void;
+            getSavedSelection?: () => visuals.ISelectionId[];
         };
         margin: IMargin;
         header: {
@@ -187,7 +186,6 @@ module powerbi.extensibility.visual {
 
         private waitingForData: boolean;
         private isSelectionLoaded: boolean;
-        private isSelectionSaved: boolean;
 
         /**
          * It's public for testability.
@@ -249,7 +247,8 @@ module powerbi.extensibility.visual {
                     forcedSelection: false,
                     showDisabled: ChicletSlicerShowDisabled.INPLACE,
                     selection: null,
-                    selfFilterEnabled: false
+                    selfFilterEnabled: false,
+                    filter: undefined,
                 },
                 margin: {
                     top: 50,
@@ -350,6 +349,7 @@ module powerbi.extensibility.visual {
                 defaultSettings.general.forcedSelection = DataViewObjectsModule.getValue<boolean>(objects, chicletSlicerProps.general.forcedSelection, defaultSettings.general.forcedSelection);
                 defaultSettings.general.showDisabled = DataViewObjectsModule.getValue<string>(objects, chicletSlicerProps.general.showDisabled, defaultSettings.general.showDisabled);
                 defaultSettings.general.selection = DataViewObjectsModule.getValue(dataView.metadata.objects, chicletSlicerProps.general.selection, defaultSettings.general.selection);
+                defaultSettings.general.filter = DataViewObjectsModule.getValue(dataView.metadata.objects, chicletSlicerProps.general.filter, defaultSettings.general.filter);
                 defaultSettings.general.selfFilterEnabled = DataViewObjectsModule.getValue<boolean>(objects, chicletSlicerProps.general.selfFilterEnabled, defaultSettings.general.selfFilterEnabled);
 
                 defaultSettings.header.show = DataViewObjectsModule.getValue<boolean>(objects, chicletSlicerProps.header.show, defaultSettings.header.show);
@@ -642,49 +642,49 @@ module powerbi.extensibility.visual {
 
             data.slicerSettings.general.getSavedSelection = () => {
                 try {
-                    return JSON.parse(this.slicerData.slicerSettings.general.selection) || [];
+                    if (this.slicerData.slicerSettings.general.filter
+                        && this.slicerData.slicerSettings.general.filter.whereItems
+                        && this.slicerData.slicerSettings.general.filter.whereItems[0]
+                        && this.slicerData.slicerSettings.general.filter.whereItems[0].condition
+                        && this.slicerData.slicerSettings.general.filter.whereItems[0].condition.values
+                    ) {
+                        const condition: { values: any[], args: any[] } = this.slicerData.slicerSettings.general.filter.whereItems[0].condition;
+
+                        return condition.values.map((valueArray: any[]) => {
+                            const sqlExpr = condition.args
+                                .map((arg, argIndex) => {
+                                    return new powerbi["data"].SQCompareExpr(0, arg, valueArray[argIndex]);
+                                })
+                                .reduce((prExp, curExpr) => {
+                                    if (!prExp) {
+                                        return curExpr;
+                                    }
+
+                                    return powerbi["data"].SQExprBuilder.and(prExp, curExpr);
+                                }, undefined);
+
+                            const identity: DataViewScopeIdentity = powerbi["data"].createDataViewScopeIdentity(sqlExpr);
+
+                            const category: DataViewCategoryColumn = {
+                                source: {
+                                    displayName: null,
+                                    queryName: "ChicletSlicer",
+                                },
+                                values: null,
+                                identity: [identity]
+                            };
+
+                            return this.visualHost.createSelectionIdBuilder()
+                                .withCategory(category, 0)
+                                .createSelectionId();
+                        });
+                    }
+
+                    return [];
                 } catch (ex) {
                     return [];
                 }
             };
-
-            data.slicerSettings.general.setSavedSelection = (filter: ISemanticFilter, selectionIds: string[]): void => {
-                this.isSelectionSaved = true;
-                this.visualHost.persistProperties(<VisualObjectInstancesToPersist>{
-                    merge: [{
-                        objectName: "general",
-                        selector: null,
-                        properties: {
-                            // filter: filter || null,
-                            selection: selectionIds && JSON.stringify(selectionIds) || ""
-                        }
-                    }]
-                });
-            };
-
-            data.slicerSettings.general.removeSavedSelection = (): void => {
-                this.isSelectionSaved = true;
-                this.visualHost.persistProperties(<VisualObjectInstancesToPersist>{
-                    merge: [{
-                        objectName: "general",
-                        selector: null,
-                        properties: {
-                            filter: null,
-                            selection: ""
-                        }
-                    }]
-                });
-            };
-
-            if (this.slicerData) {
-                if (this.isSelectionSaved) {
-                    this.isSelectionLoaded = true;
-                } else {
-                    this.isSelectionLoaded = this.slicerData.slicerSettings.general.selection === data.slicerSettings.general.selection;
-                }
-            } else {
-                this.isSelectionLoaded = false;
-            }
 
             this.slicerData = data;
             this.settings = this.slicerData.slicerSettings;
@@ -1024,7 +1024,6 @@ module powerbi.extensibility.visual {
                         slicerClear: slicerClear,
                         interactivityService: this.interactivityService,
                         slicerSettings: data.slicerSettings,
-                        isSelectionLoaded: this.isSelectionLoaded || data.hasHighlights,
                         identityFields: data.identityFields
                     };
 

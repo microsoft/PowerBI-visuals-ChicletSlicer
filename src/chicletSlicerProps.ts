@@ -35,6 +35,7 @@ module powerbi.extensibility.visual {
             multiselect: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'multiselect' },
             forcedSelection: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'forcedSelection' },
             selection: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'selection' },
+            filter: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'filter' },
             selfFilterEnabled: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'selfFilterEnabled' },
         },
         header: {
