@@ -194,21 +194,7 @@ module powerbi.extensibility.visual {
         }
 
         public loadSelection(): void {
-            const restoredSelectionIds: visuals.ISelectionId[] = this.slicerSettings.general.getSavedSelection();
-
-            this.selectionHandler.handleClearSelection();
-
-            this.dataPoints
-                .filter(dataPoint => {
-                    return restoredSelectionIds.some((selectionId: visuals.ISelectionId) => {
-                        const identity: visuals.ISelectionId = dataPoint.identity as visuals.ISelectionId;
-
-                        return identity.equals(selectionId);
-                    });
-                })
-                .forEach((dataPoint: ChicletSlicerDataPoint) => {
-                    this.selectionHandler.handleSelection(dataPoint, true);
-                });
+            this.interactivityService.applySelectionFromFitler(this.slicerSettings.general.filter);
         }
 
         public saveSelection(): void {

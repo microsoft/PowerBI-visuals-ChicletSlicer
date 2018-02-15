@@ -117,10 +117,6 @@ module powerbi.extensibility.visual.test {
                 });
         }
 
-        public getSavedSelection(): ISelectionId[] {
-            return this.visual["settings"]["general"].getSavedSelection();
-        }
-
         public getSelectionState(): SelectionState {
             return {
                 items: this.visual["settings"]["general"]["selection"],

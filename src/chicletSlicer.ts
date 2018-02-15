@@ -44,6 +44,7 @@ module powerbi.extensibility.visual {
     import VisualObjectInstancesToPersist = powerbi.VisualObjectInstancesToPersist;
     import DataViewObjectPropertyIdentifier = powerbi.DataViewObjectPropertyIdentifier;
     import EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInstancesOptions;
+    import FilterManager = powerbi.extensibility.utils.filter.FilterManager;
 
     // powerbi.data
     import ISQExpr = powerbi.data.ISQExpr;
@@ -122,7 +123,6 @@ module powerbi.extensibility.visual {
             selection: string;
             filter: any;
             selfFilterEnabled: boolean;
-            getSavedSelection?: () => visuals.ISelectionId[];
         };
         margin: IMargin;
         header: {
@@ -639,52 +639,6 @@ module powerbi.extensibility.visual {
             data.slicerSettings.general.rows = data.slicerSettings.general.rows > ChicletSlicer.MaxRows
                 ? ChicletSlicer.MaxRows
                 : data.slicerSettings.general.rows;
-
-            data.slicerSettings.general.getSavedSelection = () => {
-                try {
-                    if (this.slicerData.slicerSettings.general.filter
-                        && this.slicerData.slicerSettings.general.filter.whereItems
-                        && this.slicerData.slicerSettings.general.filter.whereItems[0]
-                        && this.slicerData.slicerSettings.general.filter.whereItems[0].condition
-                        && this.slicerData.slicerSettings.general.filter.whereItems[0].condition.values
-                    ) {
-                        const condition: { values: any[], args: any[] } = this.slicerData.slicerSettings.general.filter.whereItems[0].condition;
-
-                        return condition.values.map((valueArray: any[]) => {
-                            const sqlExpr = condition.args
-                                .map((arg, argIndex) => {
-                                    return new powerbi["data"].SQCompareExpr(0, arg, valueArray[argIndex]);
-                                })
-                                .reduce((prExp, curExpr) => {
-                                    if (!prExp) {
-                                        return curExpr;
-                                    }
-
-                                    return powerbi["data"].SQExprBuilder.and(prExp, curExpr);
-                                }, undefined);
-
-                            const identity: DataViewScopeIdentity = powerbi["data"].createDataViewScopeIdentity(sqlExpr);
-
-                            const category: DataViewCategoryColumn = {
-                                source: {
-                                    displayName: null,
-                                    queryName: "ChicletSlicer",
-                                },
-                                values: null,
-                                identity: [identity]
-                            };
-
-                            return this.visualHost.createSelectionIdBuilder()
-                                .withCategory(category, 0)
-                                .createSelectionId();
-                        });
-                    }
-
-                    return [];
-                } catch (ex) {
-                    return [];
-                }
-            };
 
             this.slicerData = data;
             this.settings = this.slicerData.slicerSettings;
