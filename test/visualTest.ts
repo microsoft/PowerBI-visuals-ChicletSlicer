@@ -113,10 +113,10 @@ module powerbi.extensibility.visual.test {
                     expect(dataViewCst.categorical.values).toBeUndefined();
                     expect(visualBuilder.slicerItemImages.length).toBe(5);
                     visualBuilder.slicerItemImages
-                    .toArray()
-                    .forEach((element: Element) => {
-                        expect($(element).attr("src").indexOf("https://")).toBe(0);
-                    });
+                        .toArray()
+                        .forEach((element: Element) => {
+                            expect($(element).attr("src").indexOf("https://")).toBe(0);
+                        });
 
                     done();
                 });
@@ -128,15 +128,15 @@ module powerbi.extensibility.visual.test {
                 visualBuilder.updateRenderTimeout(dataViewCst, () => {
                     expect(visualBuilder.slicerItemImages.length).toBe(5);
                     visualBuilder.slicerItemImages
-                    .toArray()
-                    .forEach((element: Element, index: number) => {
-                        expect($(element).prop("tagName")).toBe("IMG");
-                        if ([0, 2, 4].indexOf(index) > -1) {
-                            expect($(element).attr("src").indexOf("https://")).toBe(0);
-                        } else {
-                            expect($(element).attr("src")).toBe("");
-                        }
-                    });
+                        .toArray()
+                        .forEach((element: Element, index: number) => {
+                            expect($(element).prop("tagName")).toBe("IMG");
+                            if ([0, 2, 4].indexOf(index) > -1) {
+                                expect($(element).attr("src").indexOf("https://")).toBe(0);
+                            } else {
+                                expect($(element).attr("src")).toBe("");
+                            }
+                        });
 
                     done();
                 });
@@ -467,44 +467,6 @@ module powerbi.extensibility.visual.test {
             });
 
             describe("Selection", () => {
-                const selectionId: any[] = [{
-                    "selector": { "data": [] }
-                }];
-
-                it("saved chiclet selection is received", (done) => {
-                    dataView.metadata.objects = {
-                        general: {
-                            selection: JSON.stringify(selectionId)
-                        }
-                    };
-
-                    visualBuilder.updateRenderTimeout(dataView, () => {
-                        const selection: ISelectionId[] = visualBuilder.getSavedSelection();
-
-                        expect(selection).toBeDefined();
-                        expect(selection).toEqual(selectionId);
-
-                        done();
-                    });
-                });
-
-                it("chiclet selection is saved", (done) => {
-                    visualBuilder.updateRenderTimeout(dataView, () => {
-                        visualBuilder.saveSelection(selectionId);
-
-                        visualBuilder.updateRenderTimeout(dataView, () => {
-                            const selection: string = visualBuilder.getSelectionState().items,
-                                stateSelection: boolean = visualBuilder.getSelectionState().state;
-
-                            expect(selection).toBeDefined();
-                            expect(stateSelection).toBeDefined();
-                            expect(stateSelection).toBe(true);
-
-                            done();
-                        });
-                    });
-                });
-
                 it("a chiclet should be selected after the loading if `forcedSelection` is true", (done) => {
                     dataView.metadata.objects = {
                         general: {
@@ -706,41 +668,41 @@ module powerbi.extensibility.visual.test {
                         highlightedColor);
                 });
 
-                it( `categories data without disabled elements must be in same sequence after switching to
+                it(`categories data without disabled elements must be in same sequence after switching to
                     'Bottom' in 'Show disabled' setting`, (done) => {
-                    let valuesCategoryData: string[] = [
-                        "Alabama",
-                        "Alaska",
-                        "Arizona",
-                        "Arkansas",
-                        "California",
-                        "Colorado",
-                        "Connecticut",
-                        "Delaware",
-                        "Florida",
-                        "Georgia",
-                        "Hawaii"
-                    ];
+                        let valuesCategoryData: string[] = [
+                            "Alabama",
+                            "Alaska",
+                            "Arizona",
+                            "Arkansas",
+                            "California",
+                            "Colorado",
+                            "Connecticut",
+                            "Delaware",
+                            "Florida",
+                            "Georgia",
+                            "Hawaii"
+                        ];
 
-                    dataView.categorical.categories[0].values = valuesCategoryData;
-                    dataView.metadata.objects = {
-                        general: {
-                            columns: 3,
-                            orientation: "Horizontal",
-                            showDisabled: "Bottom"
+                        dataView.categorical.categories[0].values = valuesCategoryData;
+                        dataView.metadata.objects = {
+                            general: {
+                                columns: 3,
+                                orientation: "Horizontal",
+                                showDisabled: "Bottom"
+                            }
+                        };
+
+                        visualBuilder.updateFlushAllD3Transitions(dataView);
+
+                        const slicerTextElements: JQuery = visualBuilder.slicerTextElements;
+
+                        for (let i: number = 0, length: number = slicerTextElements.length; i < length; i++) {
+                            expect(slicerTextElements[i].textContent).toEqual(valuesCategoryData[i]);
                         }
-                    };
 
-                    visualBuilder.updateFlushAllD3Transitions(dataView);
-
-                    const slicerTextElements: JQuery = visualBuilder.slicerTextElements;
-
-                    for (let i: number = 0, length: number = slicerTextElements.length; i < length; i++) {
-                        expect(slicerTextElements[i].textContent).toEqual(valuesCategoryData[i]);
-                    }
-
-                    done();
-                });
+                        done();
+                    });
 
                 it("search header is visible", (done) => {
                     dataView.metadata.objects = {
@@ -776,14 +738,14 @@ module powerbi.extensibility.visual.test {
 
                     visualBuilder.update(dataView);
 
-                    const searchHeader: HTMLElement = visualBuilder.searchHeader;
-                    const slicerHeaderText: HTMLElement = visualBuilder.slicerHeaderText;
+                    const searchHeader: JQuery = visualBuilder.searchHeader;
+                    const slicerHeaderText: JQuery = visualBuilder.slicerHeaderText;
 
                     const actualValue = visualBuilder.viewport.height -
                         (searchHeader.height() +
-                        slicerHeaderText.height() +
-                        dataView.metadata.objects.header.outlineWeight +
-                        dataView.metadata.objects.header.borderBottomWidth);
+                            slicerHeaderText.height() +
+                            (dataView.metadata.objects.header.outlineWeight as number) +
+                            (dataView.metadata.objects.header.borderBottomWidth as number));
 
                     const expectedValue = visualBuilder.slicerBody.height();
 
@@ -1013,7 +975,7 @@ module powerbi.extensibility.visual.test {
                 it("default height in settings", (done) => {
 
                     visualBuilder.updateRenderTimeout(dataView, () => {
-                        expect(visualBuilder.visual.settings.slicerText.height).not.toEqual(0);
+                        expect(visualBuilder.instance.settings.slicerText.height).not.toEqual(0);
                         done();
                     });
 
@@ -1040,7 +1002,7 @@ module powerbi.extensibility.visual.test {
                 it("default width in settings", (done) => {
 
                     visualBuilder.updateRenderTimeout(dataView, () => {
-                        expect(visualBuilder.visual.settings.slicerText.width).not.toEqual(0);
+                        expect(visualBuilder.instance.settings.slicerText.width).not.toEqual(0);
                         done();
                     });
 

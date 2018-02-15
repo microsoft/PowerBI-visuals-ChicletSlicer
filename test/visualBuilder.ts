@@ -48,6 +48,10 @@ module powerbi.extensibility.visual.test {
             return new VisualClass(options);
         }
 
+        public get instance(): VisualClass {
+            return this.visual;
+        }
+
         public get mainElement(): JQuery {
             return this.element.children("div.chicletSlicer");
         }
@@ -102,10 +106,6 @@ module powerbi.extensibility.visual.test {
             return this.slicerItemContainers.children("img.slicer-img-wrapper");
         }
 
-        public saveSelection(selectionIds): void {
-            return this.visual.settings.general.setSavedSelection(null, selectionIds);
-        }
-
         public getDataPoints(): ChicletSlicerDataPoint[] {
             return this.visual.behavior.dataPoints;
         }
@@ -115,10 +115,6 @@ module powerbi.extensibility.visual.test {
                 .filter((dataPoint: ChicletSlicerDataPoint) => {
                     return dataPoint.selected;
                 });
-        }
-
-        public getSavedSelection(): ISelectionId[] {
-            return this.visual["settings"]["general"].getSavedSelection();
         }
 
         public getSelectionState(): SelectionState {
