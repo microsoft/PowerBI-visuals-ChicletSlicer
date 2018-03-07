@@ -194,25 +194,10 @@ module powerbi.extensibility.visual {
         }
 
         public loadSelection(): void {
-            this.interactivityService.applySelectionFromFitler(this.slicerSettings.general.filter);
+            this.interactivityService.applySelectionFromFilter(this.slicerSettings.general.filter);
         }
 
         public saveSelection(): void {
-            let filter: ISemanticFilter,
-                selectedIds: ISelectionId[],
-                selectionIdKeys: string[],
-                identityFields: ISQExpr[];
-
-            selectedIds = <ISelectionId[]>(<any>this.selectionHandler).selectedIds;
-
-            identityFields = this.options
-                ? this.options.identityFields
-                : [];
-
-            selectionIdKeys = selectedIds.map((selectionId: ISelectionId) => {
-                return (selectionId as any).getKey();
-            });
-
             this.selectionHandler.applySelectionFilter();
         }
 
