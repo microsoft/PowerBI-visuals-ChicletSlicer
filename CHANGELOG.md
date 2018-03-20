@@ -1,3 +1,9 @@
+## 1.4.9
+* FIX: Un-Filtering doesn't work at the initial loading
+
+## 1.4.8
+* Add: PBI Bookmarks support
+
 ## 1.4.7
 * FIX: Images are shown even if Values bucket is not presented
 

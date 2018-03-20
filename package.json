@@ -1,6 +1,6 @@
 {
   "name": "powerbi-visuals-chicletslicer",
-  "version": "1.4.8",
+  "version": "1.4.9",
   "author": {
     "name": "Microsoft",
     "email": "pbicvsupport@microsoft.com"
@@ -36,11 +36,12 @@
     "karma-sourcemap-loader": "0.3.7",
     "karma-typescript-preprocessor": "0.3.1",
     "lodash": "4.16.2",
-    "powerbi-visuals-tools": "^1.6.1",
+    "powerbi-models": "^1.0.2",
+    "powerbi-visuals-tools": "1.11.1",
     "powerbi-visuals-utils-colorutils": "0.2.1",
     "powerbi-visuals-utils-dataviewutils": "1.0.1",
     "powerbi-visuals-utils-formattingutils": "0.4.0",
-    "powerbi-visuals-utils-interactivityutils": "2.0.2",
+    "powerbi-visuals-utils-interactivityutils": "3.1.0",
     "powerbi-visuals-utils-svgutils": "0.2.1",
     "powerbi-visuals-utils-testutils": "0.2.2",
     "powerbi-visuals-utils-typeutils": "0.2.1",
