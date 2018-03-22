@@ -45,5 +45,8 @@
 	"formattingHeaderOutlineTypeTopOnly": "Endast överkant",
 	"formattingHeaderOutlineTypeTopBottom": "Överkant till nederkant",
 	"formattingHeaderOutlineTypeLeftRight": "Vänster till höger",
-	"formattingHeaderOutlineTypeFrame": "Ram"
+	"formattingHeaderOutlineTypeFrame": "Ram",
+	"Visual_Images_Round": "Avrunda",
+	"Visual_Selection": "Val",
+	"Visual_show": "Visa"
 }

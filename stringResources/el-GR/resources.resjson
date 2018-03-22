@@ -45,5 +45,8 @@
 	"formattingHeaderOutlineTypeTopOnly": "Μόνο επάνω",
 	"formattingHeaderOutlineTypeTopBottom": "Επάνω κάτω",
 	"formattingHeaderOutlineTypeLeftRight": "Αριστερά δεξιά",
-	"formattingHeaderOutlineTypeFrame": "Πλαίσιο"
+	"formattingHeaderOutlineTypeFrame": "Πλαίσιο",
+	"Visual_Images_Round": "Στρογγυλοποίηση",
+	"Visual_Selection": "Επιλογή",
+	"Visual_show": "Εμφάνιση"
 }

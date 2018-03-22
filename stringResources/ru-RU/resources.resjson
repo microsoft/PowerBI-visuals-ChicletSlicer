@@ -45,5 +45,8 @@
 	"formattingHeaderOutlineTypeTopOnly": "Только сверху",
 	"formattingHeaderOutlineTypeTopBottom": "Сверху вниз",
 	"formattingHeaderOutlineTypeLeftRight": "Слева направо",
-	"formattingHeaderOutlineTypeFrame": "Рамка"
+	"formattingHeaderOutlineTypeFrame": "Рамка",
+	"Visual_Images_Round": "Округление",
+	"Visual_Selection": "Выбор",
+	"Visual_show": "Показать"
 }

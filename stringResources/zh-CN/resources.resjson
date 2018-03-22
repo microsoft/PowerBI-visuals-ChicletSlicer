@@ -45,5 +45,8 @@
 	"formattingHeaderOutlineTypeTopOnly": "仅顶部",
 	"formattingHeaderOutlineTypeTopBottom": "从上向下",
 	"formattingHeaderOutlineTypeLeftRight": "从左向右",
-	"formattingHeaderOutlineTypeFrame": "框架"
+	"formattingHeaderOutlineTypeFrame": "框架",
+	"Visual_Images_Round": "舍入",
+	"Visual_Selection": "选择",
+	"Visual_show": "显示"
 }

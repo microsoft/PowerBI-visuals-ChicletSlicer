@@ -45,5 +45,8 @@
 	"formattingHeaderOutlineTypeTopOnly": "Alleen boven",
 	"formattingHeaderOutlineTypeTopBottom": "Van boven naar beneden",
 	"formattingHeaderOutlineTypeLeftRight": "Van links naar rechts",
-	"formattingHeaderOutlineTypeFrame": "Kader"
+	"formattingHeaderOutlineTypeFrame": "Kader",
+	"Visual_Images_Round": "Afronden",
+	"Visual_Selection": "Selectie",
+	"Visual_show": "Weergeven"
 }

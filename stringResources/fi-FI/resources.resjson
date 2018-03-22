@@ -45,5 +45,8 @@
 	"formattingHeaderOutlineTypeTopOnly": "Vain ylhäällä",
 	"formattingHeaderOutlineTypeTopBottom": "Ylhäältä alas",
 	"formattingHeaderOutlineTypeLeftRight": "Vasemmalta oikealle",
-	"formattingHeaderOutlineTypeFrame": "Kehys"
+	"formattingHeaderOutlineTypeFrame": "Kehys",
+	"Visual_Images_Round": "Pyöristä",
+	"Visual_Selection": "Valinta",
+	"Visual_show": "Näytä"
 }

@@ -45,5 +45,8 @@
 	"formattingHeaderOutlineTypeTopOnly": "Superior apenas",
 	"formattingHeaderOutlineTypeTopBottom": "Superior Inferior",
 	"formattingHeaderOutlineTypeLeftRight": "Esquerda e Direita",
-	"formattingHeaderOutlineTypeFrame": "Moldura"
+	"formattingHeaderOutlineTypeFrame": "Moldura",
+	"Visual_Images_Round": "Arredondar",
+	"Visual_Selection": "Seleção",
+	"Visual_show": "Mostrar"
 }

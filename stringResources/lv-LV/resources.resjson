@@ -45,5 +45,8 @@
 	"formattingHeaderOutlineTypeTopOnly": "Tikai augšā",
 	"formattingHeaderOutlineTypeTopBottom": "No augšas uz apakšu",
 	"formattingHeaderOutlineTypeLeftRight": "No kreisās puses uz labo",
-	"formattingHeaderOutlineTypeFrame": "Rāmis"
+	"formattingHeaderOutlineTypeFrame": "Rāmis",
+	"Visual_Images_Round": "Noapaļot",
+	"Visual_Selection": "Atlase",
+	"Visual_show": "Rādīt"
 }

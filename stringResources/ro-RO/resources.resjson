@@ -45,5 +45,8 @@
 	"formattingHeaderOutlineTypeTopOnly": "Doar sus",
 	"formattingHeaderOutlineTypeTopBottom": "De sus în jos",
 	"formattingHeaderOutlineTypeLeftRight": "De la stânga la dreapta",
-	"formattingHeaderOutlineTypeFrame": "Cadru"
+	"formattingHeaderOutlineTypeFrame": "Cadru",
+	"Visual_Images_Round": "Rotunjire",
+	"Visual_Selection": "Selecție",
+	"Visual_show": "Afişare"
 }

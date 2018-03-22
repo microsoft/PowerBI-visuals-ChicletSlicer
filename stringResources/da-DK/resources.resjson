@@ -45,5 +45,8 @@
 	"formattingHeaderOutlineTypeTopOnly": "Kun top",
 	"formattingHeaderOutlineTypeTopBottom": "Øverst mod nederst",
 	"formattingHeaderOutlineTypeLeftRight": "Venstre mod højre",
-	"formattingHeaderOutlineTypeFrame": "Ramme"
+	"formattingHeaderOutlineTypeFrame": "Ramme",
+	"Visual_Images_Round": "Afrund",
+	"Visual_Selection": "Valg",
+	"Visual_show": "Vis"
 }

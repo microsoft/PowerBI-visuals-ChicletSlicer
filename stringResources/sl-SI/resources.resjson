@@ -45,5 +45,8 @@
 	"formattingHeaderOutlineTypeTopOnly": "Samo zgoraj",
 	"formattingHeaderOutlineTypeTopBottom": "Postavitev od vrha proti dnu",
 	"formattingHeaderOutlineTypeLeftRight": "Postavitev od leve proti desni",
-	"formattingHeaderOutlineTypeFrame": "Okvir"
+	"formattingHeaderOutlineTypeFrame": "Okvir",
+	"Visual_Images_Round": "Zaokroži",
+	"Visual_Selection": "Izbor",
+	"Visual_show": "Pokaži"
 }

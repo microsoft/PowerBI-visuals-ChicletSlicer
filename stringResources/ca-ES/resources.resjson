@@ -45,5 +45,8 @@
 	"formattingHeaderOutlineTypeTopOnly": "Només el superior",
 	"formattingHeaderOutlineTypeTopBottom": "De dalt a baix",
 	"formattingHeaderOutlineTypeLeftRight": "D'esquerra a dreta",
-	"formattingHeaderOutlineTypeFrame": "Marc"
+	"formattingHeaderOutlineTypeFrame": "Marc",
+	"Visual_Images_Round": "Arrodoneix",
+	"Visual_Selection": "Selecció",
+	"Visual_show": "Mostra"
 }

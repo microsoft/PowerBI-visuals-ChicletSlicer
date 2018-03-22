@@ -45,5 +45,8 @@
 	"formattingHeaderOutlineTypeTopOnly": "קצה עליון בלבד",
 	"formattingHeaderOutlineTypeTopBottom": "מלמעלה למטה",
 	"formattingHeaderOutlineTypeLeftRight": "משמאל לימין",
-	"formattingHeaderOutlineTypeFrame": "מסגרת"
+	"formattingHeaderOutlineTypeFrame": "מסגרת",
+	"Visual_Images_Round": "‏‏עיגול",
+	"Visual_Selection": "בחירה",
+	"Visual_show": "‏‏הצג"
 }

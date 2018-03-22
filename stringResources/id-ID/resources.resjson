@@ -45,5 +45,8 @@
 	"formattingHeaderOutlineTypeTopOnly": "Hanya atas",
 	"formattingHeaderOutlineTypeTopBottom": "Atas Bawah",
 	"formattingHeaderOutlineTypeLeftRight": "Kanan Kiri",
-	"formattingHeaderOutlineTypeFrame": "Bingkai"
+	"formattingHeaderOutlineTypeFrame": "Bingkai",
+	"Visual_Images_Round": "Bulatkan",
+	"Visual_Selection": "Pilihan Isian",
+	"Visual_show": "Tampilkan"
 }

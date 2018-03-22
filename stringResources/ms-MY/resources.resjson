@@ -45,5 +45,8 @@
 	"formattingHeaderOutlineTypeTopOnly": "Atas sahaja",
 	"formattingHeaderOutlineTypeTopBottom": "Atas ke Bawah",
 	"formattingHeaderOutlineTypeLeftRight": "Kiri ke Kanan",
-	"formattingHeaderOutlineTypeFrame": "BIngkai"
+	"formattingHeaderOutlineTypeFrame": "BIngkai",
+	"Visual_Images_Round": "Pusingan",
+	"Visual_Selection": "Pilihan",
+	"Visual_show": "Tunjukkan"
 }

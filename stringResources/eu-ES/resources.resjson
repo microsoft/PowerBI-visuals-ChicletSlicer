@@ -45,5 +45,8 @@
 	"formattingHeaderOutlineTypeTopOnly": "Goian soilik",
 	"formattingHeaderOutlineTypeTopBottom": "Goitik behera",
 	"formattingHeaderOutlineTypeLeftRight": "Ezkerretik eskuinera",
-	"formattingHeaderOutlineTypeFrame": "Markoa"
+	"formattingHeaderOutlineTypeFrame": "Markoa",
+	"Visual_Images_Round": "Biribildu",
+	"Visual_Selection": "Hautapena",
+	"Visual_show": "Erakutsi"
 }

@@ -45,5 +45,8 @@
 	"formattingHeaderOutlineTypeTopOnly": "الجزء العلوي فقط",
 	"formattingHeaderOutlineTypeTopBottom": "من أعلى لأسفل",
 	"formattingHeaderOutlineTypeLeftRight": "من اليسار لليمين",
-	"formattingHeaderOutlineTypeFrame": "الإطار"
+	"formattingHeaderOutlineTypeFrame": "الإطار",
+	"Visual_Images_Round": "‏‏تقريب",
+	"Visual_Selection": "التحديد",
+	"Visual_show": "‏‏إظهار"
 }

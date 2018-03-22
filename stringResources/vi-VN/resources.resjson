@@ -45,5 +45,8 @@
 	"formattingHeaderOutlineTypeTopOnly": "Chỉ trên cùng",
 	"formattingHeaderOutlineTypeTopBottom": "Từ trên xuống dưới",
 	"formattingHeaderOutlineTypeLeftRight": "Từ trái sang phải",
-	"formattingHeaderOutlineTypeFrame": "Khung"
+	"formattingHeaderOutlineTypeFrame": "Khung",
+	"Visual_Images_Round": "Làm tròn",
+	"Visual_Selection": "Lựa chọn",
+	"Visual_show": "Hiện"
 }

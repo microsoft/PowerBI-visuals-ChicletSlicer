@@ -45,5 +45,8 @@
 	"formattingHeaderOutlineTypeTopOnly": "บนเท่านั้น",
 	"formattingHeaderOutlineTypeTopBottom": "บน ล่าง",
 	"formattingHeaderOutlineTypeLeftRight": "ซ้ายและขวา",
-	"formattingHeaderOutlineTypeFrame": "กรอบ"
+	"formattingHeaderOutlineTypeFrame": "กรอบ",
+	"Visual_Images_Round": "ปัดเศษ",
+	"Visual_Selection": "ส่วนที่เลือก",
+	"Visual_show": "แสดง"
 }

@@ -45,5 +45,8 @@
 	"formattingHeaderOutlineTypeTopOnly": "Лише вгорі",
 	"formattingHeaderOutlineTypeTopBottom": "Згори вниз",
 	"formattingHeaderOutlineTypeLeftRight": "Зліва направо",
-	"formattingHeaderOutlineTypeFrame": "Рамка"
+	"formattingHeaderOutlineTypeFrame": "Рамка",
+	"Visual_Images_Round": "Округлити",
+	"Visual_Selection": "Виділення",
+	"Visual_show": "Відображення"
 }

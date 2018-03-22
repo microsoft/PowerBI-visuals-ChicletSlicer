@@ -45,5 +45,8 @@
 	"formattingHeaderOutlineTypeTopOnly": "Len horný okraj",
 	"formattingHeaderOutlineTypeTopBottom": "Zhora nadol",
 	"formattingHeaderOutlineTypeLeftRight": "Zľava doprava",
-	"formattingHeaderOutlineTypeFrame": "Rám"
+	"formattingHeaderOutlineTypeFrame": "Rám",
+	"Visual_Images_Round": "Zaokrúhliť",
+	"Visual_Selection": "Výber",
+	"Visual_show": "Zobraziť"
 }

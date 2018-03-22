@@ -45,5 +45,8 @@
 	"formattingHeaderOutlineTypeTopOnly": "केवल शीर्ष",
 	"formattingHeaderOutlineTypeTopBottom": "शीर्ष तल",
 	"formattingHeaderOutlineTypeLeftRight": "बाएँ से दाएँ",
-	"formattingHeaderOutlineTypeFrame": "फ़्रेम"
+	"formattingHeaderOutlineTypeFrame": "फ़्रेम",
+	"Visual_Images_Round": "पूर्णांक बनाएँ",
+	"Visual_Selection": "चयन",
+	"Visual_show": "दिखाएँ"
 }

@@ -45,5 +45,8 @@
 	"formattingHeaderOutlineTypeTopOnly": "Nur oben",
 	"formattingHeaderOutlineTypeTopBottom": "Oben unten",
 	"formattingHeaderOutlineTypeLeftRight": "Links rechts",
-	"formattingHeaderOutlineTypeFrame": "Frame"
+	"formattingHeaderOutlineTypeFrame": "Frame",
+	"Visual_Images_Round": "Runden",
+	"Visual_Selection": "Auswahl",
+	"Visual_show": "Anzeigen"
 }

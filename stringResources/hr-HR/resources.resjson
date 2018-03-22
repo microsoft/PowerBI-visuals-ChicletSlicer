@@ -45,5 +45,8 @@
 	"formattingHeaderOutlineTypeTopOnly": "Samo gore",
 	"formattingHeaderOutlineTypeTopBottom": "Odozgo prema dolje",
 	"formattingHeaderOutlineTypeLeftRight": "Slijeva na desno",
-	"formattingHeaderOutlineTypeFrame": "Okvir"
+	"formattingHeaderOutlineTypeFrame": "Okvir",
+	"Visual_Images_Round": "Zaokruži",
+	"Visual_Selection": "Odabir",
+	"Visual_show": "Pokaži"
 }

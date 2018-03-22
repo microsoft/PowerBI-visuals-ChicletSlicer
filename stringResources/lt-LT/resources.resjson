@@ -45,5 +45,8 @@
 	"formattingHeaderOutlineTypeTopOnly": "Tik viršuje",
 	"formattingHeaderOutlineTypeTopBottom": "Iš viršaus į apačią",
 	"formattingHeaderOutlineTypeLeftRight": "Iš kairės į dešinę",
-	"formattingHeaderOutlineTypeFrame": "Rėmas"
+	"formattingHeaderOutlineTypeFrame": "Rėmas",
+	"Visual_Images_Round": "Apvalinti",
+	"Visual_Selection": "Žymėjimas",
+	"Visual_show": "Rodyti"
 }

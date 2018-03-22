@@ -45,5 +45,8 @@
 	"formattingHeaderOutlineTypeTopOnly": "위쪽만",
 	"formattingHeaderOutlineTypeTopBottom": "위쪽 아래쪽",
 	"formattingHeaderOutlineTypeLeftRight": "왼쪽 오른쪽",
-	"formattingHeaderOutlineTypeFrame": "프레임"
+	"formattingHeaderOutlineTypeFrame": "프레임",
+	"Visual_Images_Round": "반올림",
+	"Visual_Selection": "선택",
+	"Visual_show": "표시"
 }

@@ -45,5 +45,8 @@
 	"formattingHeaderOutlineTypeTopOnly": "Tylko góra",
 	"formattingHeaderOutlineTypeTopBottom": "Od góry do dołu",
 	"formattingHeaderOutlineTypeLeftRight": "Od lewej do prawej",
-	"formattingHeaderOutlineTypeFrame": "Ramka"
+	"formattingHeaderOutlineTypeFrame": "Ramka",
+	"Visual_Images_Round": "Zaokrąglenie",
+	"Visual_Selection": "Wybór",
+	"Visual_show": "Pokaż"
 }

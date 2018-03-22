@@ -45,5 +45,8 @@
 	"formattingHeaderOutlineTypeTopOnly": "Ainult ülemine",
 	"formattingHeaderOutlineTypeTopBottom": "Üleval ja all",
 	"formattingHeaderOutlineTypeLeftRight": "Vasak ja parem",
-	"formattingHeaderOutlineTypeFrame": "Raam"
+	"formattingHeaderOutlineTypeFrame": "Raam",
+	"Visual_Images_Round": "Ümardamine",
+	"Visual_Selection": "Valik",
+	"Visual_show": "Kuva"
 }

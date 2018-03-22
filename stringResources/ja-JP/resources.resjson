@@ -45,5 +45,8 @@
 	"formattingHeaderOutlineTypeTopOnly": "上端のみ",
 	"formattingHeaderOutlineTypeTopBottom": "上から下",
 	"formattingHeaderOutlineTypeLeftRight": "左から右",
-	"formattingHeaderOutlineTypeFrame": "フレーム"
+	"formattingHeaderOutlineTypeFrame": "フレーム",
+	"Visual_Images_Round": "四捨五入",
+	"Visual_Selection": "選択",
+	"Visual_show": "表示"
 }

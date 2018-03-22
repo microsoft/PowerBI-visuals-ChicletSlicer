@@ -45,5 +45,8 @@
 	"formattingHeaderOutlineTypeTopOnly": "Yalnızca üst",
 	"formattingHeaderOutlineTypeTopBottom": "Yukarıdan Aşağıya",
 	"formattingHeaderOutlineTypeLeftRight": "Soldan Sağa",
-	"formattingHeaderOutlineTypeFrame": "Çerçeve"
+	"formattingHeaderOutlineTypeFrame": "Çerçeve",
+	"Visual_Images_Round": "Yuvarla",
+	"Visual_Selection": "Seçim",
+	"Visual_show": "Göster"
 }

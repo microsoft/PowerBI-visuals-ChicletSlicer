@@ -45,5 +45,8 @@
 	"formattingHeaderOutlineTypeTopOnly": "Само врх",
 	"formattingHeaderOutlineTypeTopBottom": "Одозго надоле",
 	"formattingHeaderOutlineTypeLeftRight": "Слева надесно",
-	"formattingHeaderOutlineTypeFrame": "Оквир"
+	"formattingHeaderOutlineTypeFrame": "Оквир",
+	"Visual_Images_Round": "Заокружи",
+	"Visual_Selection": "Избор",
+	"Visual_show": "Прикажи"
 }

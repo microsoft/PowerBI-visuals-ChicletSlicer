@@ -45,5 +45,8 @@
 	"formattingHeaderOutlineTypeTopOnly": "Jenom nahoře",
 	"formattingHeaderOutlineTypeTopBottom": "Shora dolů",
 	"formattingHeaderOutlineTypeLeftRight": "Zleva doprava",
-	"formattingHeaderOutlineTypeFrame": "Rámeček"
+	"formattingHeaderOutlineTypeFrame": "Rámeček",
+	"Visual_Images_Round": "Zaokrouhlit",
+	"Visual_Selection": "Výběr",
+	"Visual_show": "Zobrazit"
 }

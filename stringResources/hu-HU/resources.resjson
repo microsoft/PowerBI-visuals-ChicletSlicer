@@ -45,5 +45,8 @@
 	"formattingHeaderOutlineTypeTopOnly": "Csak felső",
 	"formattingHeaderOutlineTypeTopBottom": "Felülre és alulra",
 	"formattingHeaderOutlineTypeLeftRight": "Balra és jobbra",
-	"formattingHeaderOutlineTypeFrame": "Keret"
+	"formattingHeaderOutlineTypeFrame": "Keret",
+	"Visual_Images_Round": "Kerekítés",
+	"Visual_Selection": "Kijelölés",
+	"Visual_show": "Megjelenítés"
 }

@@ -45,5 +45,8 @@
 	"formattingHeaderOutlineTypeTopOnly": "Тек жоғарғы",
 	"formattingHeaderOutlineTypeTopBottom": "Жоғарыдан төменге",
 	"formattingHeaderOutlineTypeLeftRight": "Солдан оңға",
-	"formattingHeaderOutlineTypeFrame": "Жақтау"
+	"formattingHeaderOutlineTypeFrame": "Жақтау",
+	"Visual_Images_Round": "Дөңгелектеу",
+	"Visual_Selection": "Таңдау",
+	"Visual_show": "Көрсету"
 }

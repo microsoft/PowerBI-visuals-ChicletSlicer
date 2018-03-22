@@ -45,5 +45,8 @@
 	"formattingHeaderOutlineTypeTopOnly": "Bare topp",
 	"formattingHeaderOutlineTypeTopBottom": "Ovenfra og ned",
 	"formattingHeaderOutlineTypeLeftRight": "Fra venstre mot høyre",
-	"formattingHeaderOutlineTypeFrame": "Ramme"
+	"formattingHeaderOutlineTypeFrame": "Ramme",
+	"Visual_Images_Round": "Rund av",
+	"Visual_Selection": "Utvalg",
+	"Visual_show": "Vis"
 }
