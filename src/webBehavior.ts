@@ -145,7 +145,7 @@ module powerbi.extensibility.visual {
                     for (let i: number = selIndex; i <= index; i++) {
                         selectionHandler.handleSelection(this.dataPoints[i], true /* isMultiSelect */);
                     }
-                } else if ((((d3.event as MouseEvent).ctrlKey || (d3.event as MouseEvent).metaKey) && !multiselect) || multiselect) {
+                } else if ((((d3.event as MouseEvent).ctrlKey || (d3.event as MouseEvent).metaKey)) || multiselect) {
                     selectionHandler.handleSelection(dataPoint, true /* isMultiSelect */);
                 } else {
                     selectionHandler.handleSelection(dataPoint, false /* isMultiSelect */);
