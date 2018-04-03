@@ -209,19 +209,13 @@ module powerbi.extensibility.visual {
         public static MaxImageSplit: number = 100;
         public static MaxImageSplitToHide: number = 90;
         public static MaxImageWidth: number = 100;
-
         public static MaxTransparency: number = 100;
 
         private static MaxCellPadding: number = 20;
-
-
-
         private static MinSizeOfViewport: number = 0;
         private static MinColumns: number = 1;
-
         private static MaxColumns: number = 1000;
         private static MaxRows: number = 1000;
-
         private static WidthOfScrollbar: number = 17;
 
         public static ItemContainerSelector: ClassAndSelector = createClassAndSelector('slicerItemContainer');

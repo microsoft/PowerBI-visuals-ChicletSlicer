@@ -17,7 +17,8 @@
     "package": "pbiviz package",
     "lint": "tslint -r \"node_modules/tslint-microsoft-contrib\" \"+(src|test)/**/*.ts\"",
     "pretest": "pbiviz package --resources --no-minify --no-pbiviz --no-plugin",
-    "test": "karma start"
+    "test": "karma start",
+    "cert": "pbiviz --create-cert"
   },
   "devDependencies": {
     "@types/d3": "3.5.36",
