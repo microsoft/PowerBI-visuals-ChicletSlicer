@@ -1,3 +1,6 @@
+## 1.4.10
+* FIX: multi select condition fix
+
 ## 1.4.9
 * FIX: Un-Filtering doesn't work at the initial loading
 
