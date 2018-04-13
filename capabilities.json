@@ -359,8 +359,9 @@
                 },
                 "transparency": {
                     "displayName": "Transparency",
-                    "displayNameKey": "Visual_Transparancy",
+                    "displayNameKey": "Visual_Transparency",
                     "description": "Set transparency for background color",
+                    "descriptionKey": "Visual_Description_Transparency",
                     "type": {
                         "numeric": true
                     }
