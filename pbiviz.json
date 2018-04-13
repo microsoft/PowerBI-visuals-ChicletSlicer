@@ -9,7 +9,7 @@
     "supportUrl": "http://community.powerbi.com",
     "gitHubUrl": "https://github.com/Microsoft/PowerBI-visuals-ChicletSlicer"
   },
-  "apiVersion": "1.6.0",
+  "apiVersion": "1.11.0",
   "author": {
     "name": "Microsoft",
     "email": "pbicvsupport@microsoft.com"

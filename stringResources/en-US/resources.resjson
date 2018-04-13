@@ -24,7 +24,7 @@
 	"Visual_Chiclets": "Chiclets",
 	"Visual_Height": "Height",
 	"Visual_Width": "Width",
-	"Visual_Transparancy": "Transparency",
+	"Visual_Transparency": "Transparency",
 	"Visual_SelectedColor": "Selected Color",
 	"Visual_HoverColor": "Hover Color",
 	"Visual_UnselectedColor": "Unselected Color",
@@ -48,5 +48,6 @@
 	"formattingHeaderOutlineTypeLeftRight": "Left Right",
 	"formattingHeaderOutlineTypeFrame": "Frame",
 	"Visual_Selection": "Selection",
-	"Visual_show": "Show"
+	"Visual_show": "Show",
+	"Visual_Description_Transparency": "Set transparency for background color"
 }
