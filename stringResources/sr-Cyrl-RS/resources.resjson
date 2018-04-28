@@ -48,5 +48,7 @@
 	"formattingHeaderOutlineTypeFrame": "Оквир",
 	"Visual_Images_Round": "Заокружи",
 	"Visual_Selection": "Избор",
-	"Visual_show": "Прикажи"
+	"Visual_show": "Прикажи",
+	"Visual_Transparency": "Прозирност",
+	"Visual_Description_Transparency": "Подеси прозирност боје позадине"
 }

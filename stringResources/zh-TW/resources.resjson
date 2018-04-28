@@ -48,5 +48,7 @@
 	"formattingHeaderOutlineTypeFrame": "框架",
 	"Visual_Images_Round": "捨入",
 	"Visual_Selection": "選取項目",
-	"Visual_show": "顯示"
+	"Visual_show": "顯示",
+	"Visual_Transparency": "透明度",
+	"Visual_Description_Transparency": "設定背景色彩的透明度"
 }

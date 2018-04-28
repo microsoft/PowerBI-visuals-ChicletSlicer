@@ -48,5 +48,7 @@
 	"formattingHeaderOutlineTypeFrame": "Kehys",
 	"Visual_Images_Round": "Pyöristä",
 	"Visual_Selection": "Valinta",
-	"Visual_show": "Näytä"
+	"Visual_show": "Näytä",
+	"Visual_Transparency": "Läpinäkyvyys",
+	"Visual_Description_Transparency": "Aseta taustavärin läpinäkyvyys"
 }

@@ -48,5 +48,7 @@
 	"formattingHeaderOutlineTypeFrame": "Rám",
 	"Visual_Images_Round": "Zaokrúhliť",
 	"Visual_Selection": "Výber",
-	"Visual_show": "Zobraziť"
+	"Visual_show": "Zobraziť",
+	"Visual_Transparency": "Priehľadnosť",
+	"Visual_Description_Transparency": "Nastaviť priehľadnosť farby pozadia"
 }

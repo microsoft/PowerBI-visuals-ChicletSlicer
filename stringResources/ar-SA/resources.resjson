@@ -48,5 +48,7 @@
 	"formattingHeaderOutlineTypeFrame": "الإطار",
 	"Visual_Images_Round": "‏‏تقريب",
 	"Visual_Selection": "التحديد",
-	"Visual_show": "‏‏إظهار"
+	"Visual_show": "‏‏إظهار",
+	"Visual_Transparency": "الشفافية",
+	"Visual_Description_Transparency": "تعيين شفافية لون الخلفية"
 }

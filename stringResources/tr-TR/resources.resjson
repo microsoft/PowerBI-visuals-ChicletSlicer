@@ -48,5 +48,7 @@
 	"formattingHeaderOutlineTypeFrame": "Çerçeve",
 	"Visual_Images_Round": "Yuvarla",
 	"Visual_Selection": "Seçim",
-	"Visual_show": "Göster"
+	"Visual_show": "Göster",
+	"Visual_Transparency": "Saydamlık",
+	"Visual_Description_Transparency": "Arka plan rengine yönelik saydamlığı ayarla"
 }

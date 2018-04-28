@@ -48,5 +48,7 @@
 	"formattingHeaderOutlineTypeFrame": "Ramme",
 	"Visual_Images_Round": "Afrund",
 	"Visual_Selection": "Valg",
-	"Visual_show": "Vis"
+	"Visual_show": "Vis",
+	"Visual_Transparency": "Gennemsigtighed",
+	"Visual_Description_Transparency": "Angiv baggrundsfarvens gennemsigtighed"
 }

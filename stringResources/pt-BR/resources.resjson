@@ -48,5 +48,7 @@
 	"formattingHeaderOutlineTypeFrame": "Quadro",
 	"Visual_Images_Round": "Arredondar",
 	"Visual_Selection": "Seleção",
-	"Visual_show": "Mostrar"
+	"Visual_show": "Mostrar",
+	"Visual_Transparency": "Transparência",
+	"Visual_Description_Transparency": "Definir transparência para cor da tela de fundo"
 }

@@ -48,5 +48,7 @@
 	"formattingHeaderOutlineTypeFrame": "Ram",
 	"Visual_Images_Round": "Avrunda",
 	"Visual_Selection": "Val",
-	"Visual_show": "Visa"
+	"Visual_show": "Visa",
+	"Visual_Transparency": "Transparens",
+	"Visual_Description_Transparency": "Ange genomskinlighet för bakgrundsfärgen"
 }

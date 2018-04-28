@@ -48,5 +48,7 @@
 	"formattingHeaderOutlineTypeFrame": "Rāmis",
 	"Visual_Images_Round": "Noapaļot",
 	"Visual_Selection": "Atlase",
-	"Visual_show": "Rādīt"
+	"Visual_show": "Rādīt",
+	"Visual_Transparency": "Caurspīdīgums",
+	"Visual_Description_Transparency": "Iestatīt fona krāsas caurredzamību"
 }

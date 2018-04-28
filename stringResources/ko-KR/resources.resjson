@@ -48,5 +48,7 @@
 	"formattingHeaderOutlineTypeFrame": "프레임",
 	"Visual_Images_Round": "반올림",
 	"Visual_Selection": "선택",
-	"Visual_show": "표시"
+	"Visual_show": "표시",
+	"Visual_Transparency": "투명도",
+	"Visual_Description_Transparency": "배경색의 투명도 설정"
 }

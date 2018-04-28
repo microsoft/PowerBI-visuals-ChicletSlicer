@@ -48,5 +48,7 @@
 	"formattingHeaderOutlineTypeFrame": "Frame",
 	"Visual_Images_Round": "Runden",
 	"Visual_Selection": "Auswahl",
-	"Visual_show": "Anzeigen"
+	"Visual_show": "Anzeigen",
+	"Visual_Transparency": "Transparenz",
+	"Visual_Description_Transparency": "Transparenz als Hintergrundfarbe festlegen"
 }

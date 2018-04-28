@@ -48,5 +48,7 @@
 	"formattingHeaderOutlineTypeFrame": "BIngkai",
 	"Visual_Images_Round": "Pusingan",
 	"Visual_Selection": "Pilihan",
-	"Visual_show": "Tunjukkan"
+	"Visual_show": "Tunjukkan",
+	"Visual_Transparency": "Kelutsinaran",
+	"Visual_Description_Transparency": "Set kelutsinaran untuk warna latar belakang"
 }

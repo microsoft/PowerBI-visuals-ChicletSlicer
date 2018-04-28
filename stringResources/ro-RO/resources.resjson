@@ -48,5 +48,7 @@
 	"formattingHeaderOutlineTypeFrame": "Cadru",
 	"Visual_Images_Round": "Rotunjire",
 	"Visual_Selection": "Selecție",
-	"Visual_show": "Afişare"
+	"Visual_show": "Afişare",
+	"Visual_Transparency": "Transparență",
+	"Visual_Description_Transparency": "Setați transparența pentru culoarea de fundal"
 }

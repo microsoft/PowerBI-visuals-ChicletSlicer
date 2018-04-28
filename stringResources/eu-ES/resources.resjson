@@ -48,5 +48,7 @@
 	"formattingHeaderOutlineTypeFrame": "Markoa",
 	"Visual_Images_Round": "Biribildu",
 	"Visual_Selection": "Hautapena",
-	"Visual_show": "Erakutsi"
+	"Visual_show": "Erakutsi",
+	"Visual_Transparency": "Gardentasuna",
+	"Visual_Description_Transparency": "Ezarri atzeko planoaren gardentasuna"
 }

@@ -48,5 +48,7 @@
 	"formattingHeaderOutlineTypeFrame": "फ़्रेम",
 	"Visual_Images_Round": "पूर्णांक बनाएँ",
 	"Visual_Selection": "चयन",
-	"Visual_show": "दिखाएँ"
+	"Visual_show": "दिखाएँ",
+	"Visual_Transparency": "पारदर्शिता",
+	"Visual_Description_Transparency": "पृष्ठभूमि रंग के लिए पारदर्शिता सेट करें"
 }

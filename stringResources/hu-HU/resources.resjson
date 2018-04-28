@@ -48,5 +48,7 @@
 	"formattingHeaderOutlineTypeFrame": "Keret",
 	"Visual_Images_Round": "Kerekítés",
 	"Visual_Selection": "Kijelölés",
-	"Visual_show": "Megjelenítés"
+	"Visual_show": "Megjelenítés",
+	"Visual_Transparency": "Átlátszóság",
+	"Visual_Description_Transparency": "Háttérszín átlátszóságának beállítása"
 }

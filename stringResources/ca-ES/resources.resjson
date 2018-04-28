@@ -48,5 +48,7 @@
 	"formattingHeaderOutlineTypeFrame": "Marc",
 	"Visual_Images_Round": "Arrodoneix",
 	"Visual_Selection": "Selecció",
-	"Visual_show": "Mostra"
+	"Visual_show": "Mostra",
+	"Visual_Transparency": "Transparència",
+	"Visual_Description_Transparency": "Defineix la transparència del color de fons"
 }

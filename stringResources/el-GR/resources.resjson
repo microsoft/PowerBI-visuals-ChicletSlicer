@@ -48,5 +48,7 @@
 	"formattingHeaderOutlineTypeFrame": "Πλαίσιο",
 	"Visual_Images_Round": "Στρογγυλοποίηση",
 	"Visual_Selection": "Επιλογή",
-	"Visual_show": "Εμφάνιση"
+	"Visual_show": "Εμφάνιση",
+	"Visual_Transparency": "Διαφάνεια",
+	"Visual_Description_Transparency": "Ορισμός διαφάνειας για το χρώμα φόντου"
 }

@@ -48,5 +48,7 @@
 	"formattingHeaderOutlineTypeFrame": "Рамка",
 	"Visual_Images_Round": "Округление",
 	"Visual_Selection": "Выбор",
-	"Visual_show": "Показать"
+	"Visual_show": "Показать",
+	"Visual_Transparency": "Прозрачность",
+	"Visual_Description_Transparency": "Задать прозрачность цвета фона"
 }

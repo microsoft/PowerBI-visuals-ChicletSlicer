@@ -48,5 +48,7 @@
 	"formattingHeaderOutlineTypeFrame": "กรอบ",
 	"Visual_Images_Round": "ปัดเศษ",
 	"Visual_Selection": "ส่วนที่เลือก",
-	"Visual_show": "แสดง"
+	"Visual_show": "แสดง",
+	"Visual_Transparency": "โปร่งใส",
+	"Visual_Description_Transparency": "ตั้งค่าความโปร่งแสงสำหรับสีพื้นหลัง"
 }

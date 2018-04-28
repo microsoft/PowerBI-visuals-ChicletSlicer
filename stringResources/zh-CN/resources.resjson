@@ -48,5 +48,7 @@
 	"formattingHeaderOutlineTypeFrame": "框架",
 	"Visual_Images_Round": "舍入",
 	"Visual_Selection": "选择",
-	"Visual_show": "显示"
+	"Visual_show": "显示",
+	"Visual_Transparency": "透明度",
+	"Visual_Description_Transparency": "设置背景色的透明度"
 }

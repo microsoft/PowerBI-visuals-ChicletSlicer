@@ -48,5 +48,7 @@
 	"formattingHeaderOutlineTypeFrame": "Marco",
 	"Visual_Images_Round": "Redondear",
 	"Visual_Selection": "Selección",
-	"Visual_show": "Mostrar"
+	"Visual_show": "Mostrar",
+	"Visual_Transparency": "Transparencia",
+	"Visual_Description_Transparency": "Establecer transparencia para color de fondo"
 }

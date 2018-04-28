@@ -48,5 +48,7 @@
 	"formattingHeaderOutlineTypeFrame": "Rėmas",
 	"Visual_Images_Round": "Apvalinti",
 	"Visual_Selection": "Žymėjimas",
-	"Visual_show": "Rodyti"
+	"Visual_show": "Rodyti",
+	"Visual_Transparency": "Skaidrumas",
+	"Visual_Description_Transparency": "Nustatyti fono spalvos skaidrumą"
 }

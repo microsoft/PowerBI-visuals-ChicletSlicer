@@ -48,5 +48,7 @@
 	"formattingHeaderOutlineTypeFrame": "Khung",
 	"Visual_Images_Round": "Làm tròn",
 	"Visual_Selection": "Lựa chọn",
-	"Visual_show": "Hiện"
+	"Visual_show": "Hiện",
+	"Visual_Transparency": "Trong suốt",
+	"Visual_Description_Transparency": "Đặt độ trong suốt cho màu nền"
 }

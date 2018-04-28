@@ -48,5 +48,7 @@
 	"formattingHeaderOutlineTypeFrame": "מסגרת",
 	"Visual_Images_Round": "‏‏עיגול",
 	"Visual_Selection": "בחירה",
-	"Visual_show": "‏‏הצג"
+	"Visual_show": "‏‏הצג",
+	"Visual_Transparency": "שקיפות",
+	"Visual_Description_Transparency": "קבע שקיפות לצבע הרקע"
 }

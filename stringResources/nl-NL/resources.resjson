@@ -48,5 +48,7 @@
 	"formattingHeaderOutlineTypeFrame": "Kader",
 	"Visual_Images_Round": "Afronden",
 	"Visual_Selection": "Selectie",
-	"Visual_show": "Weergeven"
+	"Visual_show": "Weergeven",
+	"Visual_Transparency": "Transparantie",
+	"Visual_Description_Transparency": "Transparantie voor de achtergrondkleur instellen"
 }

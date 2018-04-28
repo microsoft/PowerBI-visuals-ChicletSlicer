@@ -48,5 +48,7 @@
 	"formattingHeaderOutlineTypeFrame": "Okvir",
 	"Visual_Images_Round": "Zaokruži",
 	"Visual_Selection": "Odabir",
-	"Visual_show": "Pokaži"
+	"Visual_show": "Pokaži",
+	"Visual_Transparency": "Prozirnost",
+	"Visual_Description_Transparency": "Postavite prozirnost pozadinske boje"
 }

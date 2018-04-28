@@ -48,5 +48,7 @@
 	"formattingHeaderOutlineTypeFrame": "Жақтау",
 	"Visual_Images_Round": "Дөңгелектеу",
 	"Visual_Selection": "Таңдау",
-	"Visual_show": "Көрсету"
+	"Visual_show": "Көрсету",
+	"Visual_Transparency": "Мөлдірлік",
+	"Visual_Description_Transparency": "Фондық түс үшін мөлдір түсті орнату"
 }

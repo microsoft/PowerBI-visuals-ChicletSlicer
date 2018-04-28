@@ -48,5 +48,7 @@
 	"formattingHeaderOutlineTypeFrame": "Ramka",
 	"Visual_Images_Round": "Zaokrąglenie",
 	"Visual_Selection": "Wybór",
-	"Visual_show": "Pokaż"
+	"Visual_show": "Pokaż",
+	"Visual_Transparency": "Przezroczystość",
+	"Visual_Description_Transparency": "Ustaw przezroczystość koloru tła"
 }

@@ -48,5 +48,7 @@
 	"formattingHeaderOutlineTypeFrame": "Рамка",
 	"Visual_Images_Round": "Закръгляне",
 	"Visual_Selection": "Избор",
-	"Visual_show": "Показване"
+	"Visual_show": "Показване",
+	"Visual_Transparency": "Прозрачност",
+	"Visual_Description_Transparency": "Задаване на прозрачност за фоновия цвят"
 }

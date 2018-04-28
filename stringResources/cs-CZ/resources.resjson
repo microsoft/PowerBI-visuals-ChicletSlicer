@@ -48,5 +48,7 @@
 	"formattingHeaderOutlineTypeFrame": "Rámeček",
 	"Visual_Images_Round": "Zaokrouhlit",
 	"Visual_Selection": "Výběr",
-	"Visual_show": "Zobrazit"
+	"Visual_show": "Zobrazit",
+	"Visual_Transparency": "Průhlednost",
+	"Visual_Description_Transparency": "Nastaví průhlednost pro barvu pozadí."
 }
