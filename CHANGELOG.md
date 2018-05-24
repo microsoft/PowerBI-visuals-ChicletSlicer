@@ -1,3 +1,6 @@
+## 1.5.0
+* Added localization for all supported languages
+
 ## 1.4.10
 * FIX: multi select condition fix
 
