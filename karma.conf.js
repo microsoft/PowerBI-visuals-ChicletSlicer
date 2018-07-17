@@ -26,29 +26,18 @@
 
 'use strict';
 
-const recursivePathToTests = 'test/**/*.ts'
-    , srcRecursivePath = '.tmp/drop/visual.js'
-    , srcCssRecursivePath = '.tmp/drop/visual.css'
-    , srcOriginalRecursivePath = 'src/**/*.ts'
-    , coverageFolder = 'coverage';
+const recursivePathToTests = 'test/**/*.ts';
+const srcRecursivePath = '.tmp/drop/visual.js';
+const srcCssRecursivePath = '.tmp/drop/visual.css';
+const srcOriginalRecursivePath = 'src/**/*.ts';
+const coverageFolder = 'coverage';
+
+process.env.CHROME_BIN = require('puppeteer').executablePath();
 
 module.exports = (config) => {
-    const browsers = [];
-
-    if (process.env.TRAVIS) {
-        browsers.push('ChromeTravisCI');
-    } else {
-        browsers.push('Chrome');
-    }
 
     config.set({
-        browsers,
-        customLaunchers: {
-            ChromeTravisCI: {
-                base: 'Chrome',
-                flags: ['--no-sandbox']
-            }
-        },
+        browsers: ['ChromeHeadless'],
         colors: true,
         frameworks: ['jasmine'],
         reporters: [
