@@ -49,6 +49,7 @@ module powerbi.extensibility.visual {
         interactivityService: IInteractivityService;
         slicerSettings: ChicletSlicerSettings;
         identityFields: ISQExpr[];
+        isHighContrastMode: boolean;
     }
 
     export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
@@ -220,18 +221,23 @@ module powerbi.extensibility.visual {
                     }
 
                     if (dataPoint.mouseOut) {
-                        if (dataPoint.selected) {
-                            return this.slicerSettings.slicerText.fontColor;
-                        } else {
-                            return this.slicerSettings.slicerText.fontColor;
+                        return this.slicerSettings.slicerText.fontColor;
+                    }
+                },
+                "opacity": (dataPoint: ChicletSlicerDataPoint) => {
+                    if (dataPoint.selectable) {
+                        if (dataPoint.mouseOver) {
+                            return this.options.isHighContrastMode ? ChicletSlicer.HoveredTextOpacity : ChicletSlicer.DefaultOpacity;
                         }
                     }
+                    return ChicletSlicer.DefaultOpacity;
                 }
             });
         }
 
         public styleSlicerInputs(slicers: Selection<any>, hasSelection: boolean) {
-            let settings = this.slicerSettings;
+            let settings = this.slicerSettings,
+                isHighContrastMode = this.options.isHighContrastMode;
 
             slicers.each(function (dataPoint: ChicletSlicerDataPoint) {
                 d3.select(this).style({
@@ -239,7 +245,14 @@ module powerbi.extensibility.visual {
                         ? (dataPoint.selected
                             ? settings.slicerText.selectedColor
                             : settings.slicerText.unselectedColor)
-                        : settings.slicerText.disabledColor
+                        : settings.slicerText.disabledColor,
+                    "opacity": () => {
+                        if (isHighContrastMode) {
+                            let opacity = dataPoint.selectable ? (dataPoint.selected ? ChicletSlicer.DefaultOpacity : ChicletSlicer.DimmedOpacity) : ChicletSlicer.DisabledOpacity;
+                            return opacity;
+                        }
+                        return ChicletSlicer.DefaultOpacity;
+                    }
                 });
 
                 d3.select(this).classed("slicerItem-disabled", !dataPoint.selectable);

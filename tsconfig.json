@@ -19,6 +19,7 @@
     "/node_modules/powerbi-models/dist/models-noexports.d.ts",
     "src/chicletSlicerProps.ts",
     "src/converter.ts",
+    "src/interfaces.ts",
     "src/tableView.ts",
     "src/webBehavior.ts",
     "src/chicletSlicer.ts"
