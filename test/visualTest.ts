@@ -34,6 +34,7 @@ module powerbi.extensibility.visual.test {
     import convertAnySizeToPixel = powerbi.extensibility.visual.test.helpers.convertAnySizeToPixel;
     import convertColorToRgbColor = powerbi.extensibility.visual.test.helpers.convertColorToRgbColor;
     import getSolidColorStructuralObject = powerbi.extensibility.visual.test.helpers.getSolidColorStructuralObject;
+    import isColorAppliedToElements = powerbi.extensibility.visual.test.helpers.isColorAppliedToElements;
 
     // powerbi.extensibility.utils.type
     import PixelConverter = powerbi.extensibility.utils.type.PixelConverter;
@@ -1504,6 +1505,40 @@ module powerbi.extensibility.visual.test {
                 };
 
                 objectsChecker(jsonData);
+            });
+        });
+
+        describe("High contrast mode", () => {
+            const backgroundColor: string = "#000000";
+            const foregroundColor: string = "#ff00ff";
+        
+            beforeEach(() => {
+                visualBuilder.visualHost.colorPalette.background = { value: backgroundColor};
+                visualBuilder.visualHost.colorPalette.foreground = { value: foregroundColor};
+            });
+
+            it("should background be similar to theme color", (done) => {
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    const slicers: JQuery[] = visualBuilder.slicerItemContainers.toArray().map($);
+                    const headers: JQuery[] = visualBuilder.slicerHeader.toArray().map($);
+
+                    expect(isColorAppliedToElements(headers, backgroundColor, "background-color"));
+                    expect(isColorAppliedToElements(slicers, backgroundColor, "background-color"));
+                    done();
+                });
+            });
+
+            it("should borders and text be filled with foreground color", (done) => {
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    const slicers: JQuery[] = visualBuilder.slicerItemContainers.toArray().map($);
+                    const slicerText: JQuery[] = visualBuilder.slicerTextElements.toArray().map($);
+                    const headers: JQuery[] = visualBuilder.slicerHeader.toArray().map($);
+
+                    expect(isColorAppliedToElements(headers, foregroundColor, "color"));
+                    expect(isColorAppliedToElements(slicerText, foregroundColor, "color"));
+                    expect(isColorAppliedToElements(slicers, foregroundColor, "border-color"));
+                    done();
+                });
             });
         });
     });
