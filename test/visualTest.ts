@@ -1511,7 +1511,7 @@ module powerbi.extensibility.visual.test {
         describe("High contrast mode", () => {
             const backgroundColor: string = "#000000";
             const foregroundColor: string = "#ff00ff";
-        
+
             beforeEach(() => {
                 visualBuilder.visualHost.colorPalette.background = { value: backgroundColor};
                 visualBuilder.visualHost.colorPalette.foreground = { value: foregroundColor};

@@ -125,7 +125,7 @@ module powerbi.extensibility.visual {
         public static DefaultOpacity: number = 1;
         public static DisabledOpacity: number = 0.2;
         public static HoveredTextOpacity: number = 0.6;
-        public static DimmedOpacity: number = 0.5
+        public static DimmedOpacity: number = 0.5;
 
         public static DefaultFontFamily: string = "helvetica, arial, sans-serif";
         public static DefaultFontSizeInPt: number = 11;
