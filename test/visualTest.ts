@@ -1513,11 +1513,11 @@ module powerbi.extensibility.visual.test {
             const foregroundColor: string = "#ff00ff";
 
             beforeEach(() => {
-                visualBuilder.visualHost.colorPalette.background = { value: backgroundColor};
-                visualBuilder.visualHost.colorPalette.foreground = { value: foregroundColor};
+                visualBuilder.visualHost.colorPalette.background = { value: backgroundColor };
+                visualBuilder.visualHost.colorPalette.foreground = { value: foregroundColor };
             });
 
-            it("should background be similar to theme color", (done) => {
+            it("background color should be similar to theme background color", (done) => {
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     const slicers: JQuery[] = visualBuilder.slicerItemContainers.toArray().map($);
                     const headers: JQuery[] = visualBuilder.slicerHeader.toArray().map($);
@@ -1528,7 +1528,7 @@ module powerbi.extensibility.visual.test {
                 });
             });
 
-            it("should borders and text be filled with foreground color", (done) => {
+            it("borders and text should be filled with foreground color", (done) => {
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     const slicers: JQuery[] = visualBuilder.slicerItemContainers.toArray().map($);
                     const slicerText: JQuery[] = visualBuilder.slicerTextElements.toArray().map($);
