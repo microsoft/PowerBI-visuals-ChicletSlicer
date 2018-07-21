@@ -1,3 +1,7 @@
+## 1.6.0
+* High contrast mode
+* API 1.13.0
+
 ## 1.5.0
 * Added localization for all supported languages
 
