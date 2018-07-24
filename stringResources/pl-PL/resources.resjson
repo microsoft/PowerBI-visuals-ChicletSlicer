@@ -50,5 +50,7 @@
 	"Visual_Selection": "Wybór",
 	"Visual_show": "Pokaż",
 	"Visual_Transparency": "Przezroczystość",
-	"Visual_Description_Transparency": "Ustaw przezroczystość koloru tła"
+	"Visual_Description_Transparency": "Ustaw przezroczystość koloru tła",
+	"ChicletSlicer_Short_Description": "Wyświetl przyciski do obsługi obrazu i/lub tekstu, które działają jako filtr w kanwie w innych wizualizacjach",
+	"ChicletSlicer_Long_Description": "Inspiracją fragmentatora chiclet była fantastyczna kontrolka fragmentatora znaleziona w programie Excel w roku 2010, ale z o wiele lepszymi opcjami dostosowywania.\nElementy chiclet to fragmentatory składające się z przycisków, które można również rozmieszczać poziomo w celu bardzo efektywnego stosowania w branży nieruchomości lub aranżować jako macierz w bardzo kompaktowej formie.\nFragmentator chiclet obsługuje również wyróżnianie krzyżowe.\nTo nie wszystko — fragmentator zawiera też obrazy.\nJest to wizualizacja typu open source. Pobierz kod z usługi GitHub: https://github.com/Microsoft/PowerBI-visuals-chicletslicer"
 }

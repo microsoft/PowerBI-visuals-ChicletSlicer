@@ -50,5 +50,7 @@
 	"Visual_Selection": "Seçim",
 	"Visual_show": "Göster",
 	"Visual_Transparency": "Saydamlık",
-	"Visual_Description_Transparency": "Arka plan rengine yönelik saydamlığı ayarla"
+	"Visual_Description_Transparency": "Arka plan rengine yönelik saydamlığı ayarla",
+	"ChicletSlicer_Short_Description": "Diğer görsellerde kanvas içi bir filtre olarak davranan görüntü ve/veya metin düğmelerini gösterin",
+	"ChicletSlicer_Long_Description": "Ciklet Dilimleyici, 2010'dan bu yana Excel'de bulunan harika dilimleyici denetiminden esinlenerek yapılmıştır ancak çok daha fazla özelleştirme seçeneği sunar.\nCiklet, düğmelerden oluşan ve ekranın çok daha verimli kullanılması için yatay olarak veya çok derli toplu bir biçim alması için matris biçiminde düzenlenebilecek bir dilimleyicidir.\nCiklet dilimleyici ayrıca çapraz vurgulamayı da destekler.\nBitmedi: Görüntü bile içerebilir!\nBu, açık kaynaklı bir görseldir. Kodu GitHub'dan alabilirsiniz: https://github.com/Microsoft/PowerBI-visuals-chicletslicer"
 }

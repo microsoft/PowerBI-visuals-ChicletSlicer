@@ -50,5 +50,7 @@
 	"Visual_Selection": "Odabir",
 	"Visual_show": "Pokaži",
 	"Visual_Transparency": "Prozirnost",
-	"Visual_Description_Transparency": "Postavite prozirnost pozadinske boje"
+	"Visual_Description_Transparency": "Postavite prozirnost pozadinske boje",
+	"ChicletSlicer_Short_Description": "Prikaži slikovne i/ili tekstne gumbe koji se ponašaju kao filtar u radnom području za druge vizuale",
+	"ChicletSlicer_Long_Description": "Rezač gumbića nadahnut je fantastičnom kontrolom rezača dostupnom u programu Excel od izdanja 2010, ali uz mnogo više mogućnosti prilagodbe.\nGumbići su rezači načinjeni od gumba, koje moguće rasporediti i vodoravno radi vrlo učinkovitog korištenja prostora ili pak u obliku matrice radi postizanja iznimno kompaktnog oblika.\nRezač gumbića podržava i unakrsno isticanje.\nAli to nije sve – on čak može sadržavati slike!\nTo je vizual otvorenog koda. Kod preuzmite sa servisa GitHub: https://github.com/Microsoft/PowerBI-visuals-chicletslicer"
 }

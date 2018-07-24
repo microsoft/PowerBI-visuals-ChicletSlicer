@@ -50,5 +50,7 @@
 	"Visual_Selection": "Pilihan Isian",
 	"Visual_show": "Tampilkan",
 	"Visual_Transparency": "Transparansi",
-	"Visual_Description_Transparency": "Atur transparansi untuk warna latar belakang"
+	"Visual_Description_Transparency": "Atur transparansi untuk warna latar belakang",
+	"ChicletSlicer_Short_Description": "Tampilkan tombol teks dan/atau gambar yang berfungsi sebagai filter dalam kanvas di visual lain",
+	"ChicletSlicer_Long_Description": "Pemotong Chiclet terinspirasi dari kontrol pemotong besar yang sudah ada di Excel sejak 2010, namun dengan pilihan kustomisasi yang lebih banyak.\nChiclet adalah pemotong yang terdiri dari tombol-tombol yang dapat juga disusun secara horizontal untuk mengefisienkan penggunaan layar tampilan, atau disusun sebagai matriks agar bentuknya menjadi sangat ringkas.\nPemotong chiclet juga mendukung penyorotan silang.\nTidak hanya itu - pemotong bahkan dapat berisi gambar!\nIni adalah visual sumber terbuka. Dapatkan kodenya dari GitHub: https://github.com/Microsoft/PowerBI-visuals-chicletslicer"
 }

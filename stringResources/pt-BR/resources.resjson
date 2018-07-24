@@ -50,5 +50,7 @@
 	"Visual_Selection": "Seleção",
 	"Visual_show": "Mostrar",
 	"Visual_Transparency": "Transparência",
-	"Visual_Description_Transparency": "Definir transparência para cor da tela de fundo"
+	"Visual_Description_Transparency": "Definir transparência para cor da tela de fundo",
+	"ChicletSlicer_Short_Description": "Exibir botões de imagem e/ou de texto que agem como um filtro na tela nos outros visuais",
+	"ChicletSlicer_Long_Description": "A Segmentação Chiclet foi inspirada pelo excelente controle de segmentação de dados encontrado no Excel desde 2010, mas com opções de personalização muito melhores.\nChiclet são segmentações feitas de botões, que também podem ser organizados horizontalmente para uso muito eficiente de estado real, ou organizados como uma matriz para um formato extremamente compacto.\nA segmentação Chiclet também dá suporte a destaque cruzado.\nIsso não é tudo – ela pode até mesmo conter imagens!\nEsse é um visual de software livre. Obtenha o código do GitHub: https://github.com/Microsoft/PowerBI-visuals-chicletslicer"
 }

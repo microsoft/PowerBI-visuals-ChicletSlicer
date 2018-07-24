@@ -50,5 +50,7 @@
 	"Visual_Selection": "Výběr",
 	"Visual_show": "Zobrazit",
 	"Visual_Transparency": "Průhlednost",
-	"Visual_Description_Transparency": "Nastaví průhlednost pro barvu pozadí."
+	"Visual_Description_Transparency": "Nastaví průhlednost pro barvu pozadí.",
+	"ChicletSlicer_Short_Description": "Zobrazení obrázkových nebo textových tlačítek, která fungují jako filtr v plátně u ostatních vizuálů",
+	"ChicletSlicer_Long_Description": "Průřez čiklet byl inspirován skvělým ovládacím prvkem průřezu, který je od roku 2010 v aplikaci Excel. Má však mnohem lepší možnosti přizpůsobení.\nČiklet jsou průřezy vyrobené z tlačítek, které lze také uspořádat vodorovně pro velmi efektivní využití realit nebo do matice pro maximální kompaktnost.\nPrůřez čiklet také podporuje křížové zvýraznění.\nTo není vše: mohou obsahovat i obrázky!\nTento vizuál je typu open source. Kód můžete získat z Githubu: https://github.com/Microsoft/PowerBI-visuals-chicletslicer"
 }

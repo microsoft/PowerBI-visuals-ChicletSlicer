@@ -50,5 +50,7 @@
 	"Visual_Selection": "선택",
 	"Visual_show": "표시",
 	"Visual_Transparency": "투명도",
-	"Visual_Description_Transparency": "배경색의 투명도 설정"
+	"Visual_Description_Transparency": "배경색의 투명도 설정",
+	"ChicletSlicer_Short_Description": "다른 시각적 개체에서 캔버스 내 필터로 사용되는 이미지 및/또는 텍스트 단추를 표시합니다.",
+	"ChicletSlicer_Long_Description": "치클릿 슬라이서는 2010이후 Excel에 도입된 유용한 슬라이서 컨트롤에서 영감을 받아 탄생한 것이지만 사용자 지정 옵션을 훨씬 많습니다.\n치클릿은 면적을 효율적으로 사용하기 위해 가로로 배열하거나 압축된 형태로 나타내기 위해 행렬로 배열할 수도 있는 단추로 구성된 슬라이서입니다.\n치클릿 슬라이서는 교차 강조 표시도 지원합니다.\n그뿐 아니라, 이미지를 포함할 수도 있습니다.\n이는 오픈 소스 시각적 개체입니다. GitHub에서 코드를 받아 보세요. https://github.com/Microsoft/PowerBI-visuals-chicletslicer"
 }

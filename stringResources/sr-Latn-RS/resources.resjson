@@ -50,5 +50,7 @@
 	"Visual_Selection": "Izbor",
 	"Visual_show": "Prikaži",
 	"Visual_Transparency": "Prozirnost",
-	"Visual_Description_Transparency": "Podesi prozirnost boje pozadine"
+	"Visual_Description_Transparency": "Podesi prozirnost boje pozadine",
+	"ChicletSlicer_Short_Description": "Prikažite dugmad za sliku i/ili tekst koja se ponaša kao filter na platnu u drugim vizuelnim elementima",
+	"ChicletSlicer_Long_Description": "Čiklet segmentator je inspirisan odličnom kontrolom segmentatora koja se nalazi u programu Excel od verzije 2010, ali sa mnogo više opcija za prilagođavanje.\nČiklet predstavlja segmentatore sačinjene od dugmadi koja se takođe može rasporediti horizontalno radi veoma efikasnog korišćenja u poslovima za nekretninama, odnosno može se rasporediti kao matrica radi postizanja izuzetno kompaktnog oblika.\nČiklet segmentator takođe podržava unakrsno isticanje.\nTo nije sve – oni čak mogu i da sadrže slike!\nOvo je open source vizuelni element. Preuzmite kôd iz usluge GitHub: https://github.com/Microsoft/PowerBI-visuals-chicletslicer"
 }

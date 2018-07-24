@@ -50,5 +50,7 @@
 	"Visual_Selection": "选择",
 	"Visual_show": "显示",
 	"Visual_Transparency": "透明度",
-	"Visual_Description_Transparency": "设置背景色的透明度"
+	"Visual_Description_Transparency": "设置背景色的透明度",
+	"ChicletSlicer_Short_Description": "显示充当其他视觉对象上画布内筛选器的图像和/或文本按钮",
+	"ChicletSlicer_Long_Description": "Chiclet Slicer 的设计灵感来源于 2010 年以来的 Excel 中功能强大的切片器控件，但具有更多的自定义选项。\nChiclet 是由按钮组成的切片器，还可以水平排列以便高效地用于房地产行业，或以超级紧凑形式的矩阵进行排列。\nChiclet Slicer 还支持交叉突出显示。\n不仅如此，它们甚至可以包含图像!\n这是一个开放源代码视觉对象。从 GitHub 获取代码: https://github.com/Microsoft/PowerBI-visuals-chicletslicer"
 }

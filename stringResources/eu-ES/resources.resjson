@@ -50,5 +50,7 @@
 	"Visual_Selection": "Hautapena",
 	"Visual_show": "Erakutsi",
 	"Visual_Transparency": "Gardentasuna",
-	"Visual_Description_Transparency": "Ezarri atzeko planoaren gardentasuna"
+	"Visual_Description_Transparency": "Ezarri atzeko planoaren gardentasuna",
+	"ChicletSlicer_Short_Description": "Bistaratu beste elementu bisual batzuetan oihaleko iragazki gisa erabiltzen diren irudiak edota testu-botoiak",
+	"ChicletSlicer_Long_Description": "2010etik aurrera Excel-ek datu-zatitzaileak kontrolatzeko izan dituen aukera bikainetan dago inspiratuta Chiclet datu-zatitzailea, baina haiek baino askoz pertsonalizazio-aukera gehiago ditu.\nChiclet-ek botoiz osatutako datu-zatitzaileak eskaintzen ditu. Horizontalean ere jar daitezke, higiezinen merkatuan modu oso eraginkorrean erabiltzeko aukera emanez, edota matrize gisa antolatu, forma trinkoa emateko.\nHalaber, Chiclet datu-zatitzaileak nabarmentze gurutzatua erabiltzeko aukera ematen du.\nBaina hori ez da guztia: irudiak ere izan ditzake!\nKode irekikoa da elementu bisual hau. Eskuratu kodea GitHub-en: https://github.com/Microsoft/PowerBI-visuals-chicletslicer"
 }

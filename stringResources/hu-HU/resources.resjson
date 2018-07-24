@@ -50,5 +50,7 @@
 	"Visual_Selection": "Kijelölés",
 	"Visual_show": "Megjelenítés",
 	"Visual_Transparency": "Átlátszóság",
-	"Visual_Description_Transparency": "Háttérszín átlátszóságának beállítása"
+	"Visual_Description_Transparency": "Háttérszín átlátszóságának beállítása",
+	"ChicletSlicer_Short_Description": "Képes és/vagy szöveges gombok megjelenítése, amely vásznon belüli szűrőként használhatók más vizualizációkhoz",
+	"ChicletSlicer_Long_Description": "A gombsoros szeletelőt egy olyan remek szeletelővezérlő inspirálta, amely az Excelben 2010 óta megtalálható, azonban ez sokkal jobb testre szabási lehetőségeket kínál.\nA gombrosok gombokból álló szeletelők, amelyek vízszintesen is elrendezhetők a jobb helykihasználás érdekében, vagy mátrixként nagyon kompakt kialakításúak.\nA gombsoros szeletelő támogatja a keresztkiemeléseket is.\nÉs ez nem minden. Még akár képeket is tartalmazhat!\nEz egy nyílt forráskódú vizualizáció. A kódot letöltheti a GitHubról: https://github.com/Microsoft/PowerBI-visuals-chicletslicer"
 }

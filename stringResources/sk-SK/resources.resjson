@@ -50,5 +50,7 @@
 	"Visual_Selection": "Výber",
 	"Visual_show": "Zobraziť",
 	"Visual_Transparency": "Priehľadnosť",
-	"Visual_Description_Transparency": "Nastaviť priehľadnosť farby pozadia"
+	"Visual_Description_Transparency": "Nastaviť priehľadnosť farby pozadia",
+	"ChicletSlicer_Short_Description": "Umožňuje zobraziť obrázok alebo tlačidlá s textom, ktoré sa používajú ako filter v plátne na ostatných vizuáloch",
+	"ChicletSlicer_Long_Description": "Rýchly filter chiclet bol inšpirovaný skvelým ovládacím prvkom rýchlych filtrov, ktorý je k dispozícii v Exceli od roku 2010, a poskytuje oveľa širšie možnosti prispôsobenia.\nRýchle filtre chiclet majú tlačidlá, ktoré je tiež možné usporiadať horizontálne na veľmi efektívne využitie v odvetví obchodu s nehnuteľnosťami alebo usporiadať ako matricu, vďaka čomu získate mimoriadne kompaktný formát.\nRýchle filtre chiclet tiež podporujú krížové zvýrazňovanie.\nA to nie je všetko – môžu dokonca obsahovať aj obrázky!\nTento vizuál je typu open source. Kód získate na stránke GitHub: https://github.com/Microsoft/PowerBI-visuals-chicletslicer"
 }

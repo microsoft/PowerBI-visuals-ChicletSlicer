@@ -50,5 +50,7 @@
 	"Visual_Selection": "Atlase",
 	"Visual_show": "Rādīt",
 	"Visual_Transparency": "Caurspīdīgums",
-	"Visual_Description_Transparency": "Iestatīt fona krāsas caurredzamību"
+	"Visual_Description_Transparency": "Iestatīt fona krāsas caurredzamību",
+	"ChicletSlicer_Short_Description": "Parādiet attēla un/vai teksta pogas, kas citos vizuālajos datus darbojas kā pamatnes filtrs.",
+	"ChicletSlicer_Long_Description": "Chiclet Slicer diagrammas tika radītas, iedvesmojoties no lieliskās datu griezuma vadīklas, kas programmā Excel pieejama no 2010. gada, papildinot to ar daudz plašākām pielāgošanas iespējām.\nChiclet Slicer ir datu griezumi, ko veido pogas un ko var izkārtot arī horizontāli efektīvai lietošanai nekustamā īpašuma jomā vai kā matricu, lai iegūtu īpaši kompaktu skatu.\nChiclet Slicer atbalsta arī šķērsenisko iezīmēšanu.\nTaču tas vēl nav viss — tajos var ietvert pat attēlus!\nŠie ir atvērtā pirmkoda vizuālie dati. Iegūstiet kodu no GitHub: https://github.com/Microsoft/PowerBI-visuals-chicletslicer"
 }

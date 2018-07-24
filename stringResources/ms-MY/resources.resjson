@@ -50,5 +50,7 @@
 	"Visual_Selection": "Pilihan",
 	"Visual_show": "Tunjukkan",
 	"Visual_Transparency": "Kelutsinaran",
-	"Visual_Description_Transparency": "Set kelutsinaran untuk warna latar belakang"
+	"Visual_Description_Transparency": "Set kelutsinaran untuk warna latar belakang",
+	"ChicletSlicer_Short_Description": "Paparkan imej dan/atau teks butang yang bertindak sebagai penapis dalam kanvas telah pada visual lain",
+	"ChicletSlicer_Long_Description": "Chiclet Slicer telah diilhami oleh kawalan alat penggunting yang hebat yang terdapat dalam Excel sejak 2010, tetapi dengan pilihan penyesuaian yang lebih besar.\nChiclet adalah slicers yang diperbuat daripada butang, yang juga boleh disusun secara mendatar untuk penggunaan hartanah yang sangat efisien, atau diatur sebagai matriks untuk bentuk padat super.\nChiclet slicer juga menyokong menyoroti silang.\nIni bukan semua - mereka juga boleh mengandungi imej!\nIni adalah visual sumber terbuka. Dapatkan kod dari GitHub: https://github.com/Microsoft/PowerBI-visuals-chicletslicer"
 }

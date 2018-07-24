@@ -50,5 +50,7 @@
 	"Visual_Selection": "Valinta",
 	"Visual_show": "Näytä",
 	"Visual_Transparency": "Läpinäkyvyys",
-	"Visual_Description_Transparency": "Aseta taustavärin läpinäkyvyys"
+	"Visual_Description_Transparency": "Aseta taustavärin läpinäkyvyys",
+	"ChicletSlicer_Short_Description": "Näytä kuvan ja/tai tekstin painikkeet, jotka toimivat pohjan suodattimena muille visualisoinneille",
+	"ChicletSlicer_Long_Description": "Chiclet Sliceriä inspiroi Excelissä vuodesta 2010 lähtien löytynyt erinomainen osittajaohjausobjekti, mutta siinä on paljon paremmat mukautusasetukset.\nChiclet-osittajat ovat painikkeista koostuvia osittajia, jotka voidaan myös järjestää vaakasuuntaisesti hyvin tehokasta kiinteistökäyttöä varten tai järjestää matriisiin erittäin tiiviiseen muotoon.\nChiclet-osittaja tukee myös ristiinkorostusta.\nEikä tässä vielä kaikki – ne voivat jopa sisältää kuvia!\nTämä on avoimen lähteen visualisointi. Hanki koodi GitHubista: https://github.com/Microsoft/PowerBI-visuals-chicletslicer"
 }

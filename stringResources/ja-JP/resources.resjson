@@ -50,5 +50,7 @@
 	"Visual_Selection": "選択",
 	"Visual_show": "表示",
 	"Visual_Transparency": "透明度",
-	"Visual_Description_Transparency": "背景色の透過性を設定する"
+	"Visual_Description_Transparency": "背景色の透過性を設定する",
+	"ChicletSlicer_Short_Description": "その他のビジュアルでキャンバス内フィルターとして動作するイメージまたはテキストのボタンを表示します",
+	"ChicletSlicer_Long_Description": "Chiclet Slicer は、Excel 2010 以降に搭載されている優れたスライサー コントロールからヒントを得て開発されたもので、カスタマイズのオプションが大幅に拡充されています。\nChiclet は複数のボタンで表現されたスライサーで、水平方向に配置すると不動産用途に効率的使用できるほか、マトリックスとして配置すると非常にコンパクトな形式になります。\nChiclet スライサーでは、クロス強調表示もサポートされています。\nこれがすべてではなく、画像を含めることさえできます。\nこれは、オープンソースの視覚エフェクトです。コードは GitHub から取得します: https://github.com/Microsoft/PowerBI-visuals-chicletslicer"
 }

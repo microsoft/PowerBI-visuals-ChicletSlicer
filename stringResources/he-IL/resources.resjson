@@ -50,5 +50,7 @@
 	"Visual_Selection": "בחירה",
 	"Visual_show": "‏‏הצג",
 	"Visual_Transparency": "שקיפות",
-	"Visual_Description_Transparency": "קבע שקיפות לצבע הרקע"
+	"Visual_Description_Transparency": "קבע שקיפות לצבע הרקע",
+	"ChicletSlicer_Short_Description": "הצג תמונה ו/או לחצני טקסט שפועלים בדומה למסנן בתוך בד ציור על עזרים חזותיים אחרים",
+	"ChicletSlicer_Long_Description": "כלי הפריסה 'צ'יקלט' הוא בהשראת פקד כלי הפריסה הנהדר שנמצא ב- Excel מאז שנת 2010, אך עם אפשרויות נרחבות הרבה יותר להתאמה אישית.\nצ'יקלט הם כלי פריסה שמורכבים מלחצנים שניתנים לארגון גם באופן אופקי לשימוש יעיל מאוד בנדל\"ן, או לארגון בתור מטריצה לצורה קומפקטית במיוחד.\nכלי הפריסה 'צ'יקלט' תומך גם בהדגשה צולבת.\nוזה לא הכול - הם יכולים להכיל אפילו תמונות!\nזהו עזר חזותי בקוד פתוח. הורד את הקוד מ- GitHub: https://github.com/Microsoft/PowerBI-visuals-chicletslicer"
 }

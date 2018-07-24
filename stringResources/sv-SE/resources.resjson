@@ -50,5 +50,7 @@
 	"Visual_Selection": "Val",
 	"Visual_show": "Visa",
 	"Visual_Transparency": "Transparens",
-	"Visual_Description_Transparency": "Ange genomskinlighet för bakgrundsfärgen"
+	"Visual_Description_Transparency": "Ange genomskinlighet för bakgrundsfärgen",
+	"ChicletSlicer_Short_Description": "Visa bild och/eller textknappar som fungerar som ett filter i arbetsytan för övriga visuella objekt",
+	"ChicletSlicer_Long_Description": "Chiclet-utsnitt inspirerades av den utmärkta utsnittskontrollen som funnits i Excel sedan 2010, men med mycket fler anpassningsalternativ.\nChiclets är utsnitt som består av knappar som kan arrangeras vågrätt för ett mycket effektivt ytutnyttjande eller ordnas som en matris för ett superkompakt format.\nChiclet-utsnitt stöder även korsmarkering.\nDet är inte allt. De kan även innehålla bilder!\nDet här är ett visuellt objekt med öppen källkod. Hämta koden från GitHub: https://github.com/Microsoft/PowerBI-visuals-chicletslicer"
 }

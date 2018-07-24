@@ -50,5 +50,7 @@
 	"Visual_Selection": "Selectie",
 	"Visual_show": "Weergeven",
 	"Visual_Transparency": "Transparantie",
-	"Visual_Description_Transparency": "Transparantie voor de achtergrondkleur instellen"
+	"Visual_Description_Transparency": "Transparantie voor de achtergrondkleur instellen",
+	"ChicletSlicer_Short_Description": "Een afbeelding en/of tekstknoppen weergeven die als een filter in het canvas fungeren voor andere visuals",
+	"ChicletSlicer_Long_Description": "De Chiclet Slicer is gebaseerd op het geweldige slicerbesturingselement dat sinds 2010 in Excel wordt gebruikt, maar het bevat betere aanpassingsopties.\nDe Chiclet Slicer is een slicer die bestaat uit knoppen die u ook horizontaal kunt rangschikken zodat de ruimte zeer efficiënt wordt gebruikt. De slicer kan ook als een matrix worden gerangschikt voor een zeer compacte vorm.\nDe Chiclet Slicer ondersteunt ook kruislingse markering.\nEr is nog meer: de slicer kan zelfs afbeeldingen bevatten.\nDit is een open source visual. U kunt de code op GitHub ophalen: https://github.com/Microsoft/PowerBI-visuals-chicletslicer"
 }

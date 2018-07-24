@@ -50,5 +50,7 @@
 	"Visual_Selection": "Valg",
 	"Visual_show": "Vis",
 	"Visual_Transparency": "Gennemsigtighed",
-	"Visual_Description_Transparency": "Angiv baggrundsfarvens gennemsigtighed"
+	"Visual_Description_Transparency": "Angiv baggrundsfarvens gennemsigtighed",
+	"ChicletSlicer_Short_Description": "Vis billedet og/eller tekstknapper, der fungerer som et lærredsfilter på andre illustrationer",
+	"ChicletSlicer_Long_Description": "Chiclet Slicer er inspireret af det store snitkontrolelement, der findes i Excel siden 2010, men blot med meget større tilpasningsmuligheder.\nChiclet er et udsnitsværktøj, der er består af knapper, der også kan arrangeres vandret til meget effektiv brug i behandlingen af ejendomme, eller arrangeret som en matrix i en meget kompakt form.\nChiclet Slicer understøtter også tværgående fremhævning.\nOg det er ikke nok med det - de kan også indeholde billeder!\nDette er en open source illustration. Koden kan hentes fra GitHub: https://github.com/Microsoft/PowerBI-visuals-chicletslicer"
 }

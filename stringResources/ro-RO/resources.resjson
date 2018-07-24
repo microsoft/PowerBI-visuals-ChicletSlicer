@@ -50,5 +50,7 @@
 	"Visual_Selection": "Selecție",
 	"Visual_show": "Afişare",
 	"Visual_Transparency": "Transparență",
-	"Visual_Description_Transparency": "Setați transparența pentru culoarea de fundal"
+	"Visual_Description_Transparency": "Setați transparența pentru culoarea de fundal",
+	"ChicletSlicer_Short_Description": "Afișați butoane imagine și/sau text care să funcționeze ca un filtru pe pânză pentru alte elemente vizuale",
+	"ChicletSlicer_Long_Description": "Slicerul Chiclet a fost inspirat de controlul slicer foarte bun prezent în Excel încă din 2010, însă acesta are mult mai multe opțiuni de particularizare.\nUn chiclet este un slicer alcătuit din butoane, care, de asemenea, pot fi aranjate pe orizontală, pentru o utilizare eficientă a spațiului disponibil, sau ca matrice, pentru o formă extrem de compactă.\nSlicerul Chiclet acceptă și evidențierea încrucișată.\nȘi nu v-am spus încă tot - poate conține și imagini!\nAcesta este un element vizual open source. Obțineți codul de la GitHub: https://github.com/Microsoft/PowerBI-visuals-chicletslicer"
 }

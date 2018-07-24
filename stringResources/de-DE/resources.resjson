@@ -50,5 +50,7 @@
 	"Visual_Selection": "Auswahl",
 	"Visual_show": "Anzeigen",
 	"Visual_Transparency": "Transparenz",
-	"Visual_Description_Transparency": "Transparenz als Hintergrundfarbe festlegen"
+	"Visual_Description_Transparency": "Transparenz als Hintergrundfarbe festlegen",
+	"ChicletSlicer_Short_Description": "Hiermit zeigen Sie Bild- und/oder Textschaltflächen an, die als In-Canvas-Filter für andere Visuals fungieren.",
+	"ChicletSlicer_Long_Description": "Der Chiclet-Slicer wurde durch das leistungsstarke Slicer-Steuerelement inspiriert, das es seit 2010 in Excel gibt, bietet aber viel mehr Anpassungsoptionen.\nChiclets sind aus Schaltflächen bestehende Slicer. Diese können zur effizienten Nutzung des verfügbaren Platzes auf dem Bildschirm horizontal angeordnet oder in superkompakter Form als Matrix dargestellt werden.\nDer Chiclet-Slicer unterstützt auch übergreifende Hervorhebungen.\nUnd das ist noch längst nicht alles: Diese Slicer können sogar Bilder enthalten!\nDies ist ein Open Source-Visual. Rufen Sie den Code aus GitHub ab: https://github.com/Microsoft/PowerBI-visuals-chicletslicer"
 }

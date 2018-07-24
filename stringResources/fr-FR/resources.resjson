@@ -50,5 +50,7 @@
 	"Visual_Selection": "Sélection",
 	"Visual_show": "Afficher",
 	"Visual_Transparency": "Transparence",
-	"Visual_Description_Transparency": "Définir la transparence pour la couleur d'arrière-plan"
+	"Visual_Description_Transparency": "Définir la transparence pour la couleur d'arrière-plan",
+	"ChicletSlicer_Short_Description": "Afficher des boutons représentant une image et/ou du texte qui font office de filtres dans la zone de dessin sur d'autres visuels",
+	"ChicletSlicer_Long_Description": "Basé sur l'excellent contrôle de segment disponible dans Excel depuis 2010, le segment Chiclet offre encore plus d'options de personnalisation.\nChiclet est un segment composé de boutons que vous pouvez disposer horizontalement pour optimiser la zone d'affichage ou dans une matrice pour obtenir une forme très compacte.\nLe segment Chiclet prend également en charge les sélections croisées.\nEt ce n'est pas tout : il peut même contenir des images !\nCe visuel est open source. Obtenez le code sur GitHub ici : https://github.com/Microsoft/PowerBI-visuals-chicletslicer"
 }

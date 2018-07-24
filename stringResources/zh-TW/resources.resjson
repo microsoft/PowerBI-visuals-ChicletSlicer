@@ -50,5 +50,7 @@
 	"Visual_Selection": "選取項目",
 	"Visual_show": "顯示",
 	"Visual_Transparency": "透明度",
-	"Visual_Description_Transparency": "設定背景色彩的透明度"
+	"Visual_Description_Transparency": "設定背景色彩的透明度",
+	"ChicletSlicer_Short_Description": "顯示影像及 (或) 文字按鈕，在其他視覺效果上充任畫布內篩選",
+	"ChicletSlicer_Long_Description": "標籤方塊交叉分析篩選器的靈感來自 Excel 從 2010 年起提供的優異交叉分析篩選器控制項，但擁有青出於藍的自訂選項。\n標籤方塊是按鈕製成的交叉分析篩選器，水平排列可讓空間運用極有效率，矩陣排列則可構成非常精簡的形式。\n標籤方塊交叉分析篩選器也支援交叉醒目提示。\n不僅如此，甚至還能包含影像!\n這是開放原始碼視覺效果。從 GitHub 取得程式碼: https://github.com/Microsoft/PowerBI-visuals-chicletslicer"
 }

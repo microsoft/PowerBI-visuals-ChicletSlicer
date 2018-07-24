@@ -50,5 +50,7 @@
 	"Visual_Selection": "Valik",
 	"Visual_show": "Kuva",
 	"Visual_Transparency": "Läbipaistvus",
-	"Visual_Description_Transparency": "Määrake taustavärvi läbipaistvus"
+	"Visual_Description_Transparency": "Määrake taustavärvi läbipaistvus",
+	"ChicletSlicer_Short_Description": "Saate kuvada pildi- ja/või tekstinupud, mis toimivad lõuendisisese filtrina teiste visuaalide jaoks",
+	"ChicletSlicer_Long_Description": "Chiclet Slicer sai inspiratsiooni suurepärasest tükeldi juhtelemendist, mis on alates 2010. aastast Excelis, kuid sellel on palju rohkem kohandamissuvandeid.\nChicleti tükeldid koosnevad nuppudest, mida saab muu hulgas korrastada horisontaalselt tõhusaks kinnisvara alaseks kasutamiseks või korrastada maatriksina ülimalt kompaktsesse vormi.\nChicleti tükeldi toetab ka ristesiletõstmist.\nSee pole veel kõik – nad võivad sisaldada ka kujutisi!\nSee on avatud lähtekoodiga visuaal. Hankige kood GitHubist: https://github.com/Microsoft/PowerBI-visuals-chicletslicer"
 }

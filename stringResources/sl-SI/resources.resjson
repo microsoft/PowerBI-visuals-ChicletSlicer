@@ -50,5 +50,7 @@
 	"Visual_Selection": "Izbor",
 	"Visual_show": "Pokaži",
 	"Visual_Transparency": "Prosojnost",
-	"Visual_Description_Transparency": "Nastavitev prosojnosti za barvo ozadja"
+	"Visual_Description_Transparency": "Nastavitev prosojnosti za barvo ozadja",
+	"ChicletSlicer_Short_Description": "Prikažite sliko in/ali gumbe z besedilom, ki v drugih upodobitvah delujejo kot filter na platnu",
+	"ChicletSlicer_Long_Description": "Razčlenjevalnik Chiclet je zasnovan na vrhunskem kontrolniku razčlenjevalnika, ki je na voljo v Excelu že od leta 2010, vendar smo mu dodali dodatne možnosti prilagoditve.\nChiclet so razčlenjevalniki, ki vključujejo gumbe. Te lahko razporedite vodoravno za učinkovito uporabo na področju nepremičnin ali kot matrico za ustvarjanje stisnjene oblike zapisa.\nRazčlenjevalnik Chiclet podpira tudi navzkrižno označevanje.\nVendar to še ni vse – razčlenjevalniki lahko vključujejo celo slike.\nTo je odprtokodna ponazoritev. Kodo lahko pridobite na spletnem mestu storitve GitHub: https://github.com/Microsoft/PowerBI-visuals-chicletslicer"
 }

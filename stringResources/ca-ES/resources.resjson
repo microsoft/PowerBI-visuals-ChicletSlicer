@@ -50,5 +50,7 @@
 	"Visual_Selection": "Selecció",
 	"Visual_show": "Mostra",
 	"Visual_Transparency": "Transparència",
-	"Visual_Description_Transparency": "Defineix la transparència del color de fons"
+	"Visual_Description_Transparency": "Defineix la transparència del color de fons",
+	"ChicletSlicer_Short_Description": "Mostreu botons d'imatge o text que actuen com a filtre dins d'un llenç en altres elements visuals.",
+	"ChicletSlicer_Long_Description": "L'afinador de conjunt de botons s'inspira en l'afinador tan útil inclòs a partir de la versió del 2010 de l'Excel, però amb moltes més opcions de personalització.\nEls conjunts de botons són afinadors formats per botons, que també es poden ordenar horitzontalment per aconseguir un ús molt eficient per a les agències immobiliàries, o bé com a matriu per aconseguir una forma molt compacta.\nL'afinador de conjunt de botons també admet el marcatge creuat.\nI això no es tot, ja que també poden contenir imatges!\nAquest element visual és de codi obert. Podeu obtenir el codi al GitHub, a https://github.com/Microsoft/PowerBI-visuals-chicletslicer."
 }
