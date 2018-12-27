@@ -162,11 +162,13 @@ module powerbi.extensibility.visual {
                     }
 
                     if (this.image) {
-                        if (!/^(ftp|http|https):\/\/[^ "]+$/.test(imageURL) &&
-                            !/^data:image/.test(imageURL)) {
+                        const uncheckedImageURL = this.image.values[categoryIndex] as string;
+                        if (!/^(ftp|http|https):\/\/[^ "]+$/.test(uncheckedImageURL) &&
+                            !/^data:image/.test(uncheckedImageURL)) {
                             imageURL = undefined;
+                        } else {
+                            imageURL = uncheckedImageURL;
                         }
-                        imageURL = this.image.values[categoryIndex] as string;
                     }
 
                     let categorySelectionId: ISelectionId = this.host.createSelectionIdBuilder()

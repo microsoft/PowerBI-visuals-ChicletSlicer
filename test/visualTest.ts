@@ -1470,7 +1470,14 @@ module powerbi.extensibility.visual.test {
                         checkImageValue(dataImage);
                     });
 
-                    function checkImageValue(value) {
+                    it("image value is invalid", () => {
+                        const invalidURL: string = "justtext";
+                        dataViewBuilder.valuesImage[0] = invalidURL;
+
+                        checkImageValue(invalidURL, false);
+                    });
+
+                    function checkImageValue(value, mustBeEqual: boolean = true) {
 
                         let chicletSlicerConverter: ChicletSlicerConverter = new ChicletSlicerConverter(
                             dataViewBuilder.getDataView(),
@@ -1478,7 +1485,11 @@ module powerbi.extensibility.visual.test {
 
                         chicletSlicerConverter.convert();
 
-                        expect(chicletSlicerConverter.dataPoints[0].imageURL).toBe(value);
+                        if (mustBeEqual) {
+                            expect(chicletSlicerConverter.dataPoints[0].imageURL).toBe(value);
+                        } else {
+                            expect(chicletSlicerConverter.dataPoints[0].imageURL).toBe(undefined);
+                        }
                     }
                 });
             });

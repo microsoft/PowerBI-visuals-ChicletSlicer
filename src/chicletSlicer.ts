@@ -999,7 +999,7 @@ module powerbi.extensibility.visual {
             let slicerViewport: IViewport = this.getSlicerBodyViewport(this.currentViewport);
             this.slicerBody
                 .style({
-                    'height': PixelConverter.toString(slicerViewport.height),
+                    'height': PixelConverter.toString(slicerViewport.height - this.getSearchHeaderHeight()),
                     'width': `${ChicletSlicer.MaxImageWidth}%`,
                 });
         }

@@ -31,8 +31,8 @@
 @import (less) "node_modules/powerbi-visuals-utils-interactivityutils/lib/index.css";
 @import (less) "node_modules/powerbi-visuals-utils-formattingutils/lib/index.css";
 
-@neutralDarkColor: '#212121';
-@neutralPrimaryColor: '#333333';
+@neutralDarkColor: #212121;
+@neutralPrimaryColor: #333;
 @regularFontFamily: helvetica, arial, sans-serif;
 
 .chicletSlicer {
@@ -179,6 +179,7 @@
             display: flex; // Opera, Firefox
             justify-content: space-between;
             -webkit-align-items: center;
+            align-items: center;
             width: ~"calc(100% - 2px)";
             border: 1px solid @neutralDarkColor;
             height: 20px;

@@ -16,7 +16,8 @@
             "displayName": "Image",
             "displayNameKey": "Role_Image",
             "name": "Image",
-            "kind": "Grouping"
+            "kind": "Grouping",
+            "requiredTypes": [{"text": true}]
         }
     ],
     "dataViewMappings": [
@@ -44,7 +45,7 @@
                     ],
                     "dataReductionAlgorithm": {
                         "top": {
-                            "count": 10000
+                            "count": 1000
                         }
                     }
                 },
@@ -54,7 +55,7 @@
                     ],
                     "dataReductionAlgorithm": {
                         "top": {
-                            "count": 10000
+                            "count": 1000
                         }
                     }                    
                 }
