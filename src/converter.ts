@@ -162,7 +162,7 @@ module powerbi.extensibility.visual {
                     }
 
                     if (this.image) {
-                        const uncheckedImageURL = this.image.values[categoryIndex] as string
+                        const uncheckedImageURL = this.image.values[categoryIndex] as string;
                         if (!/^(ftp|http|https):\/\/[^ "]+$/.test(uncheckedImageURL) &&
                             !/^data:image/.test(uncheckedImageURL)) {
                             imageURL = undefined;
