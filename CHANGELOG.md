@@ -1,3 +1,8 @@
+## 1.6.1
+* Image validation was repaired
+* Restriction for number of categories was changed from 10k to 1k
+* Image bucket can accept only string fields now
+
 ## 1.6.0
 * High contrast mode
 * API 1.13.0
