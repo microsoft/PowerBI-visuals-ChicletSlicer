@@ -51,11 +51,11 @@ module powerbi.extensibility.visual.test {
     import assertColorsMatch = powerbi.extensibility.utils.test.helpers.color.assertColorsMatch;
     import MockISelectionManager = powerbi.extensibility.utils.test.mocks.MockISelectionManager;
 
-    // ChicletSlicer1448559807354
-    import TableView = powerbi.extensibility.visual.ChicletSlicer1448559807354.TableView;
-    import VisualClass = powerbi.extensibility.visual.ChicletSlicer1448559807354.ChicletSlicer;
-    import ChicletSlicerConverter = powerbi.extensibility.visual.ChicletSlicer1448559807354.ChicletSlicerConverter;
-    import ChicletSlicerDataPoint = powerbi.extensibility.visual.ChicletSlicer1448559807354.ChicletSlicerDataPoint;
+    // ChicletSlicerEss01
+    import TableView = powerbi.extensibility.visual.ChicletSlicerEss01.TableView;
+    import VisualClass = powerbi.extensibility.visual.ChicletSlicerEss01.ChicletSlicer;
+    import ChicletSlicerConverter = powerbi.extensibility.visual.ChicletSlicerEss01.ChicletSlicerConverter;
+    import ChicletSlicerDataPoint = powerbi.extensibility.visual.ChicletSlicerEss01.ChicletSlicerDataPoint;
 
     describe("ChicletSlicer", () => {
         let visualBuilder: ChicletSlicerBuilder,
@@ -763,14 +763,14 @@ module powerbi.extensibility.visual.test {
                         };
                     });
 
-                    it("multi selection should work when ctrlKey is pressed and multi select is turned off", (done) => {
+                    it("multi selection should NOT work when ctrlKey is pressed and multi select is turned off", (done) => {
                         dataView.metadata.objects.general.multiselect = false;
 
                         testMultiSelection(
                             dataView,
                             visualBuilder,
                             ClickEventType.CtrlKey,
-                            defaultDataViewBuilder.valuesCategory.length,
+                            1,
                             () => true,
                             done);
                     });

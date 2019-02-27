@@ -30,9 +30,9 @@ module powerbi.extensibility.visual.test {
     // powerbi.extensibility.utils.test
     import VisualBuilderBase = powerbi.extensibility.utils.test.VisualBuilderBase;
 
-    // ChicletSlicer1448559807354
-    import VisualClass = powerbi.extensibility.visual.ChicletSlicer1448559807354.ChicletSlicer;
-    import ChicletSlicerDataPoint = powerbi.extensibility.visual.ChicletSlicer1448559807354.ChicletSlicerDataPoint;
+    // ChicletSlicerEss01
+    import VisualClass = powerbi.extensibility.visual.ChicletSlicerEss01.ChicletSlicer;
+    import ChicletSlicerDataPoint = powerbi.extensibility.visual.ChicletSlicerEss01.ChicletSlicerDataPoint;
 
     export interface SelectionState {
         items: string;
@@ -41,7 +41,7 @@ module powerbi.extensibility.visual.test {
 
     export class ChicletSlicerBuilder extends VisualBuilderBase<VisualClass> {
         constructor(width: number, height: number) {
-            super(width, height, "ChicletSlicer1448559807354");
+            super(width, height, "ChicletSlicerEss01");
         }
 
         protected build(options: VisualConstructorOptions): VisualClass {
