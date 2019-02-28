@@ -51,11 +51,11 @@ module powerbi.extensibility.visual.test {
     import assertColorsMatch = powerbi.extensibility.utils.test.helpers.color.assertColorsMatch;
     import MockISelectionManager = powerbi.extensibility.utils.test.mocks.MockISelectionManager;
 
-    // ChicletSlicerEss01
-    import TableView = powerbi.extensibility.visual.ChicletSlicerEss01.TableView;
-    import VisualClass = powerbi.extensibility.visual.ChicletSlicerEss01.ChicletSlicer;
-    import ChicletSlicerConverter = powerbi.extensibility.visual.ChicletSlicerEss01.ChicletSlicerConverter;
-    import ChicletSlicerDataPoint = powerbi.extensibility.visual.ChicletSlicerEss01.ChicletSlicerDataPoint;
+    // ChicletSlicer689384675
+    import TableView = powerbi.extensibility.visual.ChicletSlicer689384675.TableView;
+    import VisualClass = powerbi.extensibility.visual.ChicletSlicer689384675.ChicletSlicer;
+    import ChicletSlicerConverter = powerbi.extensibility.visual.ChicletSlicer689384675.ChicletSlicerConverter;
+    import ChicletSlicerDataPoint = powerbi.extensibility.visual.ChicletSlicer689384675.ChicletSlicerDataPoint;
 
     describe("ChicletSlicer", () => {
         let visualBuilder: ChicletSlicerBuilder,

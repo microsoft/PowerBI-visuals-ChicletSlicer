@@ -1,8 +1,8 @@
 {
   "visual": {
-    "name": "chicletSlicerEss",
-    "displayName": "ChicletSlicerEss 1.6.1e",
-    "guid": "ChicletSlicerEss01",
+    "name": "chicletSlicer",
+    "displayName": "ChicletSlicer 1.6.1e",
+    "guid": "ChicletSlicer689384675",
     "visualClassName": "ChicletSlicer",
     "version": "1.6.1e",
     "description": "Use this slicer to display image and/or text buttons that act as an in-canvas filter. Define additional properties for the layout & selection to customize this slicer to meet your specific needs",
