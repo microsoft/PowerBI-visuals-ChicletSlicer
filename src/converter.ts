@@ -24,170 +24,184 @@
  *  THE SOFTWARE.
  */
 
-module powerbi.extensibility.visual {
-    // powerbi.data
-    import ISQExpr = powerbi.data.ISQExpr;
-    import SemanticFilter = powerbi.data.ISemanticFilter;
+import powerbiVisualsApi from "powerbi-visuals-api";
+import powerbi = powerbiVisualsApi;
 
-    // powerbi.extensibility.utils.formatting
-    import valueFormatter = powerbi.extensibility.utils.formatting.valueFormatter;
+import DataViewCategorical = powerbi.DataViewCategorical;
+import DataViewCategoricalColumn = powerbi.DataViewCategoricalColumn;
+import DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
+import DataViewMetadata = powerbi.DataViewMetadata;
 
-    // powerbi.extensibility.utils.dataview
-    import DataViewObjectsModule = powerbi.extensibility.utils.dataview.DataViewObjects;
+import IVisualHost = powerbi.extensibility.visual.IVisualHost;
+import ISelectionId = powerbi.visuals.ISelectionId;
+import DataView = powerbi.DataView;
+import DataViewObjectPropertyIdentifier = powerbi.DataViewObjectPropertyIdentifier;
+import DataViewScopeIdentity = powerbi.extensibility.visual.DataViewScopeIdentity;
 
-    export class ChicletSlicerConverter {
-        private dataViewCategorical: DataViewCategorical;
-        private dataViewMetadata: DataViewMetadata;
-        private category: DataViewCategoryColumn;
-        private image: DataViewCategoryColumn;
-        private categoryIdentities: DataViewScopeIdentity[];
-        private categoryValues: any[];
-        private categoryFormatString: string;
-        public identityFields: ISQExpr[];
+// powerbi.data
+import ISQExpr = powerbi.data.ISQExpr;
+import SemanticFilter = powerbi.data.ISemanticFilter;
 
-        public numberOfCategoriesSelectedInData: number;
-        public dataPoints: ChicletSlicerDataPoint[];
-        public hasHighlights: boolean;
+// powerbi.extensibility.utils.formatting
+import { valueFormatter } from "powerbi-visuals-utils-formattingutils";
 
-        private host: IVisualHost;
-        public hasSelectionOverride: boolean;
+// powerbi.extensibility.utils.dataview
+import { dataViewObjects as DataViewObjectsModule } from "powerbi-visuals-utils-dataviewutils";
 
-        public constructor(dataView: DataView, host: IVisualHost) {
-            const dataViewCategorical: DataViewCategorical = dataView.categorical;
-            this.dataViewCategorical = dataViewCategorical;
-            this.dataViewMetadata = dataView.metadata;
-            this.host = host;
+import { chicletSlicerProps } from "./chicletSlicerProps";
 
-            if (dataViewCategorical.categories && dataViewCategorical.categories.length > 0) {
-                this.category = dataViewCategorical.categories[0];
-                this.image = dataViewCategorical.categories[1]; // may be undefined
-                this.categoryIdentities = this.category.identity;
-                this.categoryValues = this.category.values;
-                this.identityFields = <ISQExpr[]>this.category.identityFields;
-                this.categoryFormatString = valueFormatter.getFormatStringByColumn(this.category.source);
+export class ChicletSlicerConverter {
+    private dataViewCategorical: DataViewCategorical;
+    private dataViewMetadata: DataViewMetadata;
+    private category: DataViewCategoryColumn;
+    private image: DataViewCategoryColumn;
+    private categoryIdentities: DataViewScopeIdentity[];
+    private categoryValues: any[];
+    private categoryFormatString: string;
+    public identityFields: ISQExpr[];
+
+    public numberOfCategoriesSelectedInData: number;
+    public dataPoints: ChicletSlicerDataPoint[];
+    public hasHighlights: boolean;
+
+    private host: IVisualHost;
+    public hasSelectionOverride: boolean;
+
+    public constructor(dataView: DataView, host: IVisualHost) {
+        const dataViewCategorical: DataViewCategorical = dataView.categorical;
+        this.dataViewCategorical = dataViewCategorical;
+        this.dataViewMetadata = dataView.metadata;
+        this.host = host;
+
+        if (dataViewCategorical.categories && dataViewCategorical.categories.length > 0) {
+            this.category = dataViewCategorical.categories[0];
+            this.image = dataViewCategorical.categories[1]; // may be undefined
+            this.categoryIdentities = this.category.identity;
+            this.categoryValues = this.category.values;
+            this.identityFields = <ISQExpr[]>this.category.identityFields;
+            this.categoryFormatString = valueFormatter.getFormatStringByColumn(this.category.source);
+        }
+
+        this.dataPoints = [];
+
+        this.hasSelectionOverride = false;
+    }
+
+    private isCategoryColumnSelected(propertyId: DataViewObjectPropertyIdentifier, categories: DataViewCategoricalColumn, idx: number): boolean {
+        return categories.objects != null
+            && categories.objects[idx]
+            && DataViewObjectsModule.getValue<boolean>(categories.objects[idx], propertyId);
+    }
+
+    public convert(): void {
+        this.dataPoints = [];
+        this.numberOfCategoriesSelectedInData = 0;
+        // If category exists, we render labels using category values. If not, we render labels
+        // using measure labels.
+        if (this.categoryValues) {
+            let objects = this.dataViewMetadata ? <any>this.dataViewMetadata.objects : undefined;
+
+            let isInvertedSelectionMode: boolean = false;
+            let numberOfScopeIds: number;
+
+            if (objects && objects.general && objects.general.filter) {
+                if (!this.identityFields) {
+                    return;
+                }
+                let filter: SemanticFilter = <SemanticFilter>objects.general.filter;
             }
 
-            this.dataPoints = [];
+            let hasSelection: boolean = undefined;
 
-            this.hasSelectionOverride = false;
-        }
-
-        private isCategoryColumnSelected(propertyId: DataViewObjectPropertyIdentifier, categories: DataViewCategoricalColumn, idx: number): boolean {
-            return categories.objects != null
-                && categories.objects[idx]
-                && DataViewObjectsModule.getValue<boolean>(categories.objects[idx], propertyId);
-        }
-
-        public convert(): void {
-            this.dataPoints = [];
-            this.numberOfCategoriesSelectedInData = 0;
-            // If category exists, we render labels using category values. If not, we render labels
-            // using measure labels.
-            if (this.categoryValues) {
-                let objects = this.dataViewMetadata ? <any>this.dataViewMetadata.objects : undefined;
-
-                let isInvertedSelectionMode: boolean = false;
-                let numberOfScopeIds: number;
-
-                if (objects && objects.general && objects.general.filter) {
-                    if (!this.identityFields) {
-                        return;
+            if (this.dataViewCategorical.values) {
+                for (let idx: number = 0; idx < this.categoryValues.length; idx++) {
+                    let selected = this.isCategoryColumnSelected(chicletSlicerProps.selectedPropertyIdentifier, this.category, idx);
+                    if (selected != null) {
+                        hasSelection = selected;
+                        break;
                     }
-                    let filter: SemanticFilter = <SemanticFilter>objects.general.filter;
+                }
+            }
+
+            let dataViewCategorical = this.dataViewCategorical,
+                value: number = -Infinity;
+
+            this.hasHighlights = false;
+
+            for (let categoryIndex: number = 0, categoryCount = this.categoryValues.length; categoryIndex < categoryCount; categoryIndex++) {
+                let categoryIsSelected: boolean = this.isCategoryColumnSelected(
+                    chicletSlicerProps.selectedPropertyIdentifier,
+                    this.category,
+                    categoryIndex);
+
+                let selectable: boolean = true;
+
+                if (hasSelection != null) {
+                    if (isInvertedSelectionMode) {
+                        if (this.category.objects == null)
+                            categoryIsSelected = undefined;
+
+                        if (categoryIsSelected != null) {
+                            categoryIsSelected = hasSelection;
+                        } else if (categoryIsSelected == null) {
+                            categoryIsSelected = !hasSelection;
+                        }
+                    } else {
+                        if (categoryIsSelected == null) {
+                            categoryIsSelected = !hasSelection;
+                        }
+                    }
                 }
 
-                let hasSelection: boolean = undefined;
+                if (categoryIsSelected) {
+                    this.numberOfCategoriesSelectedInData++;
+                }
+
+                let categoryValue: any = this.categoryValues[categoryIndex],
+                    categoryLabel: string = valueFormatter.format(categoryValue, this.categoryFormatString),
+                    imageURL: string = '';
 
                 if (this.dataViewCategorical.values) {
-                    for (let idx: number = 0; idx < this.categoryValues.length; idx++) {
-                        let selected = this.isCategoryColumnSelected(chicletSlicerProps.selectedPropertyIdentifier, this.category, idx);
-                        if (selected != null) {
-                            hasSelection = selected;
-                            break;
+
+                    // Series are either measures in the multi-measure case, or the single series otherwise
+                    for (let seriesIndex: number = 0; seriesIndex < this.dataViewCategorical.values.length; seriesIndex++) {
+                        let seriesData: any = dataViewCategorical.values[seriesIndex];
+                        if (seriesData.values[categoryIndex] != null) {
+                            value = <number>seriesData.values[categoryIndex];
+                            if (seriesData.highlights) {
+                                selectable = !(seriesData.highlights[categoryIndex] === null);
+                                this.hasHighlights = true;
+                            }
                         }
                     }
                 }
 
-                let dataViewCategorical = this.dataViewCategorical,
-                    value: number = -Infinity;
-
-                this.hasHighlights = false;
-
-                for (let categoryIndex: number = 0, categoryCount = this.categoryValues.length; categoryIndex < categoryCount; categoryIndex++) {
-                    let categoryIsSelected: boolean = this.isCategoryColumnSelected(
-                        chicletSlicerProps.selectedPropertyIdentifier,
-                        this.category,
-                        categoryIndex);
-
-                    let selectable: boolean = true;
-
-                    if (hasSelection != null) {
-                        if (isInvertedSelectionMode) {
-                            if (this.category.objects == null)
-                                categoryIsSelected = undefined;
-
-                            if (categoryIsSelected != null) {
-                                categoryIsSelected = hasSelection;
-                            } else if (categoryIsSelected == null) {
-                                categoryIsSelected = !hasSelection;
-                            }
-                        } else {
-                            if (categoryIsSelected == null) {
-                                categoryIsSelected = !hasSelection;
-                            }
-                        }
+                if (this.image) {
+                    const uncheckedImageURL = this.image.values[categoryIndex] as string;
+                    if (!/^(ftp|http|https):\/\/[^ "]+$/.test(uncheckedImageURL) &&
+                        !/^data:image/.test(uncheckedImageURL)) {
+                        imageURL = undefined;
+                    } else {
+                        imageURL = uncheckedImageURL;
                     }
-
-                    if (categoryIsSelected) {
-                        this.numberOfCategoriesSelectedInData++;
-                    }
-
-                    let categoryValue: any = this.categoryValues[categoryIndex],
-                        categoryLabel: string = valueFormatter.format(categoryValue, this.categoryFormatString),
-                        imageURL: string = '';
-
-                    if (this.dataViewCategorical.values) {
-
-                        // Series are either measures in the multi-measure case, or the single series otherwise
-                        for (let seriesIndex: number = 0; seriesIndex < this.dataViewCategorical.values.length; seriesIndex++) {
-                            let seriesData: any = dataViewCategorical.values[seriesIndex];
-                            if (seriesData.values[categoryIndex] != null) {
-                                value = <number>seriesData.values[categoryIndex];
-                                if (seriesData.highlights) {
-                                    selectable = !(seriesData.highlights[categoryIndex] === null);
-                                    this.hasHighlights = true;
-                                }
-                            }
-                        }
-                    }
-
-                    if (this.image) {
-                        const uncheckedImageURL = this.image.values[categoryIndex] as string;
-                        if (!/^(ftp|http|https):\/\/[^ "]+$/.test(uncheckedImageURL) &&
-                            !/^data:image/.test(uncheckedImageURL)) {
-                            imageURL = undefined;
-                        } else {
-                            imageURL = uncheckedImageURL;
-                        }
-                    }
-
-                    let categorySelectionId: ISelectionId = this.host.createSelectionIdBuilder()
-                        .withCategory(this.category, categoryIndex)
-                        .createSelectionId();
-
-                    this.dataPoints.push({
-                        identity: categorySelectionId as powerbi.visuals.ISelectionId,
-                        category: categoryLabel,
-                        imageURL: imageURL,
-                        value: value,
-                        selected: false,
-                        selectable: selectable
-                    });
                 }
 
-                if (numberOfScopeIds != null && numberOfScopeIds > this.numberOfCategoriesSelectedInData) {
-                    this.hasSelectionOverride = true;
-                }
+                let categorySelectionId: ISelectionId = this.host.createSelectionIdBuilder()
+                    .withCategory(this.category, categoryIndex)
+                    .createSelectionId();
+
+                this.dataPoints.push({
+                    identity: categorySelectionId as powerbi.visuals.ISelectionId,
+                    category: categoryLabel,
+                    imageURL: imageURL,
+                    value: value,
+                    selected: false,
+                    selectable: selectable
+                });
+            }
+
+            if (numberOfScopeIds != null && numberOfScopeIds > this.numberOfCategoriesSelectedInData) {
+                this.hasSelectionOverride = true;
             }
         }
     }

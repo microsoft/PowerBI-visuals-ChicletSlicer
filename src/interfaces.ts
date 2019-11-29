@@ -24,92 +24,35 @@
  *  THE SOFTWARE.
  */
 
-module powerbi.extensibility.visual {
-    // powerbi.data
-    import ISQExpr = powerbi.data.ISQExpr;
+import powerbiVisualsApi from "powerbi-visuals-api";
+import powerbi = powerbiVisualsApi;
 
-    // powerbi.extensibility.utils.svg
-    import IMargin = powerbi.extensibility.utils.svg.IMargin;
+// powerbi.data
+import ISQExpr = powerbi.data.ISQExpr;
 
-    // powerbi.extensibility.utils.interactivity
-    import SelectableDataPoint = powerbi.extensibility.utils.interactivity.SelectableDataPoint;
+// powerbi.extensibility.utils.interactivity
+import { interactivitySelectionService as interactivityService } from "powerbi-visuals-utils-interactivityutils";
+import SelectableDataPoint = interactivityService.SelectableDataPoint;
 
-    export interface ChicletSlicerData {
-        categorySourceName: string;
-        formatString: string;
-        slicerDataPoints: ChicletSlicerDataPoint[];
-        slicerSettings: ChicletSlicerSettings;
-        hasSelectionOverride?: boolean;
-        hasHighlights: boolean;
-        identityFields: ISQExpr[];
-    }
+import { ChicletSlicerSettings } from "./settings";
 
-    export interface ChicletSlicerDataPoint extends SelectableDataPoint {
-        category?: string;
-        value?: number;
-        mouseOver?: boolean;
-        mouseOut?: boolean;
-        isSelectAllDataPoint?: boolean;
-        imageURL?: string;
-        selectable?: boolean;
-        filtered?: boolean;
-    }
+export interface ChicletSlicerData {
+    categorySourceName: string;
+    formatString: string;
+    slicerDataPoints: ChicletSlicerDataPoint[];
+    slicerSettings: ChicletSlicerSettings;
+    hasSelectionOverride?: boolean;
+    hasHighlights: boolean;
+    identityFields: ISQExpr[];
+}
 
-    export interface ChicletSlicerSettings {
-        general: {
-            orientation: string;
-            columns: number;
-            rows: number;
-            multiselect: boolean;
-            forcedSelection: boolean;
-            showDisabled: string;
-            selection: string;
-            filter: any;
-            selfFilterEnabled: boolean;
-        };
-        margin: IMargin;
-        header: {
-            borderBottomWidth: number;
-            show: boolean;
-            outline: string;
-            fontColor: string;
-            background?: string;
-            textSize: number;
-            outlineColor: string;
-            outlineWeight: number;
-            title: string;
-        };
-        headerText: {
-            marginLeft: number;
-            marginTop: number;
-        };
-        slicerText: {
-            textSize: number;
-            height: number;
-            width: number;
-            fontColor: string;
-            selectedColor: string;
-            hoverColor: string;
-            unselectedColor: string;
-            disabledColor: string;
-            marginLeft: number;
-            outline: string;
-            background?: string;
-            transparency: number;
-            outlineColor: string;
-            outlineWeight: number;
-            padding: number;
-            borderStyle: string;
-        };
-        slicerItemContainer: {
-            marginTop: number;
-            marginLeft: number;
-        };
-        images: {
-            imageSplit: number;
-            imageRound: boolean;
-            stretchImage: boolean;
-            bottomImage: boolean;
-        };
-    }
+export interface ChicletSlicerDataPoint extends SelectableDataPoint {
+    category?: string;
+    value?: number;
+    mouseOver?: boolean;
+    mouseOut?: boolean;
+    isSelectAllDataPoint?: boolean;
+    imageURL?: string;
+    selectable?: boolean;
+    filtered?: boolean;
 }

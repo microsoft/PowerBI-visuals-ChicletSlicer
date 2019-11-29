@@ -24,239 +24,244 @@
  *  THE SOFTWARE.
  */
 
-module powerbi.extensibility.visual {
-    // d3
-    import Selection = d3.Selection;
-    import UpdateSelection = d3.selection.Update;
+import powerbiVisualsApi from "powerbi-visuals-api";
+import powerbi = powerbiVisualsApi;
 
-    // powerbi.data
-    import ISQExpr = powerbi.data.ISQExpr;
-    import Selector = powerbi.data.Selector;
-    import ISemanticFilter = data.ISemanticFilter;
+// d3
+import * as d3 from "d3";
+type Selection<T1, T2 = T1> = d3.Selection<any, T1, any, T2>;
 
-    // powerbi.extensibility.utils.interactivity
-    import ISelectionHandler = powerbi.extensibility.utils.interactivity.ISelectionHandler;
-    import SelectableDataPoint = powerbi.extensibility.utils.interactivity.SelectableDataPoint;
-    import IInteractiveBehavior = powerbi.extensibility.utils.interactivity.IInteractiveBehavior;
-    import IInteractivityService = powerbi.extensibility.utils.interactivity.IInteractivityService;
+import * as lodash from "lodash";
 
-    export interface ChicletSlicerBehaviorOptions {
-        slicerItemContainers: Selection<SelectableDataPoint>;
-        slicerItemLabels: Selection<any>;
-        slicerItemInputs: Selection<any>;
-        slicerClear: Selection<any>;
-        dataPoints: ChicletSlicerDataPoint[];
-        interactivityService: IInteractivityService;
-        slicerSettings: ChicletSlicerSettings;
-        identityFields: ISQExpr[];
-        isHighContrastMode: boolean;
-    }
+// powerbi.data
+import ISQExpr = powerbi.data.ISQExpr;
+import Selector = powerbi.data.Selector;
+import ISemanticFilter = data.ISemanticFilter;
 
-    export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
-        private slicers: Selection<SelectableDataPoint>;
-        private slicerItemLabels: Selection<any>;
-        private slicerItemInputs: Selection<any>;
-        private interactivityService: IInteractivityService;
-        private slicerSettings: ChicletSlicerSettings;
-        private options: ChicletSlicerBehaviorOptions;
-        private selectionHandler: ISelectionHandler;
+// powerbi.extensibility.utils.interactivity
+import { interactivityBaseService as interactivityService, interactivitySelectionService } from "powerbi-visuals-utils-interactivityutils";
+import IInteractiveBehavior = interactivityService.IInteractiveBehavior;
+import IInteractivityService = interactivityService.IInteractivityService;
+import ISelectionHandler = interactivityService.ISelectionHandler;
+import SelectableDataPoint = interactivitySelectionService.SelectableDataPoint;
 
-        /**
-         * Public for testability.
-         */
-        public dataPoints: ChicletSlicerDataPoint[];
+import { ChicletSlicerSettings } from "./settings";
+import { ChicletSlicer } from "./chicletSlicer";
 
-        public bindEvents(options: ChicletSlicerBehaviorOptions, selectionHandler: ISelectionHandler): void {
-            const slicers: Selection<SelectableDataPoint> = this.slicers = options.slicerItemContainers,
-                slicerClear: Selection<any> = options.slicerClear;
+export interface ChicletSlicerBehaviorOptions {
+    slicerItemContainers: Selection<SelectableDataPoint>;
+    slicerItemLabels: Selection<any>;
+    slicerItemInputs: Selection<any>;
+    slicerClear: Selection<any>;
+    dataPoints: ChicletSlicerDataPoint[];
+    interactivityService: IInteractivityService;
+    slicerSettings: ChicletSlicerSettings;
+    identityFields: ISQExpr[];
+    isHighContrastMode: boolean;
+}
 
-            this.slicerItemLabels = options.slicerItemLabels;
-            this.slicerItemInputs = options.slicerItemInputs;
-            this.dataPoints = options.dataPoints;
-            this.interactivityService = options.interactivityService;
-            this.slicerSettings = options.slicerSettings;
-            this.options = options;
+export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
+    private slicers: Selection<SelectableDataPoint>;
+    private slicerItemLabels: Selection<any>;
+    private slicerItemInputs: Selection<any>;
+    private interactivityService: IInteractivityService;
+    private slicerSettings: ChicletSlicerSettings;
+    private options: ChicletSlicerBehaviorOptions;
+    private selectionHandler: ISelectionHandler;
 
-            this.selectionHandler = selectionHandler;
+    /**
+     * Public for testability.
+     */
+    public dataPoints: ChicletSlicerDataPoint[];
 
-            this.loadSelection();
+    public bindEvents(options: ChicletSlicerBehaviorOptions, selectionHandler: ISelectionHandler): void {
+        const slicers: Selection<SelectableDataPoint> = this.slicers = options.slicerItemContainers,
+            slicerClear: Selection<any> = options.slicerClear;
 
-            slicers.on("mouseover", (dataPoint: ChicletSlicerDataPoint) => {
-                if (dataPoint.selectable) {
-                    dataPoint.mouseOver = true;
-                    dataPoint.mouseOut = false;
+        this.slicerItemLabels = options.slicerItemLabels;
+        this.slicerItemInputs = options.slicerItemInputs;
+        this.dataPoints = options.dataPoints;
+        this.interactivityService = options.interactivityService;
+        this.slicerSettings = options.slicerSettings;
+        this.options = options;
 
-                    this.renderMouseover();
-                }
-            });
+        this.selectionHandler = selectionHandler;
 
-            slicers.on("mouseout", (dataPoint: ChicletSlicerDataPoint) => {
-                if (dataPoint.selectable) {
-                    dataPoint.mouseOver = false;
-                    dataPoint.mouseOut = true;
+        this.loadSelection();
 
-                    this.renderMouseover();
-                }
-            });
+        slicers.on("mouseover", (dataPoint: ChicletSlicerDataPoint) => {
+            if (dataPoint.selectable) {
+                dataPoint.mouseOver = true;
+                dataPoint.mouseOut = false;
 
-            slicers.on("click", (dataPoint: ChicletSlicerDataPoint, index: number) => {
-                if (!dataPoint.selectable) {
-                    return;
-                }
+                this.renderMouseover();
+            }
+        });
 
-                (d3.event as MouseEvent).preventDefault();
+        slicers.on("mouseout", (dataPoint: ChicletSlicerDataPoint) => {
+            if (dataPoint.selectable) {
+                dataPoint.mouseOver = false;
+                dataPoint.mouseOut = true;
 
-                let settings: ChicletSlicerSettings = this.slicerSettings;
-                let multiselect: boolean = settings.general.multiselect;
+                this.renderMouseover();
+            }
+        });
 
-                let selectedIndexes: number[] = jQuery.map(
+        slicers.on("click", (dataPoint: ChicletSlicerDataPoint, index: number) => {
+            if (!dataPoint.selectable) {
+                return;
+            }
+
+            (d3.event as MouseEvent).preventDefault();
+
+            let settings: ChicletSlicerSettings = this.slicerSettings;
+            let multiselect: boolean = settings.general.multiselect;
+
+            let selectedIndexes: number[] = jQuery.map(
+                this.dataPoints,
+                (dataPoint: ChicletSlicerDataPoint, index: number) => {
+                    if (dataPoint.selected) {
+                        return index;
+                    };
+                });
+
+            if (settings.general.forcedSelection && selectedIndexes.length === 1) {
+                let availableDataPoints: ChicletSlicerDataPoint[] = jQuery.map(
                     this.dataPoints,
                     (dataPoint: ChicletSlicerDataPoint, index: number) => {
-                        if (dataPoint.selected) {
-                            return index;
+                        if (!dataPoint.filtered) {
+                            return dataPoint;
                         };
                     });
 
-                if (settings.general.forcedSelection && selectedIndexes.length === 1) {
-                    let availableDataPoints: ChicletSlicerDataPoint[] = jQuery.map(
-                        this.dataPoints,
-                        (dataPoint: ChicletSlicerDataPoint, index: number) => {
-                            if (!dataPoint.filtered) {
-                                return dataPoint;
-                            };
-                        });
-
-                    if (availableDataPoints[index]
-                        && this.dataPoints[selectedIndexes[0]].identity === availableDataPoints[index].identity) {
-                        return;
-                    }
+                if (availableDataPoints[index]
+                    && this.dataPoints[selectedIndexes[0]].identity === availableDataPoints[index].identity) {
+                    return;
                 }
+            }
 
-                if ((d3.event as MouseEvent).altKey && multiselect) {
-                    let selIndex: number = selectedIndexes.length > 0
-                        ? (selectedIndexes[selectedIndexes.length - 1])
-                        : 0;
+            if ((d3.event as MouseEvent).altKey && multiselect) {
+                let selIndex: number = selectedIndexes.length > 0
+                    ? (selectedIndexes[selectedIndexes.length - 1])
+                    : 0;
 
-                    if (selIndex > index) {
-                        [index, selIndex] = [selIndex, index];
-                    }
-
-                    selectionHandler.handleClearSelection();
-
-                    for (let i: number = selIndex; i <= index; i++) {
-                        selectionHandler.handleSelection(this.dataPoints[i], true /* isMultiSelect */);
-                    }
-                } else if ((((d3.event as MouseEvent).ctrlKey || (d3.event as MouseEvent).metaKey)) || multiselect) {
-                    selectionHandler.handleSelection(dataPoint, true /* isMultiSelect */);
-                } else {
-                    selectionHandler.handleSelection(dataPoint, false /* isMultiSelect */);
-                }
-
-                this.saveSelection();
-            });
-
-            slicerClear.on("click", (d: SelectableDataPoint) => {
-                const settings: ChicletSlicerSettings = this.slicerSettings;
-
-                if (settings.general.forcedSelection) {
-                    return false;
+                if (selIndex > index) {
+                    [index, selIndex] = [selIndex, index];
                 }
 
                 selectionHandler.handleClearSelection();
 
-                this.saveSelection();
-            });
-
-            this.forceSelection();
-        }
-
-        private forceSelection(): void {
-            if (!this.slicerSettings.general.forcedSelection) {
-                return;
+                for (let i: number = selIndex; i <= index; i++) {
+                    selectionHandler.handleSelection(this.dataPoints[i], true /* isMultiSelect */);
+                }
+            } else if ((((d3.event as MouseEvent).ctrlKey || (d3.event as MouseEvent).metaKey)) || multiselect) {
+                selectionHandler.handleSelection(dataPoint, true /* isMultiSelect */);
+            } else {
+                selectionHandler.handleSelection(dataPoint, false /* isMultiSelect */);
             }
 
-            const isSelected: boolean = _.some(
-                this.dataPoints,
-                (dataPoint: ChicletSlicerDataPoint) => dataPoint.selected);
+            this.saveSelection();
+        });
 
-            if (!isSelected) {
-                for (let i: number = 0; i < this.dataPoints.length; i++) {
-                    const dataPoint: ChicletSlicerDataPoint = this.dataPoints[i];
+        slicerClear.on("click", (d: SelectableDataPoint) => {
+            const settings: ChicletSlicerSettings = this.slicerSettings;
 
-                    if (dataPoint.selectable && !dataPoint.filtered) {
-                        this.selectionHandler.handleSelection(dataPoint, false);
+            if (settings.general.forcedSelection) {
+                return false;
+            }
 
-                        this.saveSelection();
+            selectionHandler.handleClearSelection();
 
-                        break;
-                    }
+            this.saveSelection();
+        });
+
+        this.forceSelection();
+    }
+
+    private forceSelection(): void {
+        if (!this.slicerSettings.general.forcedSelection) {
+            return;
+        }
+
+        const isSelected: boolean = lodash.some(
+            this.dataPoints,
+            (dataPoint: ChicletSlicerDataPoint) => dataPoint.selected);
+
+        if (!isSelected) {
+            for (let i: number = 0; i < this.dataPoints.length; i++) {
+                const dataPoint: ChicletSlicerDataPoint = this.dataPoints[i];
+
+                if (dataPoint.selectable && !dataPoint.filtered) {
+                    this.selectionHandler.handleSelection(dataPoint, false);
+
+                    this.saveSelection();
+
+                    break;
                 }
             }
         }
+    }
 
-        public loadSelection(): void {
-            this.interactivityService.applySelectionFromFilter(this.slicerSettings.general.filter);
+    public loadSelection(): void {
+        this.interactivityService.applySelectionFromFilter(this.slicerSettings.general.filter);
+    }
+
+    public saveSelection(): void {
+        this.selectionHandler.applySelectionFilter();
+    }
+
+    public renderSelection(hasSelection: boolean): void {
+        if (!hasSelection && !this.interactivityService.isSelectionModeInverted()) {
+            this.slicers.style(
+                "background",
+                this.slicerSettings.slicerText.unselectedColor);
         }
-
-        public saveSelection(): void {
-            this.selectionHandler.applySelectionFilter();
+        else {
+            this.styleSlicerInputs(this.slicers, hasSelection);
         }
+    }
 
-        public renderSelection(hasSelection: boolean): void {
-            if (!hasSelection && !this.interactivityService.isSelectionModeInverted()) {
-                this.slicers.style(
-                    "background",
-                    this.slicerSettings.slicerText.unselectedColor);
-            }
-            else {
-                this.styleSlicerInputs(this.slicers, hasSelection);
-            }
-        }
+    private renderMouseover(): void {
+        this.slicerItemLabels
+            .style("color", (dataPoint: ChicletSlicerDataPoint) => {
+                if (dataPoint.mouseOver) {
+                    return this.slicerSettings.slicerText.hoverColor;
+                }
 
-        private renderMouseover(): void {
-            this.slicerItemLabels.style({
-                "color": (dataPoint: ChicletSlicerDataPoint) => {
+                if (dataPoint.mouseOut) {
+                    return this.slicerSettings.slicerText.fontColor;
+                }
+            })
+            .style("opacity", (dataPoint: ChicletSlicerDataPoint) => {
+                if (dataPoint.selectable) {
                     if (dataPoint.mouseOver) {
-                        return this.slicerSettings.slicerText.hoverColor;
+                        return this.options.isHighContrastMode ? ChicletSlicer.HoveredTextOpacity : ChicletSlicer.DefaultOpacity;
                     }
+                }
+                return ChicletSlicer.DefaultOpacity;
+            });
+    }
 
-                    if (dataPoint.mouseOut) {
-                        return this.slicerSettings.slicerText.fontColor;
-                    }
-                },
-                "opacity": (dataPoint: ChicletSlicerDataPoint) => {
-                    if (dataPoint.selectable) {
-                        if (dataPoint.mouseOver) {
-                            return this.options.isHighContrastMode ? ChicletSlicer.HoveredTextOpacity : ChicletSlicer.DefaultOpacity;
-                        }
+    public styleSlicerInputs(slicers: Selection<any>, hasSelection: boolean) {
+        let settings = this.slicerSettings,
+            isHighContrastMode = this.options.isHighContrastMode;
+
+        slicers.each(function (dataPoint: ChicletSlicerDataPoint) {
+            d3.select(this)
+                .style("background", dataPoint.selectable
+                    ? (dataPoint.selected
+                        ? settings.slicerText.selectedColor
+                        : settings.slicerText.unselectedColor)
+                    : settings.slicerText.disabledColor)
+                .style("opacity", () => {
+                    if (isHighContrastMode) {
+                        let opacity = dataPoint.selectable ? (dataPoint.selected ? ChicletSlicer.DefaultOpacity : ChicletSlicer.DimmedOpacity) : ChicletSlicer.DisabledOpacity;
+                        return opacity;
                     }
                     return ChicletSlicer.DefaultOpacity;
-                }
-            });
-        }
-
-        public styleSlicerInputs(slicers: Selection<any>, hasSelection: boolean) {
-            let settings = this.slicerSettings,
-                isHighContrastMode = this.options.isHighContrastMode;
-
-            slicers.each(function (dataPoint: ChicletSlicerDataPoint) {
-                d3.select(this).style({
-                    "background": dataPoint.selectable
-                        ? (dataPoint.selected
-                            ? settings.slicerText.selectedColor
-                            : settings.slicerText.unselectedColor)
-                        : settings.slicerText.disabledColor,
-                    "opacity": () => {
-                        if (isHighContrastMode) {
-                            let opacity = dataPoint.selectable ? (dataPoint.selected ? ChicletSlicer.DefaultOpacity : ChicletSlicer.DimmedOpacity) : ChicletSlicer.DisabledOpacity;
-                            return opacity;
-                        }
-                        return ChicletSlicer.DefaultOpacity;
-                    }
                 });
 
-                d3.select(this).classed("slicerItem-disabled", !dataPoint.selectable);
-            });
-        }
+            d3.select(this).classed("slicerItem-disabled", !dataPoint.selectable);
+        });
     }
 }
