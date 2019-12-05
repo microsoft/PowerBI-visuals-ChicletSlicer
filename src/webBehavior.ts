@@ -35,8 +35,6 @@ import * as lodash from "lodash";
 
 // powerbi.data
 import ISQExpr = powerbi.data.ISQExpr;
-import Selector = powerbi.data.Selector;
-import ISemanticFilter = data.ISemanticFilter;
 
 // powerbi.extensibility.utils.interactivity
 import { interactivityBaseService as interactivityService, interactivitySelectionService } from "powerbi-visuals-utils-interactivityutils";
@@ -47,6 +45,7 @@ import SelectableDataPoint = interactivitySelectionService.SelectableDataPoint;
 
 import { ChicletSlicerSettings } from "./settings";
 import { ChicletSlicer } from "./chicletSlicer";
+import { ChicletSlicerDataPoint } from "./interfaces";
 
 export interface ChicletSlicerBehaviorOptions {
     slicerItemContainers: Selection<SelectableDataPoint>;

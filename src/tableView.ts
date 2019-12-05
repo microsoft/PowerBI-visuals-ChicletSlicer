@@ -24,13 +24,21 @@
  *  THE SOFTWARE.
  */
 
+import * as d3 from "d3";
+
+import powerbiVisualsApi from "powerbi-visuals-api";
+import IViewport = powerbiVisualsApi.IViewport;
+
 // d3
-import Selection = d3.Selection;
-import UpdateSelection = d3.selection.Update;
+type Selection<T1, T2 = T1> = d3.Selection<any, T1, any, T2>;
 
 // powerbi.extensibility.utils.svg
-import ClassAndSelector = powerbi.extensibility.utils.svg.CssConstants.ClassAndSelector;
-import createClassAndSelector = powerbi.extensibility.utils.svg.CssConstants.createClassAndSelector;
+import * as SVGUtil from "powerbi-visuals-utils-svgutils";
+import ClassAndSelector = SVGUtil.CssConstants.ClassAndSelector;
+import createClassAndSelector = SVGUtil.CssConstants.createClassAndSelector;
+
+import { ChicletSlicerDataPoint } from "./interfaces";
+import { Orientation } from "./chicletSlicer";
 
 export interface ITableView {
     data(data: any[], dataIdFunction: (d) => {}, dataAppended: boolean): ITableView;
@@ -345,20 +353,20 @@ export class TableView implements ITableView {
             visibleGroupContainer: Selection<any> = this.visibleGroupContainer,
             rowHeight: number = options.rowHeight || TableView.defaultRowHeight,
             groupedData: TableViewGroupedData = this.getGroupedData(),
-            rowSelection: UpdateSelection<any>,
-            cellSelection: UpdateSelection<any>;
+            rowSelection: Selection<any>,
+            cellSelection: Selection<any>;
 
         rowSelection = visibleGroupContainer
-            .selectAll(TableView.RowSelector.selector)
+            .selectAll(TableView.RowSelector.selectorName)
             .data(<ChicletSlicerDataPoint[]>groupedData.data);
 
         rowSelection
             .enter()
             .append("div")
-            .classed(TableView.RowSelector.class, true);
+            .classed(TableView.RowSelector.className, true);
 
         cellSelection = rowSelection
-            .selectAll(TableView.CellSelector.selector)
+            .selectAll(TableView.CellSelector.selectorName)
             .data((dataPoints: ChicletSlicerDataPoint[]) => {
                 return dataPoints;
             });
@@ -366,7 +374,7 @@ export class TableView implements ITableView {
         cellSelection
             .enter()
             .append('div')
-            .classed(TableView.CellSelector.class, true);
+            .classed(TableView.CellSelector.className, true);
 
         cellSelection.call((selection: Selection<any>) => {
             options.enter(selection);
@@ -376,9 +384,7 @@ export class TableView implements ITableView {
             options.update(selection);
         });
 
-        cellSelection.style({
-            'height': (rowHeight > 0) ? rowHeight + 'px' : 'auto'
-        });
+        cellSelection.style("height", (rowHeight > 0) ? rowHeight + "px" : "auto");
 
         if (this.options.orientation === Orientation.VERTICAL) {
             let realColumnNumber: number = 0;
@@ -388,23 +394,19 @@ export class TableView implements ITableView {
                     realColumnNumber = i + 1;
             }
 
-            cellSelection.style({ 'width': '100%' });
+            cellSelection.style("width", "100%");
 
             rowSelection
-                .style({
-                    'width': (options.columnWidth > 0)
-                        ? options.columnWidth + 'px'
-                        : (100 / realColumnNumber) + '%'
-                });
+                .style("width", (options.columnWidth > 0)
+                    ? options.columnWidth + 'px'
+                    : (100 / realColumnNumber) + '%');
         }
         else {
-            cellSelection.style({
-                'width': (options.columnWidth > 0)
-                    ? options.columnWidth + 'px'
-                    : (100 / groupedData.totalColumns) + '%'
-            });
+            cellSelection.style("width", (options.columnWidth > 0)
+                ? options.columnWidth + 'px'
+                : (100 / groupedData.totalColumns) + '%');
 
-            rowSelection.style({ 'width': null });
+            rowSelection.style("width", null);
         }
 
         cellSelection

@@ -49,6 +49,7 @@ import { valueFormatter } from "powerbi-visuals-utils-formattingutils";
 import { dataViewObjects as DataViewObjectsModule } from "powerbi-visuals-utils-dataviewutils";
 
 import { chicletSlicerProps } from "./chicletSlicerProps";
+import { ChicletSlicerDataPoint } from "./interfaces";
 
 export class ChicletSlicerConverter {
     private dataViewCategorical: DataViewCategorical;
