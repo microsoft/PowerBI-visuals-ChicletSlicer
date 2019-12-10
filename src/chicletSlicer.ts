@@ -38,7 +38,6 @@ import DataView = powerbi.DataView;
 import IViewport = powerbi.IViewport;
 import DataViewObjects = powerbi.DataViewObjects;
 import VisualObjectInstance = powerbi.VisualObjectInstance;
-import DataViewScopeIdentity = powerbi.DataViewScopeIdentity;
 import DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
 import DataViewCategoricalColumn = powerbi.DataViewCategoricalColumn;
 import VisualObjectInstancesToPersist = powerbi.VisualObjectInstancesToPersist;
@@ -50,6 +49,7 @@ import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 import IColorPalette = powerbiVisualsApi.extensibility.IColorPalette;
 import VisualUpdateOptions = powerbiVisualsApi.extensibility.visual.VisualUpdateOptions;
 import VisualConstructorOptions = powerbiVisualsApi.extensibility.visual.VisualConstructorOptions;
+import CustomVisualOpaqueIdentity =  powerbi.visuals.CustomVisualOpaqueIdentity;
 
 // powerbi.extensibility.utils.dataview
 import { dataViewObjects as DataViewObjectsModule } from "powerbi-visuals-utils-dataviewutils";
@@ -60,7 +60,7 @@ import { pixelConverter as PixelConverter } from "powerbi-visuals-utils-typeutil
 // powerbi.extensibility.utils.interactivity
 import { interactivityBaseService as interactivityService, interactivitySelectionService } from "powerbi-visuals-utils-interactivityutils";
 import IInteractivityService = interactivityService.IInteractivityService;
-import createInteractivityService = interactivitySelectionService.createInteractivitySelectionService;
+import createInteractivitySelectionService = interactivitySelectionService.createInteractivitySelectionService;
 
 // powerbi.extensibility.utils.svg
 import * as SVGUtil from "powerbi-visuals-utils-svgutils";
@@ -78,9 +78,10 @@ import TextProperties = tms.TextProperties;
 import { ChicletSlicerData, ChicletSlicerDataPoint } from "./interfaces";
 import { ChicletSlicerSettings } from "./settings";
 import { ChicletSlicerBehaviorOptions, ChicletSlicerWebBehavior } from "./webBehavior";
-import { ChicletSlicerConverter } from "./converter";
+import { ChicletSlicerConverter } from "./chicletSlicerConverter";
 import { chicletSlicerProps } from "./chicletSlicerProps";
 import { ITableView, TableViewFactory, TableViewViewOptions } from "./tableView";
+import { BaseDataPoint, InteractivityServiceOptions } from "powerbi-visuals-utils-interactivityutils/lib/interactivityBaseService";
 
 module ChicletBorderStyle {
     export let ROUNDED: string = 'Rounded';
@@ -110,11 +111,14 @@ export class ChicletSlicer implements IVisual {
     private tableView: ITableView;
     private slicerData: ChicletSlicerData;
 
-    private interactivityService: IInteractivityService;
+    private interactivityService: IInteractivityService<BaseDataPoint>;
     private visualHost: IVisualHost;
 
     private colorPalette: IColorPalette;
     private colorHelper: ColorHelper;
+
+    private waitingForData: boolean;
+    private isSelectionLoaded: boolean;
 
     /**
      * It's public for testability.
@@ -165,7 +169,7 @@ export class ChicletSlicer implements IVisual {
     public static ClearSelector: ClassAndSelector = createClassAndSelector('clear');
     public static BodySelector: ClassAndSelector = createClassAndSelector('slicerBody');
 
-    public static DefaultStyleProperties(): ChicletSlicerSettings {
+    public static DEFAULT_STYLE_PROPERTIES(): ChicletSlicerSettings {
         return {
             general: {
                 orientation: Orientation.VERTICAL,
@@ -235,7 +239,7 @@ export class ChicletSlicer implements IVisual {
     /**
      * Public to testability.
      */
-    public static getValidImageSplit(imageSplit): number {
+    public static GET_VALID_IMAGE_SPLIT(imageSplit): number {
         if (imageSplit < ChicletSlicer.MinImageSplit) {
             return ChicletSlicer.MinImageSplit;
         } else if (imageSplit > ChicletSlicer.MaxImageSplit) {
@@ -245,7 +249,7 @@ export class ChicletSlicer implements IVisual {
         }
     }
 
-    public static converter(
+    public static CONVERTER(
         dataView: DataView,
         searchText: string,
         visualHost: IVisualHost): ChicletSlicerData {
@@ -266,7 +270,7 @@ export class ChicletSlicer implements IVisual {
         converter.convert();
 
         let slicerData: ChicletSlicerData,
-            defaultSettings: ChicletSlicerSettings = this.DefaultStyleProperties(),
+            defaultSettings: ChicletSlicerSettings = this.DEFAULT_STYLE_PROPERTIES(),
             objects: DataViewObjects = dataView.metadata.objects;
 
         if (objects) {
@@ -343,12 +347,13 @@ export class ChicletSlicer implements IVisual {
         this.colorHelper = new ColorHelper(this.colorPalette);
 
         this.behavior = new ChicletSlicerWebBehavior();
-        this.interactivityService = createInteractivityService(options.host);
+        this.interactivityService = createInteractivitySelectionService(options.host);
 
-        this.settings = ChicletSlicer.DefaultStyleProperties();
+        this.settings = ChicletSlicer.DEFAULT_STYLE_PROPERTIES();
     }
 
     public update(options: VisualUpdateOptions) {
+        debugger;
         if (!options ||
             !options.dataViews ||
             !options.dataViews[0] ||
@@ -399,8 +404,8 @@ export class ChicletSlicer implements IVisual {
         }
 
         for (let i: number = 0, len: number = dv1Categories.length; i < len; i++) {
-            let dv1Identity: DataViewScopeIdentity[] = (<DataViewCategoryColumn>dv1Categories[i]).identity;
-            let dv2Identity: DataViewScopeIdentity[] = (<DataViewCategoryColumn>dv2Categories[i]).identity;
+            let dv1Identity: CustomVisualOpaqueIdentity[] = (<DataViewCategoryColumn>dv1Categories[i]).identity;
+            let dv2Identity: CustomVisualOpaqueIdentity[] = (<DataViewCategoryColumn>dv2Categories[i]).identity;
 
             let dv1Length: number = this.getLengthOptional(dv1Identity);
             if ((dv1Length < 1) || dv1Length !== this.getLengthOptional(dv2Identity)) {
@@ -408,16 +413,16 @@ export class ChicletSlicer implements IVisual {
             }
 
             for (let j: number = 0; j < dv1Length; j++) {
-                if (!lodash.isEqual(dv1Identity[j].key, dv2Identity[j].key)) {
+                 //if (!lodash.isEqual(dv1Identity[j].key, dv2Identity[j].key)) {
                     return false;
-                }
+                //}
             }
         }
 
         return true;
     }
 
-    private static getLengthOptional(identity: DataViewScopeIdentity[]): number {
+    private static getLengthOptional(identity: CustomVisualOpaqueIdentity[]): number {
         if (identity) {
             return identity.length;
         }
@@ -538,9 +543,10 @@ export class ChicletSlicer implements IVisual {
     }
 
     private updateInternal(resetScrollbarPosition: boolean) {
-        let data = ChicletSlicer.converter(
+        debugger;
+        let data = ChicletSlicer.CONVERTER(
             this.dataView,
-            this.$searchInput.val(),
+            "",//this.$searchInput.val(),
             this.visualHost);
 
         if (!data) {
@@ -573,7 +579,7 @@ export class ChicletSlicer implements IVisual {
             ? 0
             : data.slicerSettings.slicerText.width;
 
-        data.slicerSettings.images.imageSplit = ChicletSlicer.getValidImageSplit(data.slicerSettings.images.imageSplit);
+        data.slicerSettings.images.imageSplit = ChicletSlicer.GET_VALID_IMAGE_SPLIT(data.slicerSettings.images.imageSplit);
 
         const columns: number = data.slicerSettings.general.columns;
         const rows: number = data.slicerSettings.general.rows;
@@ -605,14 +611,14 @@ export class ChicletSlicer implements IVisual {
 
         if (this.settings.slicerText.height === ChicletSlicer.MinImageSplit) {
             let extraSpaceForCell = ChicletSlicer.СellTotalInnerPaddings + ChicletSlicer.СellTotalInnerBorders,
-                textProperties: TextProperties = ChicletSlicer.getChicletTextProperties(this.settings.slicerText.textSize);
+                textProperties: TextProperties = ChicletSlicer.GET_CHICLET_TEXT_PROPERTIES(this.settings.slicerText.textSize);
 
             this.settings.slicerText.height = textMeasurementService.estimateSvgTextHeight(textProperties) +
                 textMeasurementService.estimateSvgTextBaselineDelta(textProperties) +
                 extraSpaceForCell;
 
             let hasImage: boolean = lodash.some(data.slicerDataPoints, (dataPoint: ChicletSlicerDataPoint) => {
-                return dataPoint.imageURL !== '' && typeof dataPoint.imageURL !== "undefined";
+                return dataPoint.imageURL !== '' && typeof dataPoint.imageURL !== undefined;
             });
 
             if (hasImage) {
@@ -681,7 +687,7 @@ export class ChicletSlicer implements IVisual {
         };
 
         let rowUpdate = (rowSelection: Selection<any>) => {
-            this.Selection(rowSelection);
+            this.selection(rowSelection);
         };
 
         let rowExit = (rowSelection: Selection<any>) => {
@@ -714,54 +720,61 @@ export class ChicletSlicer implements IVisual {
                 return [dataPoint];
             });
 
-        ulItemElement
+        const ulItemElementMerged = ulItemElement
             .enter()
-            .append('ul');
+            .append('ul')
+            .merge(ulItemElement);
 
         ulItemElement
             .exit()
             .remove();
 
-        let listItemElement: Selection<any> = ulItemElement
+        let listItemElement: Selection<any> = ulItemElementMerged
             .selectAll(ChicletSlicer.ItemContainerSelector.selectorName)
             .data((dataPoint: ChicletSlicerDataPoint) => {
                 return [dataPoint];
             });
 
-        listItemElement
+        const listItemElementMerged = listItemElement
             .enter()
             .append('li')
-            .classed(ChicletSlicer.ItemContainerSelector.className, true);
+            .merge(listItemElement);
 
-        listItemElement.style("margin-left", PixelConverter.toString(settings.slicerItemContainer.marginLeft));
+        listItemElementMerged.classed(ChicletSlicer.ItemContainerSelector.className, true);
 
-        let slicerImgWrapperSelection: Selection<any> = listItemElement
+        listItemElementMerged.style("margin-left", PixelConverter.toString(settings.slicerItemContainer.marginLeft));
+
+        let slicerImgWrapperSelection: Selection<any> = listItemElementMerged
             .selectAll(ChicletSlicer.SlicerImgWrapperSelector.selectorName)
             .data((dataPoint: ChicletSlicerDataPoint) => {
                 return [dataPoint];
             });
 
-        slicerImgWrapperSelection
+        const slicerImgWrapperSelectionMerged = slicerImgWrapperSelection
             .enter()
             .append('img')
-            .classed(ChicletSlicer.SlicerImgWrapperSelector.className, true);
+            .merge(slicerImgWrapperSelection);
+
+        slicerImgWrapperSelectionMerged.classed(ChicletSlicer.SlicerImgWrapperSelector.className, true);
 
         slicerImgWrapperSelection
             .exit()
             .remove();
 
-        let slicerTextWrapperSelection: Selection<any> = listItemElement
+        let slicerTextWrapperSelection: Selection<any> = listItemElementMerged
             .selectAll(ChicletSlicer.SlicerTextWrapperSelector.selectorName)
             .data((dataPoint: ChicletSlicerDataPoint) => {
                 return [dataPoint];
             });
 
-        slicerTextWrapperSelection
+        const slicerTextWrapperSelectionMerged = slicerTextWrapperSelection
             .enter()
             .append('div')
-            .classed(ChicletSlicer.SlicerTextWrapperSelector.className, true);
+            .merge(slicerTextWrapperSelection);
 
-        let labelTextSelection: Selection<any> = slicerTextWrapperSelection
+        slicerImgWrapperSelectionMerged.classed(ChicletSlicer.SlicerTextWrapperSelector.className, true);
+
+        let labelTextSelection: Selection<any> = slicerTextWrapperSelectionMerged
             .selectAll(ChicletSlicer.LabelTextSelector.selectorName)
             .data((dataPoint: ChicletSlicerDataPoint) => {
                 return [dataPoint];
@@ -790,7 +803,7 @@ export class ChicletSlicer implements IVisual {
             .remove();
     };
 
-    private Selection(rowSelection: Selection<any>): void {
+    private selection(rowSelection: Selection<any>): void {
         let settings: ChicletSlicerSettings = this.settings,
             data: ChicletSlicerData = this.slicerData;
 
@@ -817,7 +830,7 @@ export class ChicletSlicer implements IVisual {
                     settings.general.orientation === Orientation.VERTICAL);
 
             let slicerText: Selection<any> = rowSelection.selectAll(ChicletSlicer.LabelTextSelector.selectorName),
-                textProperties: TextProperties = ChicletSlicer.getChicletTextProperties(settings.slicerText.textSize),
+                textProperties: TextProperties = ChicletSlicer.GET_CHICLET_TEXT_PROPERTIES(settings.slicerText.textSize),
                 formatString: string = data.formatString;
 
             let slicerBodyViewport: IViewport = this.getSlicerBodyViewport(this.currentViewport);
@@ -914,12 +927,14 @@ export class ChicletSlicer implements IVisual {
                     interactivityService: this.interactivityService,
                     slicerSettings: data.slicerSettings,
                     identityFields: data.identityFields,
-                    isHighContrastMode: this.colorHelper.isHighContrast
+                    isHighContrastMode: this.colorHelper.isHighContrast,
+                    behavior: this.behavior,
+                    interactivityServiceOptions: <InteractivityServiceOptions>{
+                        hasSelectionOverride: data.hasSelectionOverride,
+                    }
                 };
 
-                this.interactivityService.bind(data.slicerDataPoints, this.behavior, behaviorOptions, {
-                    hasSelectionOverride: data.hasSelectionOverride,
-                });
+                this.interactivityService.bind(behaviorOptions);
 
                 this.behavior.styleSlicerInputs(
                     rowSelection.select(ChicletSlicer.ItemContainerSelector.selectorName),
@@ -990,7 +1005,7 @@ export class ChicletSlicer implements IVisual {
             .style("width", `${ChicletSlicer.MaxImageWidth}%`);
     }
 
-    public static getChicletTextProperties(textSize?: number): TextProperties {
+    public static GET_CHICLET_TEXT_PROPERTIES(textSize?: number): TextProperties {
         return <TextProperties>{
             fontFamily: ChicletSlicer.DefaultFontFamily,
             fontSize: PixelConverter.fromPoint(textSize || ChicletSlicer.DefaultFontSizeInPt),
@@ -999,14 +1014,14 @@ export class ChicletSlicer implements IVisual {
 
     private getHeaderHeight(): number {
         return textMeasurementService.estimateSvgTextHeight(
-            ChicletSlicer.getChicletTextProperties(this.settings.header.textSize));
+            ChicletSlicer.GET_CHICLET_TEXT_PROPERTIES(this.settings.header.textSize));
     }
 
     private getRowHeight(): number {
         let textSettings = this.settings.slicerText;
         return textSettings.height !== 0
             ? textSettings.height
-            : textMeasurementService.estimateSvgTextHeight(ChicletSlicer.getChicletTextProperties(textSettings.textSize));
+            : textMeasurementService.estimateSvgTextHeight(ChicletSlicer.GET_CHICLET_TEXT_PROPERTIES(textSettings.textSize));
     }
 
     private getBorderStyle(outlineElement: string): string {

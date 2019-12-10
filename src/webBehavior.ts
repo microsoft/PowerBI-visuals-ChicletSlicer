@@ -39,6 +39,7 @@ import ISQExpr = powerbi.data.ISQExpr;
 // powerbi.extensibility.utils.interactivity
 import { interactivityBaseService as interactivityService, interactivitySelectionService } from "powerbi-visuals-utils-interactivityutils";
 import IInteractiveBehavior = interactivityService.IInteractiveBehavior;
+import IBehaviorOptions = interactivityService.IBehaviorOptions;
 import IInteractivityService = interactivityService.IInteractivityService;
 import ISelectionHandler = interactivityService.ISelectionHandler;
 import SelectableDataPoint = interactivitySelectionService.SelectableDataPoint;
@@ -46,14 +47,15 @@ import SelectableDataPoint = interactivitySelectionService.SelectableDataPoint;
 import { ChicletSlicerSettings } from "./settings";
 import { ChicletSlicer } from "./chicletSlicer";
 import { ChicletSlicerDataPoint } from "./interfaces";
+import { BaseDataPoint } from "powerbi-visuals-utils-interactivityutils/lib/interactivityBaseService";
 
-export interface ChicletSlicerBehaviorOptions {
+export interface ChicletSlicerBehaviorOptions extends IBehaviorOptions<BaseDataPoint> {
     slicerItemContainers: Selection<SelectableDataPoint>;
     slicerItemLabels: Selection<any>;
     slicerItemInputs: Selection<any>;
     slicerClear: Selection<any>;
     dataPoints: ChicletSlicerDataPoint[];
-    interactivityService: IInteractivityService;
+    interactivityService: IInteractivityService<BaseDataPoint>;
     slicerSettings: ChicletSlicerSettings;
     identityFields: ISQExpr[];
     isHighContrastMode: boolean;
@@ -63,7 +65,7 @@ export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
     private slicers: Selection<SelectableDataPoint>;
     private slicerItemLabels: Selection<any>;
     private slicerItemInputs: Selection<any>;
-    private interactivityService: IInteractivityService;
+    private interactivityService: IInteractivityService<BaseDataPoint>;
     private slicerSettings: ChicletSlicerSettings;
     private options: ChicletSlicerBehaviorOptions;
     private selectionHandler: ISelectionHandler;
@@ -111,7 +113,7 @@ export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
                 return;
             }
 
-            (d3.event as MouseEvent).preventDefault();
+            (<MouseEvent>d3.event).preventDefault();
 
             let settings: ChicletSlicerSettings = this.slicerSettings;
             let multiselect: boolean = settings.general.multiselect;
@@ -139,7 +141,7 @@ export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
                 }
             }
 
-            if ((d3.event as MouseEvent).altKey && multiselect) {
+            if ((<MouseEvent>d3.event).altKey && multiselect) {
                 let selIndex: number = selectedIndexes.length > 0
                     ? (selectedIndexes[selectedIndexes.length - 1])
                     : 0;
@@ -153,7 +155,7 @@ export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
                 for (let i: number = selIndex; i <= index; i++) {
                     selectionHandler.handleSelection(this.dataPoints[i], true /* isMultiSelect */);
                 }
-            } else if ((((d3.event as MouseEvent).ctrlKey || (d3.event as MouseEvent).metaKey)) || multiselect) {
+            } else if ((((<MouseEvent>d3.event).ctrlKey || (<MouseEvent>d3.event).metaKey)) || multiselect) {
                 selectionHandler.handleSelection(dataPoint, true /* isMultiSelect */);
             } else {
                 selectionHandler.handleSelection(dataPoint, false /* isMultiSelect */);
@@ -202,11 +204,13 @@ export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
     }
 
     public loadSelection(): void {
-        this.interactivityService.applySelectionFromFilter(this.slicerSettings.general.filter);
+        // TO BE CHANGED: apply new api's applyJsonFilter
+        //this.interactivityService.applySelectionFromFilter(this.slicerSettings.general.filter);
     }
 
     public saveSelection(): void {
-        this.selectionHandler.applySelectionFilter();
+        // TO BE CHANGED: apply new api's applyJsonFilter
+        //this.selectionHandler.applySelectionFilter();
     }
 
     public renderSelection(hasSelection: boolean): void {
@@ -254,8 +258,9 @@ export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
                     : settings.slicerText.disabledColor)
                 .style("opacity", () => {
                     if (isHighContrastMode) {
-                        let opacity = dataPoint.selectable ? (dataPoint.selected ? ChicletSlicer.DefaultOpacity : ChicletSlicer.DimmedOpacity) : ChicletSlicer.DisabledOpacity;
-                        return opacity;
+                        return dataPoint.selectable ? 
+                            (dataPoint.selected ? ChicletSlicer.DefaultOpacity : ChicletSlicer.DimmedOpacity) 
+                            : ChicletSlicer.DisabledOpacity;
                     }
                     return ChicletSlicer.DefaultOpacity;
                 });

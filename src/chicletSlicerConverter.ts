@@ -36,11 +36,10 @@ import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 import ISelectionId = powerbi.visuals.ISelectionId;
 import DataView = powerbi.DataView;
 import DataViewObjectPropertyIdentifier = powerbi.DataViewObjectPropertyIdentifier;
-import DataViewScopeIdentity = powerbi.extensibility.visual.DataViewScopeIdentity;
-
+import CustomVisualOpaqueIdentity =  powerbi.visuals.CustomVisualOpaqueIdentity;
 // powerbi.data
 import ISQExpr = powerbi.data.ISQExpr;
-import SemanticFilter = powerbi.data.ISemanticFilter;
+import ISemanticFilter = powerbi.data.ISemanticFilter;
 
 // powerbi.extensibility.utils.formatting
 import { valueFormatter } from "powerbi-visuals-utils-formattingutils";
@@ -56,7 +55,7 @@ export class ChicletSlicerConverter {
     private dataViewMetadata: DataViewMetadata;
     private category: DataViewCategoryColumn;
     private image: DataViewCategoryColumn;
-    private categoryIdentities: DataViewScopeIdentity[];
+    private categoryIdentities: CustomVisualOpaqueIdentity[];
     private categoryValues: any[];
     private categoryFormatString: string;
     public identityFields: ISQExpr[];
@@ -109,7 +108,7 @@ export class ChicletSlicerConverter {
                 if (!this.identityFields) {
                     return;
                 }
-                let filter: SemanticFilter = <SemanticFilter>objects.general.filter;
+                let filter: ISemanticFilter = <ISemanticFilter>objects.general.filter;
             }
 
             let hasSelection: boolean = undefined;
@@ -178,7 +177,7 @@ export class ChicletSlicerConverter {
                 }
 
                 if (this.image) {
-                    const uncheckedImageURL = this.image.values[categoryIndex] as string;
+                    const uncheckedImageURL = <string>this.image.values[categoryIndex];
                     if (!/^(ftp|http|https):\/\/[^ "]+$/.test(uncheckedImageURL) &&
                         !/^data:image/.test(uncheckedImageURL)) {
                         imageURL = undefined;
@@ -192,7 +191,7 @@ export class ChicletSlicerConverter {
                     .createSelectionId();
 
                 this.dataPoints.push({
-                    identity: categorySelectionId as powerbi.visuals.ISelectionId,
+                    identity: <powerbi.visuals.ISelectionId>categorySelectionId,
                     category: categoryLabel,
                     imageURL: imageURL,
                     value: value,

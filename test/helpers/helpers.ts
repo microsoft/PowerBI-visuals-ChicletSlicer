@@ -27,7 +27,8 @@
 import * as lodash from "lodash";
 
 // jasmine
-import Matcher = jasmine.Matchers;
+import * as jasmine from "karma-jasmine";
+import Matchers = jasmine.Matchers;
 
 // powerbi.extensibility.utils.type
 import { pixelConverter as PixelConverter } from "powerbi-visuals-utils-typeutils";
@@ -71,7 +72,7 @@ export function convertColorToRgbColor(color: string): RgbColor {
 }
 
 export function assertNumberMatch(actual: number, expected: number, round: number, invert?: boolean): boolean {
-    let matchers: Matcher = expect(roundTo(actual, round));
+    let matchers: Matchers = expect(roundTo(actual, round));
 
     if (invert) {
         matchers = matchers.not;

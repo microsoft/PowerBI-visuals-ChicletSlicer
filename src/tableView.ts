@@ -123,10 +123,10 @@ export class TableView implements ITableView {
             .append('div')
             .attr('class', 'visibleGroup');
 
-        TableView.SetDefaultOptions(options);
+        TableView.setDefaultOptions(options);
     }
 
-    private static SetDefaultOptions(options: TableViewViewOptions) {
+    private static setDefaultOptions(options: TableViewViewOptions) {
         options.rowHeight = options.rowHeight || TableView.defaultRowHeight;
     }
 

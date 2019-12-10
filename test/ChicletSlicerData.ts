@@ -24,13 +24,18 @@
  *  THE SOFTWARE.
  */
 
+import powerbiVisualsApi from "powerbi-visuals-api";
+import powerbi = powerbiVisualsApi;
+
+import DataView = powerbi.DataView;
 // powerbi.extensibility.utils.type
-import ValueType = powerbi.extensibility.utils.type.ValueType;
+import {valueType} from "powerbi-visuals-utils-typeutils";
+import ValueType = valueType.ValueType;
 
 // powerbi.extensibility.utils.test
-import getRandomNumbers = powerbi.extensibility.utils.test.helpers.getRandomNumbers;
-import CustomizeColumnFn = powerbi.extensibility.utils.test.dataViewBuilder.CustomizeColumnFn;
-import TestDataViewBuilder = powerbi.extensibility.utils.test.dataViewBuilder.TestDataViewBuilder;
+import {testDataViewBuilder, getRandomNumbers} from "powerbi-visuals-utils-testutils";
+import CustomizeColumnFn = testDataViewBuilder.CustomizeColumnFn;
+import TestDataViewBuilder = testDataViewBuilder.TestDataViewBuilder;
 
 export class ChicletSlicerData extends TestDataViewBuilder {
     public static ColumnCategory: string = "Category";
@@ -62,7 +67,7 @@ export class ChicletSlicerData extends TestDataViewBuilder {
                 source: {
                     displayName: ChicletSlicerData.ColumnCategory,
                     roles: { Category: true },
-                    type: this.valuesCategory
+                    type: ValueType.fromDescriptor({text: true})
                 },
                 values: this.valuesCategory
             },
@@ -70,7 +75,7 @@ export class ChicletSlicerData extends TestDataViewBuilder {
                 source: {
                     displayName: ChicletSlicerData.ColumnImage,
                     roles: { Image: true },
-                    type: (imageGaps === true ? this.valuesImageWithGaps : this.valuesImage)
+                    type: ValueType.fromDescriptor({text: true})
                 },
                 values: (imageGaps === true ? this.valuesImageWithGaps : this.valuesImage)
             }
@@ -84,7 +89,7 @@ export class ChicletSlicerData extends TestDataViewBuilder {
                 source: {
                     displayName: ChicletSlicerData.ColumnCategory,
                     roles: { Category: true },
-                    type: this.valuesCategory
+                    type: ValueType.fromDescriptor({text: true})
                 },
                 values: this.valuesCategory
             },
@@ -92,7 +97,7 @@ export class ChicletSlicerData extends TestDataViewBuilder {
                 source: {
                     displayName: ChicletSlicerData.ColumnImage,
                     roles: { Image: true },
-                    type: this.valuesImage
+                    type: ValueType.fromDescriptor({text: true})
                 },
                 values: this.valuesImage
             }

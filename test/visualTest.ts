@@ -24,35 +24,43 @@
  *  THE SOFTWARE.
  */
 
-// powerbi.extensibility.visual.test
-import ChicletSlicerData = powerbi.extensibility.visual.test.ChicletSlicerData;
-import ChicletSlicerBuilder = powerbi.extensibility.visual.test.ChicletSlicerBuilder;
-import assertNumberMatch = powerbi.extensibility.visual.test.helpers.assertNumberMatch;
-import convertAnySizeToPixel = powerbi.extensibility.visual.test.helpers.convertAnySizeToPixel;
-import convertColorToRgbColor = powerbi.extensibility.visual.test.helpers.convertColorToRgbColor;
-import getSolidColorStructuralObject = powerbi.extensibility.visual.test.helpers.getSolidColorStructuralObject;
-import isColorAppliedToElements = powerbi.extensibility.visual.test.helpers.isColorAppliedToElements;
+import powerbiVisualsApi from "powerbi-visuals-api";
+import powerbi = powerbiVisualsApi;
+
+import * as lodash from "lodash";
+import * as d3 from "d3";
+
+import DataView = powerbi.DataView;
+import DataViewValueColumn = powerbi.DataViewValueColumn;
+
+import {
+    assertNumberMatch,
+    convertAnySizeToPixel,
+    convertColorToRgbColor,
+    isColorAppliedToElements,
+    getSolidColorStructuralObject
+    } from "./helpers/helpers";
+
+import {ChicletSlicerData} from "./ChicletSlicerData";
+import {ChicletSlicerBuilder} from "./visualBuilder";
+
 
 // powerbi.extensibility.utils.type
-import PixelConverter = powerbi.extensibility.utils.type.PixelConverter;
+import {pixelConverter as PixelConverter} from "powerbi-visuals-utils-typeutils";
 
 // powerbi.extensibility.utils.formatting
-import TextProperties = powerbi.extensibility.utils.formatting.TextProperties;
-import textMeasurementService = powerbi.extensibility.utils.formatting.textMeasurementService;
+import { textMeasurementService as tms } from "powerbi-visuals-utils-formattingutils";
+import TextProperties = tms.TextProperties;
+import textMeasurementService = tms.textMeasurementService;
 
 // powerbi.extensibility.utils.test
-import RgbColor = powerbi.extensibility.utils.test.helpers.color.RgbColor;
-import MockIVisualHost = powerbi.extensibility.utils.test.mocks.MockIVisualHost;
-import renderTimeout = powerbi.extensibility.utils.test.helpers.renderTimeout;
-import ClickEventType = powerbi.extensibility.utils.test.helpers.ClickEventType;
-import assertColorsMatch = powerbi.extensibility.utils.test.helpers.color.assertColorsMatch;
-import MockISelectionManager = powerbi.extensibility.utils.test.mocks.MockISelectionManager;
+import {RgbColor, renderTimeout, ClickEventType, assertColorsMatch, MockISelectionManager} from "powerbi-visuals-utils-testutils";
 
 // ChicletSlicer1448559807354
-import TableView = powerbi.extensibility.visual.ChicletSlicer1448559807354.TableView;
-import VisualClass = powerbi.extensibility.visual.ChicletSlicer1448559807354.ChicletSlicer;
-import ChicletSlicerConverter = powerbi.extensibility.visual.ChicletSlicer1448559807354.ChicletSlicerConverter;
-import ChicletSlicerDataPoint = powerbi.extensibility.visual.ChicletSlicer1448559807354.ChicletSlicerDataPoint;
+import {ChicletSlicer as VisualClass} from "../src/chicletSlicer";
+import {ChicletSlicerConverter} from "../src/chicletSlicerConverter";
+import {ChicletSlicerDataPoint} from "../src/interfaces";
+import {TableView} from "../src/tableView";
 
 describe("ChicletSlicer", () => {
     let visualBuilder: ChicletSlicerBuilder,
@@ -60,7 +68,7 @@ describe("ChicletSlicer", () => {
         dataView: DataView;
 
     beforeAll(() => {
-        (MockISelectionManager as any).prototype.applySelectionFilter = () => { };
+        (<any>MockISelectionManager).prototype.applySelectionFilter = () => { };
     });
 
     beforeEach(() => {
@@ -72,17 +80,17 @@ describe("ChicletSlicer", () => {
 
     describe("getValidImageSplit", () => {
         it("should return a min value when argument less than the min value", () => {
-            expect(VisualClass.getValidImageSplit(-9999)).toBe(VisualClass.MinImageSplit);
+            expect(VisualClass.GET_VALID_IMAGE_SPLIT(-9999)).toBe(VisualClass.MinImageSplit);
         });
 
         it("should return a max value when argument more than the max value", () => {
-            expect(VisualClass.getValidImageSplit(9999)).toBe(VisualClass.MaxImageSplit);
+            expect(VisualClass.GET_VALID_IMAGE_SPLIT(9999)).toBe(VisualClass.MaxImageSplit);
         });
 
         it("should return a input value when a input value between the min value and the max value", () => {
             const inputValue: number = 50;
 
-            expect(VisualClass.getValidImageSplit(inputValue)).toBe(inputValue);
+            expect(VisualClass.GET_VALID_IMAGE_SPLIT(inputValue)).toBe(inputValue);
         });
     });
 
@@ -156,7 +164,7 @@ describe("ChicletSlicer", () => {
                     .css("font-size")
                     .replace(/[^-\d\.]/g, ""));
 
-                const textProp: TextProperties = VisualClass.getChicletTextProperties(
+                const textProp: TextProperties = VisualClass.GET_CHICLET_TEXT_PROPERTIES(
                     PixelConverter.toPoint(slicerFontSize));
 
                 const slicerTextDelta: number = textMeasurementService.estimateSvgTextBaselineDelta(textProp);
@@ -197,7 +205,7 @@ describe("ChicletSlicer", () => {
                     .css("font-size")
                     .replace(/[^-\d\.]/g, ""));
 
-                const textProp: TextProperties = VisualClass.getChicletTextProperties(
+                const textProp: TextProperties = VisualClass.GET_CHICLET_TEXT_PROPERTIES(
                     PixelConverter.toPoint(slicerFontSize));
 
                 const slicerTextDelta: number = textMeasurementService.estimateSvgTextBaselineDelta(textProp);
@@ -218,7 +226,7 @@ describe("ChicletSlicer", () => {
             visualBuilder.updateRenderTimeout(dataView, () => {
                 const chicletImageHeight: string = getImageHeight(visualBuilder);
 
-                (dataView.metadata.objects as any).images.imageSplit = 0;
+                (<any>dataView.metadata.objects).images.imageSplit = 0;
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
                     const chicletImageHeight0: string = getImageHeight(visualBuilder);
@@ -300,8 +308,8 @@ describe("ChicletSlicer", () => {
                 .children("div.row")
                 .length;
 
-            (dataView.metadata.objects as any).general.orientation = orientation;
-            (dataView.metadata.objects as any).general.rows = expectedNumber;
+            (<any>dataView.metadata.objects).general.orientation = orientation;
+            (<any>dataView.metadata.objects).general.rows = expectedNumber;
 
             visualBuilder.updateRenderTimeout(dataView, () => {
 
@@ -383,8 +391,8 @@ describe("ChicletSlicer", () => {
                 .children(".cell")
                 .length;
 
-            (dataView.metadata.objects as any).general.orientation = orientation;
-            (dataView.metadata.objects as any).general.сolumns = expectedNumber;
+            (<any>dataView.metadata.objects).general.orientation = orientation;
+            (<any>dataView.metadata.objects).general.сolumns = expectedNumber;
 
             visualBuilder.updateRenderTimeout(dataView, () => {
                 const chicletTotalColumns0: number = visualBuilder
@@ -416,7 +424,7 @@ describe("ChicletSlicer", () => {
                 .first()
                 .css("width");
 
-            (dataView.metadata.objects as any).rows.width = 0;
+            (<any>dataView.metadata.objects).rows.width = 0;
 
             visualBuilder.updateRenderTimeout(dataView, () => {
                 let chicletCellWidth0: string = visualBuilder
@@ -448,7 +456,7 @@ describe("ChicletSlicer", () => {
                 .first()
                 .css("height");
 
-            (dataView.metadata.objects as any).rows.height = 0;
+            (<any>dataView.metadata.objects).rows.height = 0;
 
             visualBuilder.updateRenderTimeout(dataView, () => {
                 const chicletCellHeight0: string = visualBuilder
@@ -526,15 +534,15 @@ describe("ChicletSlicer", () => {
             it("orientation", () => {
                 const valueCount: number = 5;
 
-                defaultDataViewBuilder.valuesCategory = _.take(
+                defaultDataViewBuilder.valuesCategory = lodash.take(
                     defaultDataViewBuilder.valuesCategory,
                     valueCount);
 
-                defaultDataViewBuilder.valuesValue = _.take(
+                defaultDataViewBuilder.valuesValue = lodash.take(
                     defaultDataViewBuilder.valuesValue,
                     valueCount);
 
-                defaultDataViewBuilder.valuesImage = _.take(
+                defaultDataViewBuilder.valuesImage = lodash.take(
                     defaultDataViewBuilder.valuesImage,
                     valueCount);
 
@@ -552,7 +560,7 @@ describe("ChicletSlicer", () => {
 
                 expect(visualBuilder.visibleGroupRows.length).toBe(1);
 
-                (dataView.metadata.objects as any).general.orientation = "Vertical";
+                (<any>dataView.metadata.objects).general.orientation = "Vertical";
                 visualBuilder.updateFlushAllD3Transitions(dataView);
 
                 expect(visualBuilder.visibleGroupRows.length).toBe(2);
@@ -636,7 +644,7 @@ describe("ChicletSlicer", () => {
                         }
                     });
 
-                (dataView.metadata.objects as any).general.showDisabled = "Bottom";
+                (<any>dataView.metadata.objects).general.showDisabled = "Bottom";
                 visualBuilder.updateFlushAllD3Transitions(dataView);
 
                 visualBuilder.visibleGroupCells
@@ -653,7 +661,7 @@ describe("ChicletSlicer", () => {
                             index !== 0);
                     });
 
-                (dataView.metadata.objects as any).general.showDisabled = "Hide";
+                (<any>dataView.metadata.objects).general.showDisabled = "Hide";
                 visualBuilder.updateFlushAllD3Transitions(dataView);
 
                 expect(visualBuilder.visibleGroupCells.length).toBe(1);
@@ -742,8 +750,8 @@ describe("ChicletSlicer", () => {
                 const actualValue = visualBuilder.viewport.height -
                     (searchHeader.height() +
                         slicerHeaderText.height() +
-                        (dataView.metadata.objects.header.outlineWeight as number) +
-                        (dataView.metadata.objects.header.borderBottomWidth as number));
+                        (<number>dataView.metadata.objects.header.outlineWeight) +
+                        (<number>dataView.metadata.objects.header.borderBottomWidth));
 
                 const expectedValue = visualBuilder.slicerBody.height();
 
@@ -853,11 +861,11 @@ describe("ChicletSlicer", () => {
             });
 
             it("show", () => {
-                (dataView.metadata.objects as any).header.show = false;
+                (<any>dataView.metadata.objects).header.show = false;
                 visualBuilder.updateFlushAllD3Transitions(dataView);
                 expect(visualBuilder.slicerHeader).not.toBeVisible();
 
-                (dataView.metadata.objects as any).header.show = true;
+                (<any>dataView.metadata.objects).header.show = true;
                 visualBuilder.updateFlushAllD3Transitions(dataView);
                 expect(visualBuilder.slicerHeader).toBeVisible();
             });
@@ -865,14 +873,14 @@ describe("ChicletSlicer", () => {
             it("title", () => {
                 const title: string = "Power BI";
 
-                (dataView.metadata.objects as any).header.title = title;
+                (<any>dataView.metadata.objects).header.title = title;
                 visualBuilder.updateFlushAllD3Transitions(dataView);
 
                 expect(visualBuilder.slicerHeaderText.text()).toBe(title);
             });
 
             it("title default", () => {
-                (dataView.metadata.objects as any).header.title = "";
+                (<any>dataView.metadata.objects).header.title = "";
                 visualBuilder.updateFlushAllD3Transitions(dataView);
 
                 expect(visualBuilder.slicerHeaderText.text()).toBe(ChicletSlicerData.ColumnCategory);
@@ -881,7 +889,7 @@ describe("ChicletSlicer", () => {
             it("font color", () => {
                 const color: string = "#123456";
 
-                (dataView.metadata.objects as any).header.fontColor = getSolidColorStructuralObject(color);
+                (<any>dataView.metadata.objects).header.fontColor = getSolidColorStructuralObject(color);
                 visualBuilder.updateFlushAllD3Transitions(dataView);
 
                 assertColorsMatch(visualBuilder.slicerHeaderText.css('color'), color);
@@ -890,7 +898,7 @@ describe("ChicletSlicer", () => {
             it("background color", () => {
                 const color: string = "#567890";
 
-                (dataView.metadata.objects as any).header.background = getSolidColorStructuralObject(color);
+                (<any>dataView.metadata.objects).header.background = getSolidColorStructuralObject(color);
                 visualBuilder.updateFlushAllD3Transitions(dataView);
 
                 assertColorsMatch(visualBuilder.slicerHeaderText.css('background-color'), color);
@@ -900,7 +908,7 @@ describe("ChicletSlicer", () => {
                 const fontSize: number = 22,
                     expectedFontSize: string = "29.3333px";
 
-                (dataView.metadata.objects as any).header.textSize = fontSize;
+                (<any>dataView.metadata.objects).header.textSize = fontSize;
                 visualBuilder.updateFlushAllD3Transitions(dataView);
 
                 expect(visualBuilder.slicerHeaderText.css('font-size')).toBe(expectedFontSize);
@@ -909,7 +917,7 @@ describe("ChicletSlicer", () => {
             it("outline color", () => {
                 const color: string = "#123456";
 
-                (dataView.metadata.objects as any).header.outlineColor = getSolidColorStructuralObject(color);
+                (<any>dataView.metadata.objects).header.outlineColor = getSolidColorStructuralObject(color);
                 visualBuilder.updateFlushAllD3Transitions(dataView);
 
                 assertColorsMatch(visualBuilder.slicerHeaderText.css('border-color'), color);
@@ -918,7 +926,7 @@ describe("ChicletSlicer", () => {
             it("outline weight", () => {
                 const weight: number = 5;
 
-                (dataView.metadata.objects as any).header.outlineWeight = weight;
+                (<any>dataView.metadata.objects).header.outlineWeight = weight;
                 visualBuilder.updateFlushAllD3Transitions(dataView);
 
                 expect(parseFloat(visualBuilder.slicerHeaderText.css('border-bottom-width'))).toBe(weight);
@@ -1113,7 +1121,7 @@ describe("ChicletSlicer", () => {
                     valueColumn.highlights[highlightedIndex] = valueColumn.values[highlightedIndex];
                 });
 
-                (dataView.metadata.objects as any).general = {
+                (<any>dataView.metadata.objects).general = {
                     showDisabled: "Inplace",
                     columns: dataView.categorical.categories[0].values.length
                 };
@@ -1212,7 +1220,7 @@ describe("ChicletSlicer", () => {
                         expect(convertAnySizeToPixel($(element).css("border-radius"))).toBeGreaterThan(0);
                     });
 
-                (dataView.metadata.objects as any).rows.borderStyle = "Cut";
+                (<any>dataView.metadata.objects).rows.borderStyle = "Cut";
                 visualBuilder.updateFlushAllD3Transitions(dataView);
 
                 visualBuilder.slicerItemContainers
@@ -1221,7 +1229,7 @@ describe("ChicletSlicer", () => {
                         expect(convertAnySizeToPixel($(element).css("border-radius"))).toBeGreaterThan(0);
                     });
 
-                (dataView.metadata.objects as any).rows.borderStyle = "Square";
+                (<any>dataView.metadata.objects).rows.borderStyle = "Square";
                 visualBuilder.updateFlushAllD3Transitions(dataView);
 
                 visualBuilder.slicerItemContainers
@@ -1284,7 +1292,7 @@ describe("ChicletSlicer", () => {
                         expect($(element).is(".imageRound")).toBeTruthy();
                     });
 
-                (dataView.metadata.objects as any).images.imageRound = false;
+                (<any>dataView.metadata.objects).images.imageRound = false;
                 visualBuilder.updateFlushAllD3Transitions(dataView);
 
                 visualBuilder.slicerItemImages
@@ -1309,7 +1317,7 @@ describe("ChicletSlicer", () => {
                         expect($(element).is(".stretchImage")).toBeTruthy();
                     });
 
-                (dataView.metadata.objects as any).images.stretchImage = false;
+                (<any>dataView.metadata.objects).images.stretchImage = false;
                 visualBuilder.updateFlushAllD3Transitions(dataView);
 
                 visualBuilder.slicerItemImages
@@ -1334,7 +1342,7 @@ describe("ChicletSlicer", () => {
                         expect($(element).is(".bottomImage")).toBeTruthy();
                     });
 
-                (dataView.metadata.objects as any).images.bottomImage = false;
+                (<any>dataView.metadata.objects).images.bottomImage = false;
 
                 visualBuilder.updateFlushAllD3Transitions(dataView);
 
@@ -1352,7 +1360,7 @@ describe("ChicletSlicer", () => {
             checkElement(
                 visualBuilder,
                 dataView,
-                TableView.RowSelector.selector,
+                TableView.RowSelector.selectorName,
                 done);
         });
 
@@ -1360,7 +1368,7 @@ describe("ChicletSlicer", () => {
             checkElement(
                 visualBuilder,
                 dataView,
-                TableView.CellSelector.selector,
+                TableView.CellSelector.selectorName,
                 done);
         });
 
@@ -1368,7 +1376,7 @@ describe("ChicletSlicer", () => {
             checkElement(
                 visualBuilder,
                 dataView,
-                VisualClass.ItemContainerSelector.selector,
+                VisualClass.ItemContainerSelector.selectorName,
                 done);
         });
 
@@ -1376,7 +1384,7 @@ describe("ChicletSlicer", () => {
             checkElement(
                 visualBuilder,
                 dataView,
-                VisualClass.SlicerImgWrapperSelector.selector,
+                VisualClass.SlicerImgWrapperSelector.selectorName,
                 done);
         });
 
@@ -1384,7 +1392,7 @@ describe("ChicletSlicer", () => {
             checkElement(
                 visualBuilder,
                 dataView,
-                VisualClass.SlicerTextWrapperSelector.selector,
+                VisualClass.SlicerTextWrapperSelector.selectorName,
                 done);
         });
 
@@ -1527,8 +1535,8 @@ describe("ChicletSlicer", () => {
 
         it("background color should be similar to theme background color", (done) => {
             visualBuilder.updateRenderTimeout(dataView, () => {
-                const slicers: JQuery[] = visualBuilder.slicerItemContainers.toArray().map($);
-                const headers: JQuery[] = visualBuilder.slicerHeader.toArray().map($);
+                const slicers: JQuery<any>[] = visualBuilder.slicerItemContainers.toArray().map($);
+                const headers: JQuery<any>[] = visualBuilder.slicerHeader.toArray().map($);
 
                 expect(isColorAppliedToElements(headers, backgroundColor, "background-color"));
                 expect(isColorAppliedToElements(slicers, backgroundColor, "background-color"));
@@ -1538,9 +1546,9 @@ describe("ChicletSlicer", () => {
 
         it("borders and text should be filled with foreground color", (done) => {
             visualBuilder.updateRenderTimeout(dataView, () => {
-                const slicers: JQuery[] = visualBuilder.slicerItemContainers.toArray().map($);
-                const slicerText: JQuery[] = visualBuilder.slicerTextElements.toArray().map($);
-                const headers: JQuery[] = visualBuilder.slicerHeader.toArray().map($);
+                const slicers: JQuery<any>[] = visualBuilder.slicerItemContainers.toArray().map($);
+                const slicerText: JQuery<any>[] = visualBuilder.slicerTextElements.toArray().map($);
+                const headers: JQuery<any>[] = visualBuilder.slicerHeader.toArray().map($);
 
                 expect(isColorAppliedToElements(headers, foregroundColor, "color"));
                 expect(isColorAppliedToElements(slicerText, foregroundColor, "color"));
