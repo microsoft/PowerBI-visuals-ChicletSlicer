@@ -5,6 +5,9 @@
 * updated powerbi-visuals-utils, powerbi-visuals-tools 3.x.x
 * d3 v5
 
+## 1.6.2
+* Added [Sync slicers](https://docs.microsoft.com/en-us/power-bi/visuals/power-bi-visualization-slicers#sync-and-use-slicers-on-other-pages) support
+
 ## 1.6.1
 * Image validation was repaired
 * Restriction for number of categories was changed from 10k to 1k
