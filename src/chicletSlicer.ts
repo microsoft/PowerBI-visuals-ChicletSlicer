@@ -26,6 +26,7 @@
 
 import * as d3 from "d3";
 import * as lodash from "lodash";
+import * as $ from "jquery";
 
 import powerbiVisualsApi from "powerbi-visuals-api";
 import powerbi = powerbiVisualsApi;
@@ -49,7 +50,7 @@ import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 import IColorPalette = powerbiVisualsApi.extensibility.IColorPalette;
 import VisualUpdateOptions = powerbiVisualsApi.extensibility.visual.VisualUpdateOptions;
 import VisualConstructorOptions = powerbiVisualsApi.extensibility.visual.VisualConstructorOptions;
-import CustomVisualOpaqueIdentity =  powerbi.visuals.CustomVisualOpaqueIdentity;
+import CustomVisualOpaqueIdentity = powerbi.visuals.CustomVisualOpaqueIdentity;
 
 // powerbi.extensibility.utils.dataview
 import { dataViewObjects as DataViewObjectsModule } from "powerbi-visuals-utils-dataviewutils";
@@ -339,6 +340,10 @@ export class ChicletSlicer implements IVisual {
 
 
     constructor(options: VisualConstructorOptions) {
+        if (window.location !== window.parent.location) {
+            require("core-js/stable");
+        }
+
         this.$root = $(options.element);
 
         this.visualHost = options.host;
@@ -413,8 +418,8 @@ export class ChicletSlicer implements IVisual {
             }
 
             for (let j: number = 0; j < dv1Length; j++) {
-                 //if (!lodash.isEqual(dv1Identity[j].key, dv2Identity[j].key)) {
-                    return false;
+                //if (!lodash.isEqual(dv1Identity[j].key, dv2Identity[j].key)) {
+                return false;
                 //}
             }
         }
@@ -543,10 +548,9 @@ export class ChicletSlicer implements IVisual {
     }
 
     private updateInternal(resetScrollbarPosition: boolean) {
-        debugger;
         let data = ChicletSlicer.CONVERTER(
             this.dataView,
-            "",//this.$searchInput.val(),
+            this.$searchInput.val().toString(),
             this.visualHost);
 
         if (!data) {
@@ -780,12 +784,14 @@ export class ChicletSlicer implements IVisual {
                 return [dataPoint];
             });
 
-        labelTextSelection
+        const labelTextSelectionMerged = labelTextSelection
             .enter()
             .append('span')
-            .classed(ChicletSlicer.LabelTextSelector.className, true);
+            .merge(labelTextSelection);
 
-        labelTextSelection
+        labelTextSelectionMerged.classed(ChicletSlicer.LabelTextSelector.className, true);
+
+        labelTextSelectionMerged
             .style("font-size", PixelConverter.fromPoint(settings.slicerText.textSize))
             .style("color", settings.slicerText.fontColor)
             .style("opacity", ChicletSlicer.DefaultOpacity);

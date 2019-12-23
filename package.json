@@ -17,7 +17,7 @@
     "lint": "node node_modules/tslint/bin/tslint \"+(src|test)/**/*.ts\"",
     "pretest": "pbiviz package --resources --no-minify --no-pbiviz --no-plugin",
     "test": "karma start",
-    "cert": "pbiviz --create-cert"
+    "cert": "pbiviz --install-cert"
   },
   "devDependencies": {
     "@types/d3": "5.7.2",
@@ -33,6 +33,7 @@
     "istanbul-instrumenter-loader": "3.0.1",
     "jasmine": "3.5.0",
     "jasmine-jquery": "2.1.1",
+    "jquery": "3.4.1",
     "karma": "4.4.1",
     "karma-chrome-launcher": "3.1.0",
     "karma-coverage": "2.0.1",

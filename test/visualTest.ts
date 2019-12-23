@@ -29,6 +29,7 @@ import powerbi = powerbiVisualsApi;
 
 import * as lodash from "lodash";
 import * as d3 from "d3";
+import * as $ from "jquery";
 
 import DataView = powerbi.DataView;
 import DataViewValueColumn = powerbi.DataViewValueColumn;
@@ -39,14 +40,14 @@ import {
     convertColorToRgbColor,
     isColorAppliedToElements,
     getSolidColorStructuralObject
-    } from "./helpers/helpers";
+} from "./helpers/helpers";
 
-import {ChicletSlicerData} from "./ChicletSlicerData";
-import {ChicletSlicerBuilder} from "./visualBuilder";
+import { ChicletSlicerData } from "./ChicletSlicerData";
+import { ChicletSlicerBuilder } from "./visualBuilder";
 
 
 // powerbi.extensibility.utils.type
-import {pixelConverter as PixelConverter} from "powerbi-visuals-utils-typeutils";
+import { pixelConverter as PixelConverter } from "powerbi-visuals-utils-typeutils";
 
 // powerbi.extensibility.utils.formatting
 import { textMeasurementService as tms } from "powerbi-visuals-utils-formattingutils";
@@ -54,13 +55,13 @@ import TextProperties = tms.TextProperties;
 import textMeasurementService = tms.textMeasurementService;
 
 // powerbi.extensibility.utils.test
-import {RgbColor, renderTimeout, ClickEventType, assertColorsMatch, MockISelectionManager} from "powerbi-visuals-utils-testutils";
+import { RgbColor, renderTimeout, ClickEventType, assertColorsMatch, MockISelectionManager, d3Click } from "powerbi-visuals-utils-testutils";
 
 // ChicletSlicer1448559807354
-import {ChicletSlicer as VisualClass} from "../src/chicletSlicer";
-import {ChicletSlicerConverter} from "../src/chicletSlicerConverter";
-import {ChicletSlicerDataPoint} from "../src/interfaces";
-import {TableView} from "../src/tableView";
+import { ChicletSlicer as VisualClass } from "../src/chicletSlicer";
+import { ChicletSlicerConverter } from "../src/chicletSlicerConverter";
+import { ChicletSlicerDataPoint } from "../src/interfaces";
+import { TableView } from "../src/tableView";
 
 describe("ChicletSlicer", () => {
     let visualBuilder: ChicletSlicerBuilder,
@@ -819,12 +820,12 @@ describe("ChicletSlicer", () => {
                     callback: () => void) {
 
                     visualBuilder.updateRenderTimeout(dataView, () => {
-                        visualBuilder
+                        const filteredContainers = visualBuilder
                             .slicerItemContainers
                             .filter((index) => {
                                 return filter(index);
-                            })
-                            .d3Click(0, 0, clickEventType);
+                            });
+                        d3Click(filteredContainers, 0, 0, clickEventType);
 
                         checkSelection(
                             visualBuilder,

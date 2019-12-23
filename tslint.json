@@ -4,6 +4,8 @@
         "node_modules/tslint-microsoft-contrib"
     ],
     "rules": {
-        "no-relative-imports": false
+        "no-relative-imports": false,
+        "no-internal-module": false,
+        "no-namespace": false
     }
 }
