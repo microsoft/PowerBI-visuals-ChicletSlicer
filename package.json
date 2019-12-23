@@ -36,7 +36,7 @@
     "karma-remap-istanbul": "0.6.0",
     "karma-sourcemap-loader": "0.3.7",
     "karma-typescript-preprocessor": "0.3.1",
-    "lodash": "4.16.2",
+    "lodash": "4.17.13",
     "powerbi-models": "^1.0.2",
     "powerbi-visuals-tools": "1.13.0",
     "powerbi-visuals-utils-colorutils": "1.1.0",
