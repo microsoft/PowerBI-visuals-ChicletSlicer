@@ -1,3 +1,6 @@
+## 1.6.3
+* FIX: Last image in column is cut off when the search enabled
+
 ## 1.6.2
 * Added [Sync slicers](https://docs.microsoft.com/en-us/power-bi/visuals/power-bi-visualization-slicers#sync-and-use-slicers-on-other-pages) support
 
