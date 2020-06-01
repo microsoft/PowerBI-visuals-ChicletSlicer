@@ -196,6 +196,12 @@ module powerbi.extensibility.visual {
 
         public loadSelection(): void {
             this.interactivityService.applySelectionFromFilter(this.slicerSettings.general.filter);
+
+            if (!this.slicerSettings.general.filter && !this.interactivityService.hasSelection()) {
+                // TODO: REMOVE IT in API 3.3.0. Clear selected items in selectionManager
+                // for bookmarks that reset selection
+                (this.interactivityService as any).selectionManager.selectedIds = [];
+            }
         }
 
         public saveSelection(): void {
