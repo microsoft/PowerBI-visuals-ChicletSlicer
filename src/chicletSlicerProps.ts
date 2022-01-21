@@ -24,55 +24,57 @@
  *  THE SOFTWARE.
  */
 
-module powerbi.extensibility.visual {
+import powerbiVisualsApi from "powerbi-visuals-api";
+import powerbi = powerbiVisualsApi;
 
-    export let chicletSlicerProps = {
-        general: {
-            orientation: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'orientation' },
-            columns: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'columns' },
-            rows: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'rows' },
-            showDisabled: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'showDisabled' },
-            multiselect: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'multiselect' },
-            forcedSelection: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'forcedSelection' },
-            selection: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'selection' },
-            filter: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'filter' },
-            selfFilterEnabled: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'selfFilterEnabled' },
-        },
-        header: {
-            show: <DataViewObjectPropertyIdentifier>{ objectName: 'header', propertyName: 'show' },
-            title: <DataViewObjectPropertyIdentifier>{ objectName: 'header', propertyName: 'title' },
-            fontColor: <DataViewObjectPropertyIdentifier>{ objectName: 'header', propertyName: 'fontColor' },
-            background: <DataViewObjectPropertyIdentifier>{ objectName: 'header', propertyName: 'background' },
-            outline: <DataViewObjectPropertyIdentifier>{ objectName: 'header', propertyName: 'outline' },
-            textSize: <DataViewObjectPropertyIdentifier>{ objectName: 'header', propertyName: 'textSize' },
-            outlineColor: <DataViewObjectPropertyIdentifier>{ objectName: 'header', propertyName: 'outlineColor' },
-            outlineWeight: <DataViewObjectPropertyIdentifier>{ objectName: 'header', propertyName: 'outlineWeight' }
-        },
-        rows: {
-            fontColor: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'fontColor' },
-            textSize: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'textSize' },
-            height: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'height' },
-            width: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'width' },
-            background: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'background' },
-            transparency: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'transparency' },
-            selectedColor: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'selectedColor' },
-            hoverColor: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'hoverColor' },
-            unselectedColor: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'unselectedColor' },
-            disabledColor: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'disabledColor' },
-            outline: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'outline' },
-            outlineColor: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'outlineColor' },
-            outlineWeight: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'outlineWeight' },
-            padding: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'padding' },
-            borderStyle: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'borderStyle' },
-        },
-        images: {
-            imageSplit: <DataViewObjectPropertyIdentifier>{ objectName: 'images', propertyName: 'imageSplit' },
-            imageRound: <DataViewObjectPropertyIdentifier>{ objectName: 'images', propertyName: 'imageRound' },
-            stretchImage: <DataViewObjectPropertyIdentifier>{ objectName: 'images', propertyName: 'stretchImage' },
-            bottomImage: <DataViewObjectPropertyIdentifier>{ objectName: 'images', propertyName: 'bottomImage' },
-        },
-        selectedPropertyIdentifier: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'selected' },
-        filterPropertyIdentifier: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'filter' },
-        hasSavedSelection: true,
-    };
-}
+import DataViewObjectPropertyIdentifier = powerbi.DataViewObjectPropertyIdentifier;
+
+export let chicletSlicerProps = {
+    general: {
+        orientation: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'orientation' },
+        columns: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'columns' },
+        rows: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'rows' },
+        showDisabled: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'showDisabled' },
+        multiselect: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'multiselect' },
+        forcedSelection: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'forcedSelection' },
+        selection: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'selection' },
+        filter: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'filter' },
+        selfFilterEnabled: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'selfFilterEnabled' },
+    },
+    header: {
+        show: <DataViewObjectPropertyIdentifier>{ objectName: 'header', propertyName: 'show' },
+        title: <DataViewObjectPropertyIdentifier>{ objectName: 'header', propertyName: 'title' },
+        fontColor: <DataViewObjectPropertyIdentifier>{ objectName: 'header', propertyName: 'fontColor' },
+        background: <DataViewObjectPropertyIdentifier>{ objectName: 'header', propertyName: 'background' },
+        outline: <DataViewObjectPropertyIdentifier>{ objectName: 'header', propertyName: 'outline' },
+        textSize: <DataViewObjectPropertyIdentifier>{ objectName: 'header', propertyName: 'textSize' },
+        outlineColor: <DataViewObjectPropertyIdentifier>{ objectName: 'header', propertyName: 'outlineColor' },
+        outlineWeight: <DataViewObjectPropertyIdentifier>{ objectName: 'header', propertyName: 'outlineWeight' }
+    },
+    rows: {
+        fontColor: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'fontColor' },
+        textSize: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'textSize' },
+        height: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'height' },
+        width: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'width' },
+        background: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'background' },
+        transparency: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'transparency' },
+        selectedColor: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'selectedColor' },
+        hoverColor: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'hoverColor' },
+        unselectedColor: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'unselectedColor' },
+        disabledColor: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'disabledColor' },
+        outline: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'outline' },
+        outlineColor: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'outlineColor' },
+        outlineWeight: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'outlineWeight' },
+        padding: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'padding' },
+        borderStyle: <DataViewObjectPropertyIdentifier>{ objectName: 'rows', propertyName: 'borderStyle' },
+    },
+    images: {
+        imageSplit: <DataViewObjectPropertyIdentifier>{ objectName: 'images', propertyName: 'imageSplit' },
+        imageRound: <DataViewObjectPropertyIdentifier>{ objectName: 'images', propertyName: 'imageRound' },
+        stretchImage: <DataViewObjectPropertyIdentifier>{ objectName: 'images', propertyName: 'stretchImage' },
+        bottomImage: <DataViewObjectPropertyIdentifier>{ objectName: 'images', propertyName: 'bottomImage' },
+    },
+    selectedPropertyIdentifier: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'selected' },
+    filterPropertyIdentifier: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'filter' },
+    hasSavedSelection: true,
+};
