@@ -44,12 +44,17 @@ import IInteractivityService = interactivityService.IInteractivityService;
 import ISelectionHandler = interactivityService.ISelectionHandler;
 import SelectableDataPoint = interactivitySelectionService.SelectableDataPoint;
 
+import IVisualHost = powerbi.extensibility.visual.IVisualHost;
+import { FilterType, ITupleFilter, ITupleFilterTarget, IFilterTarget } from "powerbi-models";
+import FilterAction = powerbi.FilterAction;
+
 import { ChicletSlicerSettings } from "./settings";
 import { ChicletSlicer } from "./chicletSlicer";
 import { ChicletSlicerDataPoint } from "./interfaces";
 import { BaseDataPoint } from "powerbi-visuals-utils-interactivityutils/lib/interactivityBaseService";
 
 export interface ChicletSlicerBehaviorOptions extends IBehaviorOptions<BaseDataPoint> {
+    visualHost: IVisualHost;
     slicerItemContainers: Selection<SelectableDataPoint>;
     slicerItemLabels: Selection<any>;
     slicerItemInputs: Selection<any>;
@@ -57,7 +62,7 @@ export interface ChicletSlicerBehaviorOptions extends IBehaviorOptions<BaseDataP
     dataPoints: ChicletSlicerDataPoint[];
     interactivityService: IInteractivityService<BaseDataPoint>;
     slicerSettings: ChicletSlicerSettings;
-    identityFields: ISQExpr[];
+    identityFields: ISQExpr[] | any;
     isHighContrastMode: boolean;
 }
 
@@ -69,6 +74,7 @@ export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
     private slicerSettings: ChicletSlicerSettings;
     private options: ChicletSlicerBehaviorOptions;
     private selectionHandler: ISelectionHandler;
+    private visualHost: IVisualHost;
 
     /**
      * Public for testability.
@@ -85,6 +91,7 @@ export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
         this.interactivityService = options.interactivityService;
         this.slicerSettings = options.slicerSettings;
         this.options = options;
+        this.visualHost = options.visualHost;
 
         this.selectionHandler = selectionHandler;
 
@@ -209,8 +216,33 @@ export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
     }
 
     public saveSelection(): void {
-        // TO BE CHANGED: apply new api's applyJsonFilter
-        //this.selectionHandler.applySelectionFilter();
+        let targets: ITupleFilterTarget = [
+            {
+                table: this.options.identityFields[0].source.entity,
+                column: this.options.identityFields[0].ref
+            }
+        ];
+
+        const filterDataPoints: any[] = this.dataPoints.filter(d => d.selected);
+    
+        let filterValues: any[] = filterDataPoints.map((dataPoint: any) => {
+            return [{value: dataPoint.category}];
+        });
+
+        if (filterValues.length === 0) {
+            this.visualHost.applyJsonFilter(null, "general", "filter", FilterAction.merge);
+            return;
+        }
+
+        let filter: ITupleFilter = {
+            $schema: "https://powerbi.com/product/schema#tuple",
+            filterType: FilterType.Tuple,
+            operator: "In",
+            target: targets,
+            values: filterValues
+        }
+
+        this.visualHost.applyJsonFilter(filter, "general", "filter", FilterAction.merge);
     }
 
     public renderSelection(hasSelection: boolean): void {

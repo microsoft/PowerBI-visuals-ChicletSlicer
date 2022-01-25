@@ -28,6 +28,8 @@ import * as d3 from "d3";
 import * as lodash from "lodash";
 import * as $ from "jquery";
 
+import "../style/chicletSlicer.less";
+
 import powerbiVisualsApi from "powerbi-visuals-api";
 import powerbi = powerbiVisualsApi;
 
@@ -358,7 +360,6 @@ export class ChicletSlicer implements IVisual {
     }
 
     public update(options: VisualUpdateOptions) {
-        debugger;
         if (!options ||
             !options.dataViews ||
             !options.dataViews[0] ||
@@ -925,6 +926,7 @@ export class ChicletSlicer implements IVisual {
                     slicerClear: Selection<any> = this.slicerHeader.select(ChicletSlicer.ClearSelector.selectorName);
 
                 let behaviorOptions: ChicletSlicerBehaviorOptions = {
+                    visualHost: this.visualHost,
                     dataPoints: data.slicerDataPoints,
                     slicerItemContainers: slicerItemContainers,
                     slicerItemLabels: slicerItemLabels,
