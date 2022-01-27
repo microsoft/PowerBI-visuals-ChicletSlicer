@@ -55,4 +55,5 @@ export interface ChicletSlicerDataPoint extends SelectableDataPoint {
     imageURL?: string;
     selectable?: boolean;
     filtered?: boolean;
+    id?: number;
 }

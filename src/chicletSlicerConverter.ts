@@ -196,7 +196,8 @@ export class ChicletSlicerConverter {
                     imageURL: imageURL,
                     value: value,
                     selected: false,
-                    selectable: selectable
+                    selectable: selectable,
+                    id: categoryIndex
                 });
             }
 

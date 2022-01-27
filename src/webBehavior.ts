@@ -45,7 +45,7 @@ import ISelectionHandler = interactivityService.ISelectionHandler;
 import SelectableDataPoint = interactivitySelectionService.SelectableDataPoint;
 
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
-import { FilterType, ITupleFilter, ITupleFilterTarget, IFilterTarget } from "powerbi-models";
+import { FilterType, IIdentityFilterTarget, IIdentityFilter } from "powerbi-models";
 import FilterAction = powerbi.FilterAction;
 
 import { ChicletSlicerSettings } from "./settings";
@@ -216,30 +216,17 @@ export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
     }
 
     public saveSelection(): void {
-        let targets: ITupleFilterTarget = [
-            {
-                table: this.options.identityFields[0].source.entity,
-                column: this.options.identityFields[0].ref
-            }
-        ];
-
         const filterDataPoints: any[] = this.dataPoints.filter(d => d.selected);
-    
-        let filterValues: any[] = filterDataPoints.map((dataPoint: any) => {
-            return [{value: dataPoint.category}];
+
+        let filterTargets: IIdentityFilterTarget = filterDataPoints.map((dataPoint: any) => {
+            return dataPoint.id;
         });
 
-        if (filterValues.length === 0) {
-            this.visualHost.applyJsonFilter(null, "general", "filter", FilterAction.merge);
-            return;
-        }
-
-        let filter: ITupleFilter = {
-            $schema: "https://powerbi.com/product/schema#tuple",
-            filterType: FilterType.Tuple,
+        let filter: IIdentityFilter = {
+            $schema: "https://powerbi.com/product/schema#identity",
+            filterType: FilterType.Identity,
             operator: "In",
-            target: targets,
-            values: filterValues
+            target: filterTargets
         }
 
         this.visualHost.applyJsonFilter(filter, "general", "filter", FilterAction.merge);
