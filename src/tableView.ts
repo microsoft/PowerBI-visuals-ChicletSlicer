@@ -361,31 +361,35 @@ export class TableView implements ITableView {
             .selectAll(TableView.RowSelector.selectorName)
             .data(<ChicletSlicerDataPoint[]>groupedData.data);
 
-        rowSelection
+        const rowSelectionMerged = rowSelection
             .enter()
             .append("div")
-            .classed(TableView.RowSelector.className, true);
+            .merge(rowSelection);
 
-        cellSelection = rowSelection
+        rowSelectionMerged.classed(TableView.RowSelector.className, true);
+
+        cellSelection = rowSelectionMerged
             .selectAll(TableView.CellSelector.selectorName)
             .data((dataPoints: ChicletSlicerDataPoint[]) => {
                 return dataPoints;
             });
-
-        cellSelection
+            
+        const cellSelectionMerged = cellSelection
             .enter()
             .append('div')
-            .classed(TableView.CellSelector.className, true);
+            .merge(cellSelection);
 
-        cellSelection.call((selection: Selection<any>) => {
+        cellSelectionMerged.classed(TableView.CellSelector.className, true);
+
+        cellSelectionMerged.call((selection: Selection<any>) => {
             options.enter(selection);
         });
 
-        cellSelection.call((selection: Selection<any>) => {
+        cellSelectionMerged.call((selection: Selection<any>) => {
             options.update(selection);
         });
 
-        cellSelection.style("height", (rowHeight > 0) ? rowHeight + "px" : "auto");
+        cellSelectionMerged.style("height", (rowHeight > 0) ? rowHeight + "px" : "auto");
 
         if (this.options.orientation === Orientation.VERTICAL) {
             let realColumnNumber: number = 0;
@@ -395,19 +399,19 @@ export class TableView implements ITableView {
                     realColumnNumber = i + 1;
             }
 
-            cellSelection.style("width", "100%");
+            cellSelectionMerged.style("width", "100%");
 
-            rowSelection
+            rowSelectionMerged
                 .style("width", (options.columnWidth > 0)
                     ? options.columnWidth + 'px'
                     : (100 / realColumnNumber) + '%');
         }
         else {
-            cellSelection.style("width", (options.columnWidth > 0)
+            cellSelectionMerged.style("width", (options.columnWidth > 0)
                 ? options.columnWidth + 'px'
                 : (100 / groupedData.totalColumns) + '%');
 
-            rowSelection.style("width", null);
+            rowSelectionMerged.style("width", null);
         }
 
         cellSelection
