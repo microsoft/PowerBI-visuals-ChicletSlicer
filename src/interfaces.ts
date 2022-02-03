@@ -47,6 +47,8 @@ export interface ChicletSlicerData {
 }
 
 export interface ChicletSlicerDataPoint extends SelectableDataPoint {
+    identity: any;
+    selected: any;
     category?: string;
     value?: number;
     mouseOver?: boolean;

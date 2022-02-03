@@ -52,7 +52,7 @@
     "powerbi-visuals-utils-colorutils": "2.2.1",
     "powerbi-visuals-utils-dataviewutils": "2.2.1",
     "powerbi-visuals-utils-formattingutils": "4.4.2",
-    "powerbi-visuals-utils-interactivityutils": "5.6.0",
+    "powerbi-visuals-utils-interactivityutils": "^5.7.1",
     "powerbi-visuals-utils-svgutils": "2.2.1",
     "powerbi-visuals-utils-testutils": "2.2.1",
     "powerbi-visuals-utils-typeutils": "2.2.1",

@@ -51,7 +51,7 @@ import FilterAction = powerbi.FilterAction;
 import { ChicletSlicerSettings } from "./settings";
 import { ChicletSlicer } from "./chicletSlicer";
 import { ChicletSlicerDataPoint } from "./interfaces";
-import { BaseDataPoint } from "powerbi-visuals-utils-interactivityutils/lib/interactivityBaseService";
+import { BaseDataPoint, InteractivityServiceOptions } from "powerbi-visuals-utils-interactivityutils/lib/interactivityBaseService";
 
 export interface ChicletSlicerBehaviorOptions extends IBehaviorOptions<BaseDataPoint> {
     visualHost: IVisualHost;
@@ -64,6 +64,8 @@ export interface ChicletSlicerBehaviorOptions extends IBehaviorOptions<BaseDataP
     slicerSettings: ChicletSlicerSettings;
     identityFields: ISQExpr[] | any;
     isHighContrastMode: boolean;
+    behavior: any;
+    interactivityServiceOptions: InteractivityServiceOptions;
 }
 
 export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
