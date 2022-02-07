@@ -373,6 +373,10 @@ export class ChicletSlicer implements IVisual {
 
         this.jsonFilters = options.jsonFilters;
 
+        if (this.jsonFilters.length === 0) {
+            this.interactivityService.selectionManager.clear();
+        }
+
         if (!this.currentViewport) {
             this.currentViewport = options.viewport;
             this.initContainer();
@@ -783,7 +787,7 @@ export class ChicletSlicer implements IVisual {
             .append('div')
             .merge(slicerTextWrapperSelection);
 
-        slicerImgWrapperSelectionMerged.classed(ChicletSlicer.SlicerTextWrapperSelector.className, true);
+        slicerTextWrapperSelectionMerged.classed(ChicletSlicer.SlicerTextWrapperSelector.className, true);
 
         let labelTextSelection: Selection<any> = slicerTextWrapperSelectionMerged
             .selectAll(ChicletSlicer.LabelTextSelector.selectorName)
