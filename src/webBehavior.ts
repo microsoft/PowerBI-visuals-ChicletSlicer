@@ -47,6 +47,7 @@ import SelectableDataPoint = interactivitySelectionService.SelectableDataPoint;
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 import { FilterType, IIdentityFilterTarget, IIdentityFilter } from "powerbi-models";
 import FilterAction = powerbi.FilterAction;
+import IFilter = powerbi.IFilter;
 
 import { ChicletSlicerSettings } from "./settings";
 import { ChicletSlicer } from "./chicletSlicer";
@@ -66,17 +67,19 @@ export interface ChicletSlicerBehaviorOptions extends IBehaviorOptions<BaseDataP
     isHighContrastMode: boolean;
     behavior: any;
     interactivityServiceOptions: InteractivityServiceOptions;
+    jsonFilters: IFilter[] | undefined | any;
 }
 
 export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
     private slicers: Selection<SelectableDataPoint>;
     private slicerItemLabels: Selection<any>;
     private slicerItemInputs: Selection<any>;
-    private interactivityService: IInteractivityService<BaseDataPoint>;
+    private interactivityService: IInteractivityService<BaseDataPoint> | any;
     private slicerSettings: ChicletSlicerSettings;
     private options: ChicletSlicerBehaviorOptions;
     private selectionHandler: ISelectionHandler;
     private visualHost: IVisualHost;
+    private jsonFilters: IFilter[] | undefined | any;
 
     /**
      * Public for testability.
@@ -96,6 +99,8 @@ export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
         this.visualHost = options.visualHost;
 
         this.selectionHandler = selectionHandler;
+
+        this.jsonFilters = options.jsonFilters;
 
         this.loadSelection();
 
@@ -213,8 +218,11 @@ export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
     }
 
     public loadSelection(): void {
-        // TO BE CHANGED: apply new api's applyJsonFilter
-        //this.interactivityService.applySelectionFromFilter(this.slicerSettings.general.filter);
+        if (this.jsonFilters && this.jsonFilters[0]) {
+            const targets = this.jsonFilters[0].target;
+            this.interactivityService.selectionManager.clear();
+            targets.forEach(target => this.selectionHandler.handleSelection(this.dataPoints[target], true))
+        }
     }
 
     public saveSelection(): void {

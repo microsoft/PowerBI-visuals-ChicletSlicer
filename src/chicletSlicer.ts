@@ -86,6 +86,8 @@ import { chicletSlicerProps } from "./chicletSlicerProps";
 import { ITableView, TableViewFactory, TableViewViewOptions } from "./tableView";
 import { BaseDataPoint, InteractivityServiceOptions } from "powerbi-visuals-utils-interactivityutils/lib/interactivityBaseService";
 
+import IFilter = powerbi.IFilter;
+
 module ChicletBorderStyle {
     export let ROUNDED: string = 'Rounded';
     export let CUT: string = 'Cut';
@@ -114,7 +116,7 @@ export class ChicletSlicer implements IVisual {
     private tableView: ITableView;
     private slicerData: ChicletSlicerData;
 
-    private interactivityService: IInteractivityService<BaseDataPoint>;
+    private interactivityService: IInteractivityService<BaseDataPoint> | any;
     private visualHost: IVisualHost;
 
     private colorPalette: IColorPalette;
@@ -122,6 +124,8 @@ export class ChicletSlicer implements IVisual {
 
     private waitingForData: boolean;
     private isSelectionLoaded: boolean;
+
+    private jsonFilters: IFilter[] | undefined | any;
 
     /**
      * It's public for testability.
@@ -366,6 +370,8 @@ export class ChicletSlicer implements IVisual {
             !options.viewport) {
             return;
         }
+
+        this.jsonFilters = options.jsonFilters;
 
         if (!this.currentViewport) {
             this.currentViewport = options.viewport;
@@ -926,6 +932,7 @@ export class ChicletSlicer implements IVisual {
                     slicerClear: Selection<any> = this.slicerHeader.select(ChicletSlicer.ClearSelector.selectorName);
 
                 let behaviorOptions: ChicletSlicerBehaviorOptions = {
+                    jsonFilters: this.jsonFilters,
                     visualHost: this.visualHost,
                     dataPoints: data.slicerDataPoints,
                     slicerItemContainers: slicerItemContainers,
