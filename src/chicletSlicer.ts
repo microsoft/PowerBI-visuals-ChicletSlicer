@@ -433,6 +433,10 @@ export class ChicletSlicer implements IVisual {
             event.preventDefault();
         });
 
+        this.updateFilter();
+    }
+
+    private updateFilter() {
         if(this.jsonFilters && this.jsonFilters[0]) {
             let filterTargets = this.jsonFilters[0].target;
 
