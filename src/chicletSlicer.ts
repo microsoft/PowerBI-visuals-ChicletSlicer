@@ -92,6 +92,9 @@ import { createTooltipServiceWrapper, ITooltipServiceWrapper } from "powerbi-vis
 import VisualTooltipDataItem = powerbiVisualsApi.extensibility.VisualTooltipDataItem;
 
 import IFilter = powerbi.IFilter;
+import ISelectionManager = powerbiVisualsApi.extensibility.ISelectionManager;
+import { FilterType, IIdentityFilterTarget, IIdentityFilter } from "powerbi-models";
+import FilterAction = powerbi.FilterAction;
 
 module ChicletBorderStyle {
     export let ROUNDED: string = 'Rounded';
@@ -131,8 +134,8 @@ export class ChicletSlicer implements IVisual {
     private isSelectionLoaded: boolean;
 
     private jsonFilters: IFilter[] | undefined | any;
-
     private tooltipService: ITooltipServiceWrapper;
+    private selectionManager: ISelectionManager;
 
     /**
      * It's public for testability.
@@ -373,6 +376,8 @@ export class ChicletSlicer implements IVisual {
             this.visualHost.tooltipService, 
             options.element
         );
+
+        this.selectionManager = options.host.createSelectionManager();
     }
 
     public update(options: VisualUpdateOptions) {
@@ -413,6 +418,33 @@ export class ChicletSlicer implements IVisual {
         }
 
         this.updateInternal(resetScrollbarPosition);
+        this.renderContextMenu();
+    }
+
+    private renderContextMenu() {
+        this.root.on('contextmenu', (event) => {
+            let dataPoint: any = d3Select(event.target).datum();
+            debugger;
+
+            this.selectionManager.showContextMenu((dataPoint && dataPoint.identity) ? dataPoint.identity : {}, {​​
+                x: event.clientX,
+                y: event.clientY
+            });
+            event.preventDefault();
+        });
+
+        if(this.jsonFilters && this.jsonFilters[0]) {
+            let filterTargets = this.jsonFilters[0].target;
+
+        let filter: IIdentityFilter = {
+            $schema: "https://powerbi.com/product/schema#identity",
+            filterType: FilterType.Identity,
+            operator: "In",
+            target: filterTargets
+        }
+
+        this.visualHost.applyJsonFilter(filter, "general", "filter", FilterAction.merge);
+        }
     }
 
     private static hasSameCategoryIdentity(dataView1: DataView, dataView2: DataView): boolean {
@@ -681,7 +713,6 @@ export class ChicletSlicer implements IVisual {
     }
 
     private getTooltipData(value: any): VisualTooltipDataItem[] {
-        console.log('value', value);
         return [{
             displayName: value.columnName,
             value: value.category,
