@@ -25,7 +25,6 @@
  */
 
 import * as d3 from "d3";
-import * as $ from "jquery";
 
 import powerbiVisualsApi from "powerbi-visuals-api";
 import IViewport = powerbiVisualsApi.IViewport;
@@ -110,7 +109,7 @@ export class TableView implements ITableView {
 
     public constructor(options: TableViewViewOptions) {
         // make a copy of options so that it is not modified later by caller
-        this.options = $.extend(true, {}, options);
+        this.options = Object.assign({}, options);
 
         this.options.baseContainer
             .style('overflow-y', 'auto')
@@ -180,7 +179,7 @@ export class TableView implements ITableView {
         this.setTotalRows();
 
         if (dataReset) {
-            $(this.options.baseContainer.node()).scrollTop(0);
+            this.options.baseContainer.node().scrollTop = 0;
         }
 
         return this;

@@ -26,7 +26,6 @@
 
 import * as d3 from "d3";
 import * as lodash from "lodash";
-import * as $ from "jquery";
 
 import "../style/chicletSlicer.less";
 
@@ -35,6 +34,10 @@ import powerbi = powerbiVisualsApi;
 
 // d3
 type Selection<T1, T2 = T1> = d3.Selection<any, T1, any, T2>;
+
+import {
+    select as d3Select
+} from "d3-selection";
 
 // powerbi
 import DataView = powerbi.DataView;
@@ -106,9 +109,9 @@ export module Orientation {
 }
 
 export class ChicletSlicer implements IVisual {
-    private $root: JQuery;
-    private $searchHeader: JQuery;
-    private $searchInput: JQuery;
+    private root: Selection<any>;
+    private searchHeader: Selection<any>;
+    private searchInput: Selection<any>;  
     private currentViewport: IViewport;
     private dataView: DataView;
     private slicerHeader: Selection<any>;
@@ -350,7 +353,7 @@ export class ChicletSlicer implements IVisual {
             require("core-js/stable");
         }
 
-        this.$root = $(options.element);
+        this.root = d3Select(options.element);
 
         this.visualHost = options.host;
 
@@ -371,10 +374,13 @@ export class ChicletSlicer implements IVisual {
             return;
         }
 
+        let resetScrollbarPosition: boolean = false;
+
         this.jsonFilters = options.jsonFilters;
 
         if (this.jsonFilters.length === 0) {
             this.interactivityService.selectionManager.clear();
+            resetScrollbarPosition = true;
         }
 
         if (!this.currentViewport) {
@@ -384,8 +390,6 @@ export class ChicletSlicer implements IVisual {
 
         const existingDataView = this.dataView;
         this.dataView = options.dataViews[0];
-
-        let resetScrollbarPosition: boolean = true;
 
         if (existingDataView) {
             resetScrollbarPosition = !ChicletSlicer.hasSameCategoryIdentity(existingDataView, this.dataView);
@@ -561,7 +565,7 @@ export class ChicletSlicer implements IVisual {
     private updateInternal(resetScrollbarPosition: boolean) {
         let data = ChicletSlicer.CONVERTER(
             this.dataView,
-            this.$searchInput.val().toString(),
+            this.searchInput.node().value,
             this.visualHost);
 
         if (!data) {
@@ -659,7 +663,7 @@ export class ChicletSlicer implements IVisual {
         let settings: ChicletSlicerSettings = this.settings,
             slicerBodyViewport: IViewport = this.getSlicerBodyViewport(this.currentViewport);
 
-        let slicerContainer: Selection<any> = d3.select(this.$root.get(0))
+        let slicerContainer: Selection<any> = this.root
             .append('div')
             .classed(ChicletSlicer.ContainerSelector.className, true);
 
@@ -682,7 +686,7 @@ export class ChicletSlicer implements IVisual {
             .style("border-width", this.getBorderWidth(settings.header.outline, settings.header.outlineWeight))
             .style("font-size", PixelConverter.fromPoint(settings.header.textSize));
 
-        this.createSearchHeader($(slicerContainer.node()));
+        this.createSearchHeader(slicerContainer);
 
         this.slicerBody = slicerContainer
             .append('div')
@@ -965,41 +969,44 @@ export class ChicletSlicer implements IVisual {
         }
     };
 
-    private createSearchHeader(container: JQuery): void {
+    private createSearchHeader(container: Selection<any>): void {
         let counter: number = 0;
 
-        this.$searchHeader = $("<div>")
-            .appendTo(container)
-            .addClass("searchHeader")
-            .addClass("collapsed");
+        this.searchHeader = container
+            .append("div")
+            .classed("searchHeader", true)
+            .classed("collapsed", true);
 
-        $("<div>").appendTo(this.$searchHeader)
+        this.searchHeader
+            .append('div')
             .attr("title", "Search")
-            .addClass("search");
+            .classed("search", true);
 
-        this.$searchInput = $("<input>").appendTo(this.$searchHeader)
+        this.searchInput = this.searchHeader
+            .append('input')
             .attr("type", "text")
             .attr("drag-resize-disabled", "true")
-            .addClass("searchInput")
-            .on("input", () => this.visualHost.persistProperties(<VisualObjectInstancesToPersist>{
-                merge: [{
-                    objectName: "general",
-                    selector: null,
-                    properties: {
-                        counter: counter++
-                    }
-                }]
-            }));
+            .classed("searchInput", true);
+
+        this.searchInput.on("input", () => this.visualHost.persistProperties(<VisualObjectInstancesToPersist>{
+            merge: [{
+                objectName: "general",
+                selector: null,
+                properties: {
+                    counter: counter++
+                }
+            }]
+        }));
     }
 
     private updateSearchHeader(): void {
-        this.$searchHeader.toggleClass("show", this.slicerData.slicerSettings.general.selfFilterEnabled);
-        this.$searchHeader.toggleClass("collapsed", !this.slicerData.slicerSettings.general.selfFilterEnabled);
+        this.searchHeader.classed("show", this.slicerData.slicerSettings.general.selfFilterEnabled ? true : false);
+        this.searchHeader.classed("collapsed", this.slicerData.slicerSettings.general.selfFilterEnabled ? false : true);
     }
 
     private getSearchHeaderHeight(): number {
-        return this.$searchHeader && this.$searchHeader.hasClass('show')
-            ? this.$searchHeader.height()
+        return this.searchHeader && this.searchHeader.classed('show')
+            ? this.searchHeader.node().getBoundingClientRect().height
             : 0;
     }
 
