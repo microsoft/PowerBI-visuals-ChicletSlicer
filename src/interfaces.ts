@@ -58,4 +58,5 @@ export interface ChicletSlicerDataPoint extends SelectableDataPoint {
     selectable?: boolean;
     filtered?: boolean;
     id?: number;
+    columnName?: any;
 }

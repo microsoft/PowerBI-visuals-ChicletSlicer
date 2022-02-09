@@ -197,7 +197,8 @@ export class ChicletSlicerConverter {
                     value: value,
                     selected: false,
                     selectable: selectable,
-                    id: categoryIndex
+                    id: categoryIndex,
+                    columnName: this.category.source.displayName
                 });
             }
 

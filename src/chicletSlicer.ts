@@ -88,6 +88,9 @@ import { chicletSlicerProps } from "./chicletSlicerProps";
 import { ITableView, TableViewFactory, TableViewViewOptions } from "./tableView";
 import { BaseDataPoint, InteractivityServiceOptions } from "powerbi-visuals-utils-interactivityutils/lib/interactivityBaseService";
 
+import { createTooltipServiceWrapper, ITooltipServiceWrapper } from "powerbi-visuals-utils-tooltiputils";
+import VisualTooltipDataItem = powerbiVisualsApi.extensibility.VisualTooltipDataItem;
+
 import IFilter = powerbi.IFilter;
 
 module ChicletBorderStyle {
@@ -128,6 +131,8 @@ export class ChicletSlicer implements IVisual {
     private isSelectionLoaded: boolean;
 
     private jsonFilters: IFilter[] | undefined | any;
+
+    private tooltipService: ITooltipServiceWrapper;
 
     /**
      * It's public for testability.
@@ -363,6 +368,11 @@ export class ChicletSlicer implements IVisual {
         this.interactivityService = createInteractivitySelectionService(options.host);
 
         this.settings = ChicletSlicer.DEFAULT_STYLE_PROPERTIES();
+
+        this.tooltipService = createTooltipServiceWrapper(
+            this.visualHost.tooltipService, 
+            options.element
+        );
     }
 
     public update(options: VisualUpdateOptions) {
@@ -657,6 +667,27 @@ export class ChicletSlicer implements IVisual {
             .viewport(this.getSlicerBodyViewport(this.currentViewport))
             .render();
     }
+
+    private renderTooltip(selection: Selection<any>): void {
+        if (!this.tooltipService) {
+            return;
+        }
+
+        this.tooltipService.addTooltip(
+            selection,
+            (data: ChicletSlicerDataPoint) => this.getTooltipData(data),
+            (data: ChicletSlicerDataPoint) => data.identity
+        );
+    }
+
+    private getTooltipData(value: any): VisualTooltipDataItem[] {
+        console.log('value', value);
+        return [{
+            displayName: value.columnName,
+            value: value.category,
+        }];
+    }
+
 
     private initContainer() {
         let settings: ChicletSlicerSettings = this.settings,
@@ -958,6 +989,8 @@ export class ChicletSlicer implements IVisual {
 
                 this.interactivityService.bind(behaviorOptions);
 
+                this.renderTooltip(slicerItemContainers);
+
                 this.behavior.styleSlicerInputs(
                     rowSelection.select(ChicletSlicer.ItemContainerSelector.selectorName),
                     this.interactivityService.hasSelection());
@@ -965,6 +998,8 @@ export class ChicletSlicer implements IVisual {
             else {
                 this.behavior.styleSlicerInputs(rowSelection.select(ChicletSlicer.ItemContainerSelector.selectorName), false);
             }
+
+            
         }
     };
 
