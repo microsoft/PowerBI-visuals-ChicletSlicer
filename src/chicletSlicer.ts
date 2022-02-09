@@ -77,9 +77,8 @@ import createClassAndSelector = SVGUtil.CssConstants.createClassAndSelector;
 import { hexToRGBString, ColorHelper } from "powerbi-visuals-utils-colorutils";
 
 // powerbi.extensibility.utils.formatting
-import { textMeasurementService as tms, valueFormatter, } from "powerbi-visuals-utils-formattingutils";
-import textMeasurementService = tms.textMeasurementService;
-import TextProperties = tms.TextProperties;
+import { textMeasurementService, valueFormatter, interfaces} from "powerbi-visuals-utils-formattingutils";
+import TextProperties = interfaces.TextProperties;
 
 import { ChicletSlicerData, ChicletSlicerDataPoint } from "./interfaces";
 import { ChicletSlicerSettings } from "./settings";
