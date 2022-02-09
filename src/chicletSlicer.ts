@@ -391,9 +391,9 @@ export class ChicletSlicer implements IVisual {
         const existingDataView = this.dataView;
         this.dataView = options.dataViews[0];
 
-        if (existingDataView) {
-            resetScrollbarPosition = !ChicletSlicer.hasSameCategoryIdentity(existingDataView, this.dataView);
-        }
+        // if (existingDataView) {
+        //     resetScrollbarPosition = !ChicletSlicer.hasSameCategoryIdentity(existingDataView, this.dataView);
+        // }
 
         if (options.viewport.height === this.currentViewport.height
             && options.viewport.width === this.currentViewport.width) {
@@ -653,7 +653,7 @@ export class ChicletSlicer implements IVisual {
             .columns(this.settings.general.columns)
             .data(
                 data.slicerDataPoints.filter(x => !x.filtered),
-                (d: ChicletSlicerDataPoint) => $.inArray(d, data.slicerDataPoints),
+                (d: ChicletSlicerDataPoint) => data.slicerDataPoints.indexOf(d),
                 resetScrollbarPosition)
             .viewport(this.getSlicerBodyViewport(this.currentViewport))
             .render();
