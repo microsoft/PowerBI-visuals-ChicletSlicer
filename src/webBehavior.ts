@@ -104,7 +104,7 @@ export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
 
         this.loadSelection();
 
-        slicers.on("mouseover", (dataPoint: ChicletSlicerDataPoint) => {
+        slicers.on("mouseover", (event, dataPoint: ChicletSlicerDataPoint) => {
             if (dataPoint.selectable) {
                 dataPoint.mouseOver = true;
                 dataPoint.mouseOut = false;
@@ -113,7 +113,7 @@ export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
             }
         });
 
-        slicers.on("mouseout", (dataPoint: ChicletSlicerDataPoint) => {
+        slicers.on("mouseout", (event, dataPoint: ChicletSlicerDataPoint) => {
             if (dataPoint.selectable) {
                 dataPoint.mouseOver = false;
                 dataPoint.mouseOut = true;
@@ -122,12 +122,15 @@ export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
             }
         });
 
-        slicers.on("click", (dataPoint: ChicletSlicerDataPoint, index: number) => {
+        slicers.on("click", (event, dataPoint: ChicletSlicerDataPoint) => {
             if (!dataPoint.selectable) {
                 return;
             }
 
-            (<MouseEvent>d3.event).preventDefault();
+            (<MouseEvent>event).preventDefault();
+            
+            const slicersNodes = slicers.nodes();
+            let index = slicersNodes.indexOf(this);
 
             let settings: ChicletSlicerSettings = this.slicerSettings;
             let multiselect: boolean = settings.general.multiselect;
@@ -151,7 +154,7 @@ export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
                 }
             }
 
-            if ((<MouseEvent>d3.event).altKey && multiselect) {
+            if ((<MouseEvent>event).altKey && multiselect) {
                 let selIndex: number = selectedIndexes.length > 0
                     ? (selectedIndexes[selectedIndexes.length - 1])
                     : 0;
@@ -165,7 +168,7 @@ export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
                 for (let i: number = selIndex; i <= index; i++) {
                     selectionHandler.handleSelection(this.dataPoints[i], true /* isMultiSelect */);
                 }
-            } else if ((((<MouseEvent>d3.event).ctrlKey || (<MouseEvent>d3.event).metaKey)) || multiselect) {
+            } else if ((((<MouseEvent>event).ctrlKey || (<MouseEvent>event).metaKey)) || multiselect) {
                 selectionHandler.handleSelection(dataPoint, true /* isMultiSelect */);
             } else {
                 selectionHandler.handleSelection(dataPoint, false /* isMultiSelect */);
@@ -174,7 +177,7 @@ export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
             this.saveSelection();
         });
 
-        slicerClear.on("click", (d: SelectableDataPoint) => {
+        slicerClear.on("click", (event, d: SelectableDataPoint) => {
             const settings: ChicletSlicerSettings = this.slicerSettings;
 
             if (settings.general.forcedSelection) {
