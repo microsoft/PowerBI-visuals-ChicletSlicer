@@ -28,7 +28,7 @@ import * as lodash from "lodash";
 
 // jasmine
 import * as jasmine from "karma-jasmine";
-import Matchers = jasmine.Matchers;
+//import Matchers = jasmine.Matchers;
 
 // powerbi.extensibility.utils.type
 import { pixelConverter as PixelConverter } from "powerbi-visuals-utils-typeutils";
@@ -71,15 +71,15 @@ export function convertColorToRgbColor(color: string): RgbColor {
     return parseColorString(color);
 }
 
-export function assertNumberMatch(actual: number, expected: number, round: number, invert?: boolean): boolean {
-    let matchers: Matchers = expect(roundTo(actual, round));
+// export function assertNumberMatch(actual: number, expected: number, round: number, invert?: boolean): boolean {
+//     let matchers: Matchers = expect(roundTo(actual, round));
 
-    if (invert) {
-        matchers = matchers.not;
-    }
+//     if (invert) {
+//         matchers = matchers.not;
+//     }
 
-    return matchers.toBe(roundTo(expected, round));
-}
+//     return matchers.toBe(roundTo(expected, round));
+// }
 
 export function areColorsEqual(firstColor: string, secondColor: string): boolean {
     const firstConvertedColor: RgbColor = parseColorString(firstColor),
@@ -90,18 +90,18 @@ export function areColorsEqual(firstColor: string, secondColor: string): boolean
         && firstConvertedColor.B === secondConvertedColor.B;
 }
 
-export function isColorAppliedToElements(
-    elements: JQuery[],
-    color?: string,
-    colorStyleName: string = "fill"
-): boolean {
-    return elements.some((element: JQuery) => {
-        const currentColor: string = element.css(colorStyleName);
+// export function isColorAppliedToElements(
+//     elements: HTMLElement[],
+//     color?: string,
+//     colorStyleName: string = "fill"
+// ): boolean {
+//     return elements.some((element: HTMLElement) => {
+//         const currentColor: string = element.css(colorStyleName);
 
-        if (!currentColor || !color) {
-            return currentColor === color;
-        }
+//         if (!currentColor || !color) {
+//             return currentColor === color;
+//         }
 
-        return areColorsEqual(currentColor, color);
-    });
-}
+//         return areColorsEqual(currentColor, color);
+//     });
+// }

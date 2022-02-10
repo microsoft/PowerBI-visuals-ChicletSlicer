@@ -54,58 +54,58 @@ export class ChicletSlicerBuilder extends VisualBuilderBase<VisualClass> {
         return this.visual;
     }
 
-    public get mainElement(): JQuery {
-        return this.element.children("div.chicletSlicer");
+    public get mainElement(): HTMLElement {
+        return this.element.querySelector("div.chicletSlicer");
     }
 
-    public get slicerBody(): JQuery {
-        return this.mainElement.children("div.slicerBody");
+    public get slicerBody(): HTMLElement {
+        return this.mainElement.querySelector("div.slicerBody");
     }
 
-    public get searchHeader(): JQuery {
-        return this.mainElement.children("div.searchHeader");
+    public get searchHeader(): HTMLElement {
+        return this.mainElement.querySelector("div.searchHeader");
     }
 
-    public get slicerHeader(): JQuery {
-        return this.mainElement.children("div.slicerHeader");
+    public get slicerHeader(): HTMLElement {
+        return this.mainElement.querySelector("div.slicerHeader");
     }
 
-    public get slicerHeaderText(): JQuery {
-        return this.slicerHeader.children("div.headerText");
+    public get slicerHeaderText(): HTMLElement {
+        return this.slicerHeader.querySelector("div.headerText");
     }
 
-    public get visibleGroup(): JQuery {
+    public get visibleGroup(): HTMLElement {
         return this.mainElement
-            .children("div.slicerBody")
-            .children("div.scrollRegion")
-            .children("div.visibleGroup");
+            .querySelector("div.slicerBody")
+            .querySelector("div.scrollRegion")
+            .querySelector("div.visibleGroup");
     }
 
-    public get visibleGroupRows(): JQuery {
-        return this.visibleGroup.children("div.row");
+    public get visibleGroupRows(): NodeListOf<HTMLElement> {
+        return this.visibleGroup.querySelectorAll("div.row");
     }
 
-    public get visibleGroupCells(): JQuery {
-        return this.visibleGroupRows.children("div.cell");
+    public get visibleGroupCells(): NodeListOf<HTMLElement> {
+        return this.visibleGroup.querySelectorAll("div.cell");
     }
 
-    public get slicerTextElements(): JQuery {
-        return this.visibleGroup.find(".slicerText");
+    public get slicerTextElements(): NodeListOf<HTMLElement> {
+        return this.visibleGroup.querySelectorAll(".slicerText");
     }
 
-    public get slicerItemContainers(): JQuery {
-        return this.visibleGroupCells
-            .children("ul")
-            .children(".slicerItemContainer");
-    }
-
-    public get slicerItemContainer(): JQuery {
+    public get slicerItemContainers(): NodeListOf<HTMLElement> {
         return this.visibleGroup
-            .find("div.row .cell:first .slicerItemContainer");
+            .querySelectorAll(".slicerItemContainer");
     }
 
-    public get slicerItemImages(): JQuery {
-        return this.slicerItemContainers.children("img.slicer-img-wrapper");
+    // check if one is expected or all first cells in each container
+    public get slicerItemContainer(): HTMLElement {
+        return this.visibleGroup
+            .querySelector("div.row .cell:first .slicerItemContainer");
+    }
+
+    public get slicerItemImages(): NodeListOf<HTMLElement> {
+        return this.visibleGroup.querySelectorAll("img.slicer-img-wrapper");
     }
 
     public getDataPoints(): ChicletSlicerDataPoint[] {
