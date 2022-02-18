@@ -71,15 +71,16 @@ export function convertColorToRgbColor(color: string): RgbColor {
     return parseColorString(color);
 }
 
-// export function assertNumberMatch(actual: number, expected: number, round: number, invert?: boolean): boolean {
-//     let matchers: Matchers = expect(roundTo(actual, round));
+export function assertNumberMatch(actual: number, expected: number, round: number, invert?: boolean) {
+    const expectedResult = roundTo(actual, round);
+    const result = roundTo(expected, round);
 
-//     if (invert) {
-//         matchers = matchers.not;
-//     }
+    if (invert) {
+        expect(expectedResult).not.toBe(result)
+    }
 
-//     return matchers.toBe(roundTo(expected, round));
-// }
+    expect(expectedResult).toBe(result);
+}
 
 export function areColorsEqual(firstColor: string, secondColor: string): boolean {
     const firstConvertedColor: RgbColor = parseColorString(firstColor),
@@ -90,18 +91,18 @@ export function areColorsEqual(firstColor: string, secondColor: string): boolean
         && firstConvertedColor.B === secondConvertedColor.B;
 }
 
-// export function isColorAppliedToElements(
-//     elements: HTMLElement[],
-//     color?: string,
-//     colorStyleName: string = "fill"
-// ): boolean {
-//     return elements.some((element: HTMLElement) => {
-//         const currentColor: string = element.css(colorStyleName);
+export function isColorAppliedToElements(
+    elements: HTMLElement[],
+    color?: string,
+    colorStyleName: string = "fill"
+): boolean {
+    return elements.some((element: HTMLElement) => {
+        const currentColor: string = element.style[colorStyleName];
 
-//         if (!currentColor || !color) {
-//             return currentColor === color;
-//         }
+        if (!currentColor || !color) {
+            return currentColor === color;
+        }
 
-//         return areColorsEqual(currentColor, color);
-//     });
-// }
+        return areColorsEqual(currentColor, color);
+    });
+}

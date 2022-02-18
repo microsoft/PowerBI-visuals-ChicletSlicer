@@ -60,7 +60,7 @@ module.exports = (config) => {
                 served: true
             },
             {
-                pattern: '**/*.json',
+                pattern: "./capabilities.json",
                 watched: true,
                 served: true,
                 included: false

@@ -129,17 +129,14 @@ export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
 
             (<MouseEvent>event).preventDefault();
             
-            const slicersNodes = slicers.nodes();
-            let index = slicersNodes.indexOf(this);
+            let index = dataPoint.id;
 
             let settings: ChicletSlicerSettings = this.slicerSettings;
             let multiselect: boolean = settings.general.multiselect;
 
-            let selectedIndexes: number[] = this.dataPoints.map((dataPoint: ChicletSlicerDataPoint, index: number) => {
-                    if (dataPoint.selected) {
-                        return index;
-                    };
-                });
+            let selectedIndexes: number[] = this.dataPoints
+                .filter((dataPoint: ChicletSlicerDataPoint, index: number) => dataPoint.selected)
+                .map(dataPoint => dataPoint.id);
 
             if (settings.general.forcedSelection && selectedIndexes.length === 1) {
                 let availableDataPoints: ChicletSlicerDataPoint[] = this.dataPoints.map((dataPoint: ChicletSlicerDataPoint, index: number) => {

@@ -98,13 +98,12 @@ export class ChicletSlicerBuilder extends VisualBuilderBase<VisualClass> {
             .querySelectorAll(".slicerItemContainer");
     }
 
-    // check if one is expected or all first cells in each container
     public get slicerItemContainer(): HTMLElement {
         return this.visibleGroup
-            .querySelector("div.row .cell:first .slicerItemContainer");
+            .querySelector(".row").querySelector(".cell").querySelector(".slicerItemContainer");
     }
 
-    public get slicerItemImages(): NodeListOf<HTMLElement> {
+    public get slicerItemImages(): NodeListOf<HTMLImageElement> {
         return this.visibleGroup.querySelectorAll("img.slicer-img-wrapper");
     }
 
