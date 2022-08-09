@@ -161,6 +161,8 @@ module powerbi.extensibility.visual {
         public static ClearSelector: ClassAndSelector = createClassAndSelector('clear');
         public static BodySelector: ClassAndSelector = createClassAndSelector('slicerBody');
 
+        private urlLinkStart: string = 'http://';
+
         public static DefaultStyleProperties(): ChicletSlicerSettings {
             return {
                 general: {
@@ -538,6 +540,14 @@ module powerbi.extensibility.visual {
                 this.dataView,
                 this.$searchInput.val(),
                 this.visualHost);
+
+            let hasExternalImageLink: boolean = _.some(data.slicerDataPoints, (dataPoint: ChicletSlicerDataPoint) => {
+                return typeof dataPoint.imageURL !== "undefined" && dataPoint.imageURL.indexOf(this.urlLinkStart) !== -1;
+            });
+
+            if (hasExternalImageLink){
+                this.visualHost.telemetry.trace(VisualEventType.Trace, 'External image link detected');
+            }
 
             if (!data) {
                 this.tableView.empty();
