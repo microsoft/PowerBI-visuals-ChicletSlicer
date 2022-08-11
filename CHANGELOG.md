@@ -1,3 +1,6 @@
+## 1.6.4
+* Added telemetry for detection of external images in visual
+
 ## 1.6.3
 * FIX: Last image in column is cut off when the search enabled
 

@@ -112,6 +112,8 @@ module powerbi.extensibility.visual {
         private waitingForData: boolean;
         private isSelectionLoaded: boolean;
 
+        private ExternalImageTelemetryTraced: boolean;
+
         /**
          * It's public for testability.
          */
@@ -160,8 +162,6 @@ module powerbi.extensibility.visual {
         public static InputSelector: ClassAndSelector = createClassAndSelector('slicerCheckbox');
         public static ClearSelector: ClassAndSelector = createClassAndSelector('clear');
         public static BodySelector: ClassAndSelector = createClassAndSelector('slicerBody');
-
-        private urlLinkStart: string = 'http://';
 
         public static DefaultStyleProperties(): ChicletSlicerSettings {
             return {
@@ -536,17 +536,22 @@ module powerbi.extensibility.visual {
         }
 
         private updateInternal(resetScrollbarPosition: boolean) {
+
             let data = ChicletSlicer.converter(
                 this.dataView,
                 this.$searchInput.val(),
                 this.visualHost);
 
-            let hasExternalImageLink: boolean = _.some(data.slicerDataPoints, (dataPoint: ChicletSlicerDataPoint) => {
-                return typeof dataPoint.imageURL !== "undefined" && dataPoint.imageURL.indexOf(this.urlLinkStart) !== -1;
-            });
+            if (!this.ExternalImageTelemetryTraced)
+            {
+                let hasExternalImageLink: boolean = _.some(data.slicerDataPoints, (dataPoint: ChicletSlicerDataPoint) => {
+                    return /^(ftp|http|https):\/\/[^ "]+$/.test(dataPoint.imageURL);
+                });
 
-            if (hasExternalImageLink){
-                this.visualHost.telemetry.trace(VisualEventType.Trace, 'External image link detected');
+                if (hasExternalImageLink){
+                    this.visualHost.telemetry.trace(VisualEventType.Trace, 'External image link detected');
+                    this.ExternalImageTelemetryTraced = true;
+                }
             }
 
             if (!data) {
