@@ -450,7 +450,6 @@
     },
     "supportsHighlight": true,
     "suppressDefaultTitle": true,
-    "supportsSynchronizingFilterState": true,
     "sorting": {
         "default": {}
     }
