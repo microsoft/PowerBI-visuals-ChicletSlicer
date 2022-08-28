@@ -1081,7 +1081,7 @@ module powerbi.extensibility.visual {
             return /^(ftp|http|https):\/\/[^ "]+$/.test(link);
         }
 
-        public GetExternalImageTelemetryTracedProperty(): boolean {
+        public getExternalImageTelemetryTracedProperty(): boolean {
             return this.ExternalImageTelemetryTraced;
         }
     }

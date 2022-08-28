@@ -123,5 +123,9 @@ module powerbi.extensibility.visual.test {
                 state: this.visual["isSelectionSaved"],
             };
         }
+
+        public get externalImageTelemetryTracedProperty() : boolean {
+            return this.visual.getExternalImageTelemetryTracedProperty();
+        }
     }
 }
