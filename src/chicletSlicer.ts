@@ -112,7 +112,7 @@ module powerbi.extensibility.visual {
         private waitingForData: boolean;
         private isSelectionLoaded: boolean;
 
-        private ExternalImageTelemetryTraced: boolean;
+        private ExternalImageTelemetryTraced: boolean = false;
 
         /**
          * It's public for testability.
@@ -542,16 +542,21 @@ module powerbi.extensibility.visual {
                 this.$searchInput.val(),
                 this.visualHost);
 
-            if (!this.ExternalImageTelemetryTraced)
-            {
-                let hasExternalImageLink: boolean = _.some(data.slicerDataPoints, (dataPoint: ChicletSlicerDataPoint) => {
-                    return /^(ftp|http|https):\/\/[^ "]+$/.test(dataPoint.imageURL);
-                });
-
-                if (hasExternalImageLink){
-                    this.visualHost.telemetry.trace(VisualEventType.Trace, 'External image link detected');
-                    this.ExternalImageTelemetryTraced = true;
+            if (!this.ExternalImageTelemetryTraced) {
+              let hasExternalImageLink: boolean = _.some(
+                data.slicerDataPoints,
+                (dataPoint: ChicletSlicerDataPoint) => {
+                  return ChicletSlicer.checkHttpLink(dataPoint.imageURL);
                 }
+              );
+
+              if (hasExternalImageLink) {
+                this.visualHost.telemetry.trace(
+                  VisualEventType.Trace,
+                  "External image link detected"
+                );
+                this.ExternalImageTelemetryTraced = true;
+              }
             }
 
             if (!data) {
@@ -1014,7 +1019,7 @@ module powerbi.extensibility.visual {
             let slicerViewport: IViewport = this.getSlicerBodyViewport(this.currentViewport);
             this.slicerBody
                 .style({
-                    'height': PixelConverter.toString(slicerViewport.height - this.getSearchHeaderHeight()),
+                    'height': PixelConverter.toString(slicerViewport.height),
                     'width': `${ChicletSlicer.MaxImageWidth}%`,
                 });
         }
@@ -1071,6 +1076,13 @@ module powerbi.extensibility.visual {
                     return "5px";
             }
         }
-    }
 
+        public static checkHttpLink(link: string): boolean {
+            return /^(ftp|http|https):\/\/[^ "]+$/.test(link);
+        }
+
+        public GetExternalImageTelemetryTracedProperty(): boolean {
+            return this.ExternalImageTelemetryTraced;
+        }
+    }
 }

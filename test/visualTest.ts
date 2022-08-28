@@ -1552,5 +1552,61 @@ module powerbi.extensibility.visual.test {
                 });
             });
         });
+
+
+        describe("Http Link", () => {
+            it("matches to http pattern", (done) => {
+                let link = "http://localhost:5000";
+                expect(VisualClass.checkHttpLink(link).valueOf()).toBe(true);
+                done();
+            });
+
+            it("matches to https pattern", (done) => {
+                let link = "https://powerbi.com";
+                expect(VisualClass.checkHttpLink(link).valueOf()).toBe(true);
+                done();
+            });
+
+            it("does not matches to http or https link", (done) => {
+                let link = "powerbi.com";
+                expect(VisualClass.checkHttpLink(link).valueOf()).toBe(false);
+                done();
+            });
+        });
+
+
+        describe("External image ", () => {
+            it("contains external images links", (done) => {
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    let containsExternalImage: boolean = false;
+                    visualBuilder.slicerItemImages
+                        .toArray()
+                        .forEach((element: Element) => {
+                            containsExternalImage = containsExternalImage || VisualClass.checkHttpLink($(element).attr("src"));
+                        });
+                    expect(containsExternalImage.valueOf()).toBe(true);
+                    done();
+                });
+            });
+
+            it("does not contain external images links", (done) => {
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    let containsExternalImage: boolean = false;
+                    visualBuilder.slicerItemImages
+                        .toArray()
+                        .forEach((element: Element) => {
+                            element.setAttribute("src", "a");
+                        });
+
+                    visualBuilder.slicerItemImages
+                        .toArray()
+                        .forEach((element: Element) => {
+                            containsExternalImage = containsExternalImage || VisualClass.checkHttpLink($(element).attr("src"));
+                        });
+                    expect(containsExternalImage.valueOf()).toBe(false);
+                    done();
+                });
+            });
+        });
     });
 }
