@@ -124,7 +124,7 @@ module powerbi.extensibility.visual.test {
             };
         }
 
-        public get externalImageTelemetryTracedProperty() : boolean {
+        public get externalImageTelemetryTracedProperty(): boolean {
             return this.visual.getExternalImageTelemetryTracedProperty();
         }
     }
