@@ -16,8 +16,8 @@
     "start": "pbiviz start",
     "package": "pbiviz package",
     "lint": "tslint -r \"node_modules/tslint-microsoft-contrib\" \"+(src|test)/**/*.ts\"",
-    "pretest": "pbiviz package --resources --no-minify --no-pbiviz --no-plugin",
-    "test": "sed -i '43 i \t\t\"supportsSynchronizingFilterState\": { \"type\": \"boolean\", \"description\": \"Indicates whether the visual supports synchronization across report pages (for slicer visuals only)\"},' .api\\v1.13.0\\schema.capabilities.json && karma start",
+    "pretest": "sed -i '43 i \"supportsSynchronizingFilterState\": { \"type\": \"boolean\", \"description\": \"Indicates whether the visual supports synchronization across report pages (for slicer visuals only)\"},' .api\\v1.13.0\\schema.capabilities.json && pbiviz package --resources --no-minify --no-pbiviz --no-plugin",
+    "test": "karma start",
     "cert": "pbiviz --create-cert"
   },
   "devDependencies": {
@@ -37,7 +37,7 @@
     "karma-sourcemap-loader": "0.3.7",
     "karma-typescript-preprocessor": "0.3.1",
     "lodash": "4.16.2",
-    "powerbi-models": "^1.11.0",
+    "powerbi-models": "^1.0.2",
     "powerbi-visuals-tools": "^2.6.0",
     "powerbi-visuals-utils-colorutils": "1.1.0",
     "powerbi-visuals-utils-dataviewutils": "1.0.1",
