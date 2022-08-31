@@ -16,7 +16,7 @@
     "start": "pbiviz start",
     "package": "pbiviz package",
     "lint": "tslint -r \"node_modules/tslint-microsoft-contrib\" \"+(src|test)/**/*.ts\"",
-    "pretest": "sed -i '43 i \"supportsSynchronizingFilterState\": { \"type\": \"boolean\", \"description\": \"Indicates whether the visual supports synchronization across report pages (for slicer visuals only)\"},' .api\/v1.13.0\/schema.capabilities.json && pbiviz package --resources --no-minify --no-pbiviz --no-plugin",
+    "pretest": "cp test\/schema.test-capabilities.json .api\/v1.13.0\/schema.capabilities.json && pbiviz package --resources --no-minify --no-pbiviz --no-plugin",
     "test": "karma start",
     "cert": "pbiviz --create-cert"
   },
