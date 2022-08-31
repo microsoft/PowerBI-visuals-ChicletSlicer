@@ -1554,13 +1554,7 @@ module powerbi.extensibility.visual.test {
         });
 
 
-        describe("Http Link", () => {
-            it("matches to http pattern", (done) => {
-                let link = "http://localhost:5000";
-                expect(VisualClass.checkHttpLink(link).valueOf()).toBe(true);
-                done();
-            });
-
+        describe("URL Link", () => {
             it("matches to https pattern", (done) => {
                 let link = "https://powerbi.com";
                 expect(VisualClass.checkHttpLink(link).valueOf()).toBe(true);
