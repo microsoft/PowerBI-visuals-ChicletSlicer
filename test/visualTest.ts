@@ -1552,5 +1552,76 @@ module powerbi.extensibility.visual.test {
                 });
             });
         });
+
+
+        describe("URL Link", () => {
+            it("matches to https pattern", (done) => {
+                let link = "https://powerbi.com";
+                expect(VisualClass.checkHttpLink(link).valueOf()).toBe(true);
+                done();
+            });
+
+            it("matches to ftp pattern", (done) => {
+                let link = "ftp://microsoft@ftp.someserver.com/program.exe";
+                expect(VisualClass.checkHttpLink(link).valueOf()).toBe(true);
+                done();
+            });
+
+            it("does not matches to http, https or ftp pattern", (done) => {
+                let link = "powerbi.com";
+                expect(VisualClass.checkHttpLink(link).valueOf()).toBe(false);
+                done();
+            });
+        });
+
+
+        describe("External image ", () => {
+            it("contains external images links with http", (done) => {
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    let containsExternalImage: boolean = false;
+                    visualBuilder.slicerItemImages
+                        .toArray()
+                        .forEach((element: Element) => {
+                            containsExternalImage = containsExternalImage || VisualClass.checkHttpLink($(element).attr("src"));
+                        });
+                    expect(containsExternalImage.valueOf()).toBe(true);
+                    done();
+                });
+            });
+
+            it("does not contain external images links", (done) => {
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    let containsExternalImage: boolean = false;
+                    visualBuilder.slicerItemImages
+                        .toArray()
+                        .forEach((element: Element) => {
+                            element.setAttribute("src", "a");
+                        });
+
+                    visualBuilder.slicerItemImages
+                        .toArray()
+                        .forEach((element: Element) => {
+                            containsExternalImage = containsExternalImage || VisualClass.checkHttpLink($(element).attr("src"));
+                        });
+                    expect(containsExternalImage.valueOf()).toBe(false);
+                    done();
+                });
+            });
+        });
+
+
+        describe("Telemetry trace method call ", () => {
+            it("Trace method is not called", (done) => {
+                expect(visualBuilder.externalImageTelemetryTracedProperty).toBe(false);
+                done();
+            });
+
+            it("Trace method is called", (done) => {
+                visualBuilder.updateRenderTimeout(dataView, () => {
+                    expect(visualBuilder.externalImageTelemetryTracedProperty).toBe(true);
+                    done();
+                });
+            });
+        });
     });
 }

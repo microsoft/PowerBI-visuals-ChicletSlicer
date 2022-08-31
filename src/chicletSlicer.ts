@@ -112,6 +112,8 @@ module powerbi.extensibility.visual {
         private waitingForData: boolean;
         private isSelectionLoaded: boolean;
 
+        private ExternalImageTelemetryTraced: boolean = false;
+
         /**
          * It's public for testability.
          */
@@ -534,10 +536,28 @@ module powerbi.extensibility.visual {
         }
 
         private updateInternal(resetScrollbarPosition: boolean) {
+
             let data = ChicletSlicer.converter(
                 this.dataView,
                 this.$searchInput.val(),
                 this.visualHost);
+
+            if (!this.ExternalImageTelemetryTraced) {
+              let hasExternalImageLink: boolean = _.some(
+                data.slicerDataPoints,
+                (dataPoint: ChicletSlicerDataPoint) => {
+                  return ChicletSlicer.checkHttpLink(dataPoint.imageURL);
+                }
+              );
+
+              if (hasExternalImageLink) {
+                this.visualHost.telemetry.trace(
+                  VisualEventType.Trace,
+                  "External image link detected"
+                );
+                this.ExternalImageTelemetryTraced = true;
+              }
+            }
 
             if (!data) {
                 this.tableView.empty();
@@ -999,7 +1019,7 @@ module powerbi.extensibility.visual {
             let slicerViewport: IViewport = this.getSlicerBodyViewport(this.currentViewport);
             this.slicerBody
                 .style({
-                    'height': PixelConverter.toString(slicerViewport.height - this.getSearchHeaderHeight()),
+                    'height': PixelConverter.toString(slicerViewport.height),
                     'width': `${ChicletSlicer.MaxImageWidth}%`,
                 });
         }
@@ -1056,6 +1076,13 @@ module powerbi.extensibility.visual {
                     return "5px";
             }
         }
-    }
 
+        public static checkHttpLink(link: string): boolean {
+            return /^(ftp|http|https):\/\/[^ "]+$/.test(link);
+        }
+
+        public getExternalImageTelemetryTracedProperty(): boolean {
+            return this.ExternalImageTelemetryTraced;
+        }
+    }
 }
