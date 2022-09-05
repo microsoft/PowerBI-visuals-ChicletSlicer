@@ -17,9 +17,14 @@
             "displayNameKey": "Role_Image",
             "name": "Image",
             "kind": "Grouping",
-            "requiredTypes": [{"text": true}]
+            "requiredTypes": [
+                {
+                    "text": true
+                }
+            ]
         }
     ],
+    "privileges": [],
     "dataViewMappings": [
         {
             "conditions": [
@@ -40,8 +45,16 @@
             "categorical": {
                 "categories": {
                     "select": [
-                        { "bind": { "to": "Category" } },
-                        { "bind": { "to": "Image" } }
+                        {
+                            "bind": {
+                                "to": "Category"
+                            }
+                        },
+                        {
+                            "bind": {
+                                "to": "Image"
+                            }
+                        }
                     ],
                     "dataReductionAlgorithm": {
                         "top": {
@@ -51,13 +64,17 @@
                 },
                 "values": {
                     "select": [
-                        { "bind": { "to": "Values" } }
+                        {
+                            "bind": {
+                                "to": "Values"
+                            }
+                        }
                     ],
                     "dataReductionAlgorithm": {
                         "top": {
                             "count": 1000
                         }
-                    }                    
+                    }
                 }
             }
         }
@@ -78,15 +95,18 @@
                     "displayName": "Orientation",
                     "displayNameKey": "Visual_Orientation",
                     "type": {
-                        "enumeration": [{
-                            "value": "Horizontal",
-                            "displayNameKey": "Visual_Orientation_Horizontal",
-                            "displayName": "Horizontal"
-                        }, {
-                            "value": "Vertical",
-                            "displayNameKey": "Visual_Orientation_Vertical",
-                            "displayName": "Vertical"
-                        }]
+                        "enumeration": [
+                            {
+                                "value": "Horizontal",
+                                "displayNameKey": "Visual_Orientation_Horizontal",
+                                "displayName": "Horizontal"
+                            },
+                            {
+                                "value": "Vertical",
+                                "displayNameKey": "Visual_Orientation_Vertical",
+                                "displayName": "Vertical"
+                            }
+                        ]
                     }
                 },
                 "columns": {
@@ -107,19 +127,23 @@
                     "displayName": "Show Disabled",
                     "displayNameKey": "Visual_ShowDisabled",
                     "type": {
-                        "enumeration": [{
-                            "value": "Inplace",
-                            "displayName": "Inplace",
-                            "displayNameKey": "Visual_ShowDisabled_Inplace"
-                        }, {
-                            "value": "Bottom",
-                            "displayName": "Bottom",
-                            "displayNameKey": "Visual_ShowDisabled_Bottom"
-                        }, {
-                            "value": "Hide",
-                            "displayName": "Hide",
-                            "displayNameKey": "Visual_ShowDisabled_Hide"
-                        }]
+                        "enumeration": [
+                            {
+                                "value": "Inplace",
+                                "displayName": "Inplace",
+                                "displayNameKey": "Visual_ShowDisabled_Inplace"
+                            },
+                            {
+                                "value": "Bottom",
+                                "displayName": "Bottom",
+                                "displayNameKey": "Visual_ShowDisabled_Bottom"
+                            },
+                            {
+                                "value": "Hide",
+                                "displayName": "Hide",
+                                "displayNameKey": "Visual_ShowDisabled_Hide"
+                            }
+                        ]
                     }
                 },
                 "multiselect": {
@@ -220,31 +244,38 @@
                     "displayName": "Outline Type",
                     "displayNameKey": "formattingHeaderOutlineType",
                     "type": {
-                        "enumeration": [{
-                            "value": "None",
-                            "displayNameKey": "formattingHeaderOutlineTypeNone",
-                            "displayName": "None"
-                        }, {
-                            "value": "BottomOnly",
-                            "displayNameKey": "formattingHeaderOutlineTypeBottomOnly",
-                            "displayName": "Bottom only"
-                        }, {
-                            "value": "TopOnly",
-                            "displayNameKey": "formattingHeaderOutlineTypeTopOnly",
-                            "displayName": "Top only"
-                        }, {
-                            "value": "TopBottom",
-                            "displayNameKey": "formattingHeaderOutlineTypeTopBottom",
-                            "displayName": "Top Bottom"
-                        }, {
-                            "value": "LeftRight",
-                            "displayNameKey": "formattingHeaderOutlineTypeLeftRight",
-                            "displayName": "Left Right"
-                        }, {
-                            "value": "Frame",
-                            "displayNameKey": "formattingHeaderOutlineTypeFrame",
-                            "displayName": "Frame"
-                        }]
+                        "enumeration": [
+                            {
+                                "value": "None",
+                                "displayNameKey": "formattingHeaderOutlineTypeNone",
+                                "displayName": "None"
+                            },
+                            {
+                                "value": "BottomOnly",
+                                "displayNameKey": "formattingHeaderOutlineTypeBottomOnly",
+                                "displayName": "Bottom only"
+                            },
+                            {
+                                "value": "TopOnly",
+                                "displayNameKey": "formattingHeaderOutlineTypeTopOnly",
+                                "displayName": "Top only"
+                            },
+                            {
+                                "value": "TopBottom",
+                                "displayNameKey": "formattingHeaderOutlineTypeTopBottom",
+                                "displayName": "Top Bottom"
+                            },
+                            {
+                                "value": "LeftRight",
+                                "displayNameKey": "formattingHeaderOutlineTypeLeftRight",
+                                "displayName": "Left Right"
+                            },
+                            {
+                                "value": "Frame",
+                                "displayNameKey": "formattingHeaderOutlineTypeFrame",
+                                "displayName": "Frame"
+                            }
+                        ]
                     }
                 },
                 "outlineColor": {
@@ -396,19 +427,23 @@
                     "displayName": "Outline Style",
                     "displayNameKey": "Visual_OutlineStyle",
                     "type": {
-                        "enumeration": [{
-                            "value": "Rounded",
-                            "displayNameKey": "Visual_OutlineStyle_Rounded",
-                            "displayName": "Rounded"
-                        }, {
-                            "value": "Cut",
-                            "displayNameKey": "Visual_OutlineStyle_Cut",
-                            "displayName": "Cut"
-                        }, {
-                            "value": "Square",
-                            "displayNameKey": "Visual_OutlineStyle_Square",
-                            "displayName": "Square"
-                        }]
+                        "enumeration": [
+                            {
+                                "value": "Rounded",
+                                "displayNameKey": "Visual_OutlineStyle_Rounded",
+                                "displayName": "Rounded"
+                            },
+                            {
+                                "value": "Cut",
+                                "displayNameKey": "Visual_OutlineStyle_Cut",
+                                "displayName": "Cut"
+                            },
+                            {
+                                "value": "Square",
+                                "displayNameKey": "Visual_OutlineStyle_Square",
+                                "displayName": "Square"
+                            }
+                        ]
                     }
                 }
             }

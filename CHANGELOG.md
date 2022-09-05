@@ -1,3 +1,10 @@
+## 2.0.0
+* Webpack integration
+* Azure Pipelines integration
+* API 2.6.0+
+* updated powerbi-visuals-utils, powerbi-visuals-tools 4.x.x
+* d3 v5
+
 ## 1.6.4
 * Added telemetry for detection of external images in visual
 

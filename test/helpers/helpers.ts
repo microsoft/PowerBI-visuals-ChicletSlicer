@@ -24,88 +24,86 @@
  *  THE SOFTWARE.
  */
 
-/// <reference path="../_references.ts"/>
+import lodashTakeright from "lodash.takeright";
+import lodashIsnumber from "lodash.isnumber";
 
-module powerbi.extensibility.visual.test.helpers {
-    // jasmine
-    import Matcher = jasmine.Matchers;
+// powerbi.extensibility.utils.type
+import { pixelConverter as PixelConverter } from "powerbi-visuals-utils-typeutils";
+import { RgbColor, parseColorString } from "powerbi-visuals-utils-colorutils";
 
-    // powerbi.extensibility.utils.type
-    import PixelConverter = powerbi.extensibility.utils.type.PixelConverter;
+export function getSolidColorStructuralObject(color: string): any {
+    return { solid: { color } };
+}
 
-    // powerbi.extensibility.utils.test
-    import RgbColor = powerbi.extensibility.utils.test.helpers.color.RgbColor;
-    import parseColorString = powerbi.extensibility.utils.test.helpers.color.parseColorString;
+export function convertAnySizeToPixel(size: string, round: number): number {
+    let result: number;
 
-    export function getSolidColorStructuralObject(color: string): any {
-        return { solid: { color } };
+    switch (lodashTakeright(size, 2).join("").toLowerCase()) {
+        case "pt": {
+            result = PixelConverter.fromPointToPixel(parseFloat(size));
+            break;
+        }
+        case "px": {
+            result = parseFloat(size);
+            break;
+        }
+        default: {
+            result = 0;
+            break;
+        }
     }
 
-    export function convertAnySizeToPixel(size: string, round?: number): number {
-        let result: number;
+    return lodashIsnumber(round)
+        ? roundTo(result, round)
+        : result;
+}
 
-        switch (_.takeRight(size, 2).join("").toLowerCase()) {
-            case "pt": {
-                result = PixelConverter.fromPointToPixel(parseFloat(size));
-                break;
-            }
-            case "px": {
-                result = parseFloat(size);
-                break;
-            }
+export function roundTo(value: number | string, round: number): number {
+    value = lodashIsnumber(value)
+        ? value
+        : parseFloat(value);
+
+    return lodashIsnumber(value)
+        ? parseFloat((value).toFixed(round))
+        : <any>value;
+}
+
+export function convertColorToRgbColor(color: string): RgbColor {
+    return parseColorString(color);
+}
+
+export function assertNumberMatch(actual: number, expected: number, round: number, invert?: boolean) {
+    const expectedResult = roundTo(actual, round);
+    const result = roundTo(expected, round);
+
+    if (invert) {
+        expect(expectedResult).not.toBe(result)
+    }
+
+    expect(expectedResult).toBe(result);
+}
+
+export function areColorsEqual(firstColor: string, secondColor: string): boolean {
+    const firstConvertedColor: RgbColor = parseColorString(firstColor),
+        secondConvertedColor: RgbColor = parseColorString(secondColor);
+
+    return firstConvertedColor.R === secondConvertedColor.R
+        && firstConvertedColor.G === secondConvertedColor.G
+        && firstConvertedColor.B === secondConvertedColor.B;
+}
+
+export function isColorAppliedToElements(
+    elements: HTMLElement[],
+    color?: string,
+    colorStyleName: string = "fill"
+): boolean {
+    return elements.some((element: HTMLElement) => {
+        const currentColor: string = element.style[colorStyleName];
+
+        if (!currentColor || !color) {
+            return currentColor === color;
         }
 
-        return _.isNumber(round)
-            ? roundTo(result, round)
-            : result;
-    }
-
-    export function roundTo(value: number | string, round: number): number {
-        value = _.isNumber(value)
-            ? value
-            : parseFloat(value);
-
-        return _.isNumber(value)
-            ? parseFloat((value).toFixed(round))
-            : <any>value;
-    }
-
-    export function convertColorToRgbColor(color: string): RgbColor {
-        return parseColorString(color);
-    }
-
-    export function assertNumberMatch(actual: number, expected: number, round: number, invert?: boolean): boolean {
-        let matchers: Matcher = expect(roundTo(actual, round));
-
-        if (invert) {
-            matchers = matchers.not;
-        }
-
-        return matchers.toBe(roundTo(expected, round));
-    }
-
-    export function areColorsEqual(firstColor: string, secondColor: string): boolean {
-        const firstConvertedColor: RgbColor = parseColorString(firstColor),
-            secondConvertedColor: RgbColor = parseColorString(secondColor);
-
-        return firstConvertedColor.R === secondConvertedColor.R
-            && firstConvertedColor.G === secondConvertedColor.G
-            && firstConvertedColor.B === secondConvertedColor.B;
-    }
-
-    export function isColorAppliedToElements(
-        elements: JQuery[],
-        color?: string,
-        colorStyleName: string = "fill"
-    ): boolean {
-        return elements.some((element: JQuery) => {
-            const currentColor: string = element.css(colorStyleName);
-
-            if (!currentColor || !color) {
-                return currentColor === color;
-            }
-
-            return areColorsEqual(currentColor, color);
-        });
-    }
+        return areColorsEqual(currentColor, color);
+    });
 }
