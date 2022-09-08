@@ -390,7 +390,6 @@ export class ChicletSlicer implements IVisual {
         let resetScrollbarPosition: boolean = false;
 
         this.jsonFilters = options.jsonFilters;
-        console.log(this.jsonFilters);
 
         if (this.jsonFilters && this.jsonFilters.length === 0) {
             this.interactivityService.selectionManager.clear();
