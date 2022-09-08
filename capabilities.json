@@ -24,7 +24,13 @@
             ]
         }
     ],
-    "privileges": [],
+    "privileges": [
+        {
+            "name": "WebAccess",
+            "essential": true,
+            "parameters": ["https://*", "ftp://*"]
+        }
+    ],
     "dataViewMappings": [
         {
             "conditions": [
@@ -488,5 +494,10 @@
     "supportsSynchronizingFilterState": true,
     "sorting": {
         "default": {}
+    },
+    "migration": {
+        "filter": {
+            "shouldUseIdentityFilter": true
+        }
     }
 }

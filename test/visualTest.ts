@@ -1537,17 +1537,17 @@ describe("ChicletSlicer", () => {
     describe("URL Link", () => {
         it("matches to https pattern", () => {
             let link = "https://powerbi.com";
-            expect(VisualClass.CHECK_HTTP_LINK(link).valueOf()).toBe(true);
+            expect(VisualClass.IS_EXTERNAL_LINK(link).valueOf()).toBe(true);
         });
 
         it("matches to ftp pattern", () => {
             let link = "ftp://microsoft@ftp.someserver.com/program.exe";
-            expect(VisualClass.CHECK_HTTP_LINK(link).valueOf()).toBe(true);
+            expect(VisualClass.IS_EXTERNAL_LINK(link).valueOf()).toBe(true);
         });
 
         it("does not matches to http, https or ftp pattern", () => {
             let link = "powerbi.com";
-            expect(VisualClass.CHECK_HTTP_LINK(link).valueOf()).toBe(false);
+            expect(VisualClass.IS_EXTERNAL_LINK(link).valueOf()).toBe(false);
         });
     });
 
@@ -1558,7 +1558,7 @@ describe("ChicletSlicer", () => {
                 let containsExternalImage: boolean = false;
                 visualBuilder.slicerItemImages
                     .forEach((element: Element) => {
-                        containsExternalImage = containsExternalImage || VisualClass.CHECK_HTTP_LINK(element.getAttribute("src"));
+                        containsExternalImage = containsExternalImage || VisualClass.IS_EXTERNAL_LINK(element.getAttribute("src"));
                     });
                 expect(containsExternalImage.valueOf()).toBe(true);
                 done();
@@ -1575,7 +1575,7 @@ describe("ChicletSlicer", () => {
 
                 visualBuilder.slicerItemImages
                     .forEach((element: Element) => {
-                        containsExternalImage = containsExternalImage || VisualClass.CHECK_HTTP_LINK(element.getAttribute("src"));
+                        containsExternalImage = containsExternalImage || VisualClass.IS_EXTERNAL_LINK(element.getAttribute("src"));
                     });
                 expect(containsExternalImage.valueOf()).toBe(false);
                 done();

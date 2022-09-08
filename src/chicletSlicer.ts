@@ -390,6 +390,7 @@ export class ChicletSlicer implements IVisual {
         let resetScrollbarPosition: boolean = false;
 
         this.jsonFilters = options.jsonFilters;
+        console.log(this.jsonFilters);
 
         if (this.jsonFilters && this.jsonFilters.length === 0) {
             this.interactivityService.selectionManager.clear();
@@ -567,7 +568,7 @@ export class ChicletSlicer implements IVisual {
             const hasExternalImageLink: boolean = lodashSome(
                 data.slicerDataPoints,
                 (dataPoint: ChicletSlicerDataPoint) => {
-                    return ChicletSlicer.CHECK_HTTP_LINK(dataPoint.imageURL);
+                    return ChicletSlicer.IS_EXTERNAL_LINK(dataPoint.imageURL);
                 }
             );
             if (hasExternalImageLink) {
@@ -1064,8 +1065,8 @@ export class ChicletSlicer implements IVisual {
         this.externalImageTelemetryTraced();
     }
 
-    public static CHECK_HTTP_LINK(link: string): boolean {
-        return /^(ftp|http|https):\/\/[^ "]+$/.test(link);
+    public static IS_EXTERNAL_LINK(link: string): boolean {
+        return /^(ftp|https):\/\/[^ "]+$/.test(link);
     }
 
     public getExternalImageTelemetryTracedProperty(): boolean {
