@@ -37,7 +37,7 @@
     "karma-webpack": "^5.0.0",
     "less": "4.1.2",
     "powerbi-models": "^1.11.0",
-    "powerbi-visuals-api": "^4.7.0",
+    "powerbi-visuals-api": "~5.1.0",
     "powerbi-visuals-tools": "^4.0.5",
     "powerbi-visuals-utils-colorutils": "^2.3.1",
     "powerbi-visuals-utils-dataviewutils": "^2.4.1",
