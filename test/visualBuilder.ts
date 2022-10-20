@@ -24,104 +24,108 @@
  *  THE SOFTWARE.
  */
 
-/// <reference path="_references.ts"/>
+import powerbiVisualsApi from "powerbi-visuals-api";
+import powerbi = powerbiVisualsApi;
 
-module powerbi.extensibility.visual.test {
-    // powerbi.extensibility.utils.test
-    import VisualBuilderBase = powerbi.extensibility.utils.test.VisualBuilderBase;
+import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
 
-    // ChicletSlicer1448559807354
-    import VisualClass = powerbi.extensibility.visual.ChicletSlicer1448559807354.ChicletSlicer;
-    import ChicletSlicerDataPoint = powerbi.extensibility.visual.ChicletSlicer1448559807354.ChicletSlicerDataPoint;
+// powerbi.extensibility.utils.test
+import { VisualBuilderBase } from "powerbi-visuals-utils-testutils";
 
-    export interface SelectionState {
-        items: string;
-        state: boolean;
+// ChicletSlicer1448559807354
+import { ChicletSlicerMock as VisualClass } from "./chicletSlicerMock";
+import { ChicletSlicerDataPoint } from "../src/interfaces";
+
+export interface SelectionState {
+    items: string;
+    state: boolean;
+}
+
+export class ChicletSlicerBuilder extends VisualBuilderBase<VisualClass> {
+    constructor(width: number, height: number) {
+        super(width, height);
     }
 
-    export class ChicletSlicerBuilder extends VisualBuilderBase<VisualClass> {
-        constructor(width: number, height: number) {
-            super(width, height, "ChicletSlicer1448559807354");
-        }
+    protected build(options: VisualConstructorOptions): VisualClass {
+        return new VisualClass(options);
+    }
 
-        protected build(options: VisualConstructorOptions): VisualClass {
-            return new VisualClass(options);
-        }
+    public get instance(): VisualClass {
+        return this.visual;
+    }
 
-        public get instance(): VisualClass {
-            return this.visual;
-        }
+    public get mainElement(): HTMLElement {
+        return this.element.querySelector("div.chicletSlicer");
+    }
 
-        public get mainElement(): JQuery {
-            return this.element.children("div.chicletSlicer");
-        }
+    public get slicerBody(): HTMLElement {
+        return this.mainElement.querySelector("div.slicerBody");
+    }
 
-        public get slicerBody(): JQuery {
-            return this.mainElement.children("div.slicerBody");
-        }
+    public get searchHeader(): HTMLElement {
+        return this.mainElement.querySelector("div.searchHeader");
+    }
 
-        public get searchHeader(): JQuery {
-            return this.mainElement.children("div.searchHeader");
-        }
+    public get slicerHeader(): HTMLElement {
+        return this.mainElement.querySelector("div.slicerHeader");
+    }
 
-        public get slicerHeader(): JQuery {
-            return this.mainElement.children("div.slicerHeader");
-        }
+    public get slicerHeaderText(): HTMLElement {
+        return this.slicerHeader.querySelector("div.headerText");
+    }
 
-        public get slicerHeaderText(): JQuery {
-            return this.slicerHeader.children("div.headerText");
-        }
+    public get visibleGroup(): HTMLElement {
+        return this.mainElement
+            .querySelector("div.slicerBody")
+            .querySelector("div.scrollRegion")
+            .querySelector("div.visibleGroup");
+    }
 
-        public get visibleGroup(): JQuery {
-            return this.mainElement
-                .children("div.slicerBody")
-                .children("div.scrollRegion")
-                .children("div.visibleGroup");
-        }
+    public get visibleGroupRows(): NodeListOf<HTMLElement> {
+        return this.visibleGroup.querySelectorAll("div.row");
+    }
 
-        public get visibleGroupRows(): JQuery {
-            return this.visibleGroup.children("div.row");
-        }
+    public get visibleGroupCells(): NodeListOf<HTMLElement> {
+        return this.visibleGroup.querySelectorAll("div.cell");
+    }
 
-        public get visibleGroupCells(): JQuery {
-            return this.visibleGroupRows.children("div.cell");
-        }
+    public get slicerTextElements(): NodeListOf<HTMLElement> {
+        return this.visibleGroup.querySelectorAll(".slicerText");
+    }
 
-        public get slicerTextElements(): JQuery {
-            return this.visibleGroup.find(".slicerText");
-        }
+    public get slicerItemContainers(): NodeListOf<HTMLElement> {
+        return this.visibleGroup
+            .querySelectorAll(".slicerItemContainer");
+    }
 
-        public get slicerItemContainers(): JQuery {
-            return this.visibleGroupCells
-                .children("ul")
-                .children(".slicerItemContainer");
-        }
+    public get slicerItemContainer(): HTMLElement {
+        return this.visibleGroup
+            .querySelector(".row").querySelector(".cell").querySelector(".slicerItemContainer");
+    }
 
-        public get slicerItemContainer(): JQuery {
-            return this.visibleGroup
-                .find("div.row .cell:first .slicerItemContainer");
-        }
+    public get slicerItemImages(): NodeListOf<HTMLImageElement> {
+        return this.visibleGroup.querySelectorAll("img.slicer-img-wrapper");
+    }
 
-        public get slicerItemImages(): JQuery {
-            return this.slicerItemContainers.children("img.slicer-img-wrapper");
-        }
+    public getDataPoints(): ChicletSlicerDataPoint[] {
+        return this.visual.behavior.dataPoints;
+    }
 
-        public getDataPoints(): ChicletSlicerDataPoint[] {
-            return this.visual.behavior.dataPoints;
-        }
+    public getSelectedPoints(): ChicletSlicerDataPoint[] {
+        return this.getDataPoints()
+            .filter((dataPoint: ChicletSlicerDataPoint) => {
+                return dataPoint.selected;
+            });
+    }
 
-        public getSelectedPoints(): ChicletSlicerDataPoint[] {
-            return this.getDataPoints()
-                .filter((dataPoint: ChicletSlicerDataPoint) => {
-                    return dataPoint.selected;
-                });
-        }
+    public getSelectionState(): SelectionState {
+        return {
+            items: this.visual["settings"]["general"]["selection"],
+            state: this.visual["isSelectionSaved"],
+        };
+    }
 
-        public getSelectionState(): SelectionState {
-            return {
-                items: this.visual["settings"]["general"]["selection"],
-                state: this.visual["isSelectionSaved"],
-            };
-        }
+    public get externalImageTelemetryTracedProperty(): boolean {
+        return this.visual.getExternalImageTelemetryTracedProperty();
     }
 }

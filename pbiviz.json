@@ -1,15 +1,15 @@
 {
   "visual": {
     "name": "chicletSlicer",
-    "displayName": "ChicletSlicer 1.6.3",
+    "displayName": "ChicletSlicer 2.0.0",
     "guid": "ChicletSlicer1448559807354",
     "visualClassName": "ChicletSlicer",
-    "version": "1.6.3",
+    "version": "2.0.0",
     "description": "Use this slicer to display image and/or text buttons that act as an in-canvas filter. Define additional properties for the layout & selection to customize this slicer to meet your specific needs",
     "supportUrl": "https://community.powerbi.com",
     "gitHubUrl": "https://github.com/Microsoft/PowerBI-visuals-ChicletSlicer"
   },
-  "apiVersion": "1.13.0",
+  "apiVersion": "5.1.0",
   "author": {
     "name": "Microsoft",
     "email": "pbicvsupport@microsoft.com"
@@ -17,22 +17,7 @@
   "assets": {
     "icon": "assets/icon.png"
   },
-  "externalJS": [
-    "node_modules/jquery/dist/jquery.min.js",
-    "node_modules/d3/d3.min.js",
-    "node_modules/lodash/lodash.min.js",
-    "node_modules/globalize/lib/globalize.js",
-    "node_modules/globalize/lib/cultures/globalize.culture.en-US.js",
-    "node_modules/powerbi-visuals-utils-dataviewutils/lib/index.js",
-    "node_modules/powerbi-visuals-utils-typeutils/lib/index.js",
-    "node_modules/powerbi-visuals-utils-svgutils/lib/index.js",
-    "node_modules/powerbi-visuals-utils-formattingutils/lib/index.js",
-    "node_modules/powerbi-visuals-utils-interactivityutils/lib/index.js",
-    "node_modules/powerbi-visuals-utils-colorutils/lib/index.js"
-  ],
+  "externalJS": [],
   "style": "style/chicletSlicer.less",
-  "capabilities": "capabilities.json",
-  "stringResources": [
-    "stringResources/ru-RU.json"
-  ]
+  "capabilities": "capabilities.json"
 }
