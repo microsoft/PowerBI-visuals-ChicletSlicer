@@ -425,23 +425,6 @@ export class ChicletSlicer implements IVisual {
             this.selectionManager.showContextMenu((dataPoint && dataPoint.identity) ? dataPoint.identity : {}, {x: event.clientX, y: event.clientY});
             event.preventDefault();
         });
-
-        this.updateFilter();
-    }
-
-    private updateFilter() {
-        if(this.jsonFilters && this.jsonFilters[0]) {
-            const filterTargets = this.jsonFilters[0].target;
-
-            const filter: IIdentityFilter = {
-                $schema: "https://powerbi.com/product/schema#identity",
-                filterType: FilterType.Identity,
-                operator: "In",
-                target: filterTargets
-            }
-
-            this.visualHost.applyJsonFilter(filter, "general", "filter", FilterAction.merge);
-        }
     }
 
     public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions): VisualObjectInstanceEnumeration {
