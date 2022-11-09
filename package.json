@@ -44,7 +44,7 @@
     "powerbi-visuals-utils-formattingutils": "^4.7.1",
     "powerbi-visuals-utils-interactivityutils": "^5.7.1",
     "powerbi-visuals-utils-svgutils": "^2.3.2",
-    "powerbi-visuals-utils-testutils": "^2.6.0",
+    "powerbi-visuals-utils-testutils": "^3.2.0",
     "powerbi-visuals-utils-tooltiputils": "^2.5.2",
     "powerbi-visuals-utils-typeutils": "^2.3.1",
     "style-loader": "^3.3.1",
