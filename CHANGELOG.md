@@ -1,3 +1,6 @@
+## 2.0.1
+* FIX: select in each of several visuals
+
 ## 2.0.0
 * Webpack integration
 * Azure Pipelines integration
