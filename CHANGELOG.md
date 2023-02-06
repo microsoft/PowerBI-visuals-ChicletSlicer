@@ -1,3 +1,6 @@
+## 2.0.2
+* Updated tools
+
 ## 2.0.1
 * FIX: select in each of several visuals
 
