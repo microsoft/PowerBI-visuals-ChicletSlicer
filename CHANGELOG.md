@@ -1,3 +1,6 @@
+## 2.0.3
+* Capabilities update: category should be filled before others
+
 ## 2.0.2
 * Updated tools
 
