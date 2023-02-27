@@ -544,6 +544,11 @@ export class ChicletSlicer implements IVisual {
             this.searchInput.node().value,
             this.visualHost);
 
+        if (!data) {
+            this.tableView.empty();
+            return;
+        }
+
         if (!this.getExternalImageTelemetryTracedProperty()) {
             const hasExternalImageLink: boolean = lodashSome(
                 data.slicerDataPoints,
@@ -554,11 +559,6 @@ export class ChicletSlicer implements IVisual {
             if (hasExternalImageLink) {
                 this.telemetryTrace();
             }
-        }
-
-        if (!data) {
-            this.tableView.empty();
-            return;
         }
 
         if (this.colorHelper.isHighContrast) {
