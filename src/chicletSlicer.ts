@@ -92,8 +92,6 @@ import VisualTooltipDataItem = powerbiVisualsApi.extensibility.VisualTooltipData
 
 import IFilter = powerbi.IFilter;
 import ISelectionManager = powerbiVisualsApi.extensibility.ISelectionManager;
-import { FilterType, IIdentityFilter } from "powerbi-models";
-import FilterAction = powerbi.FilterAction;
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 namespace ChicletBorderStyle {
