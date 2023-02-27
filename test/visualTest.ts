@@ -1195,6 +1195,9 @@ describe("ChicletSlicer", () => {
             });
 
             it("outline style", () => {
+
+                const precision: number = 0;
+
                 dataView.metadata.objects = {
                     rows: {
                         borderStyle: "Rounded"
@@ -1205,7 +1208,7 @@ describe("ChicletSlicer", () => {
 
                 Array.from(visualBuilder.slicerItemContainers)
                     .forEach((element: HTMLElement) => {
-                        expect(convertAnySizeToPixel(element.style.borderRadius, 0)).toBeGreaterThan(0);
+                        expect(convertAnySizeToPixel(element.style.borderRadius, precision)).toBeGreaterThan(0);
                     });
 
                 (<any>dataView.metadata.objects).rows.borderStyle = "Cut";
@@ -1213,7 +1216,7 @@ describe("ChicletSlicer", () => {
 
                 Array.from(visualBuilder.slicerItemContainers)
                     .forEach((element: HTMLElement) => {
-                        expect(convertAnySizeToPixel(element.style.borderRadius, 0)).toBeGreaterThan(0);
+                        expect(convertAnySizeToPixel(element.style.borderRadius, precision)).toBeGreaterThan(0);
                     });
 
                 (<any>dataView.metadata.objects).rows.borderStyle = "Square";
@@ -1221,7 +1224,7 @@ describe("ChicletSlicer", () => {
 
                 Array.from(visualBuilder.slicerItemContainers)
                     .forEach((element: HTMLElement) => {
-                        expect(convertAnySizeToPixel(element.style.borderRadius, 0)).toBe(0);
+                        expect(convertAnySizeToPixel(element.style.borderRadius, precision)).toBe(0);
                     });
             });
 
