@@ -61,10 +61,10 @@ export function convertAnySizeToPixel(size: string, round: number): number {
 export function roundTo(value: number | string, round: number): number {
     value = lodashIsnumber(value)
         ? value
-        : parseFloat(value);
+        : parseFloat(value.toString());
 
     return lodashIsnumber(value)
-        ? parseFloat((value).toFixed(round))
+        ? parseFloat((<number>value).toFixed(round))
         : <any>value;
 }
 
