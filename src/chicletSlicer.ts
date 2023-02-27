@@ -434,19 +434,19 @@ export class ChicletSlicer implements IVisual {
 
         switch (options.objectName) {
             case 'rows':
-                return this.enumerateRows(data);
+                return this.enumerateRows();
             case 'header':
-                return this.enumerateHeader(data);
+                return this.enumerateHeader();
             case 'general':
-                return this.enumerateGeneral(data);
+                return this.enumerateGeneral();
             case 'images':
-                return this.enumerateImages(data);
+                return this.enumerateImages();
             default:
                 return [];
         }
     }
 
-    private enumerateHeader(data: ChicletSlicerData): VisualObjectInstance[] {
+    private enumerateHeader(): VisualObjectInstance[] {
         const slicerSettings: ChicletSlicerSettings = this.settings;
 
         return [{
@@ -465,7 +465,7 @@ export class ChicletSlicer implements IVisual {
         }];
     }
 
-    private enumerateRows(data: ChicletSlicerData): VisualObjectInstance[] {
+    private enumerateRows(): VisualObjectInstance[] {
         const slicerSettings: ChicletSlicerSettings = this.settings;
 
         return [{
@@ -491,7 +491,7 @@ export class ChicletSlicer implements IVisual {
         }];
     }
 
-    private enumerateGeneral(data: ChicletSlicerData): VisualObjectInstance[] {
+    private enumerateGeneral(): VisualObjectInstance[] {
         const slicerSettings: ChicletSlicerSettings = this.settings;
 
         return [{
@@ -508,7 +508,7 @@ export class ChicletSlicer implements IVisual {
         }];
     }
 
-    private enumerateImages(data: ChicletSlicerData): VisualObjectInstance[] {
+    private enumerateImages(): VisualObjectInstance[] {
         const slicerSettings: ChicletSlicerSettings = this.settings;
 
         return [{
@@ -874,7 +874,7 @@ export class ChicletSlicer implements IVisual {
                     if (d.imageURL) { height -= settings.images.imageSplit; }
                     return `${height}%`;
                 })
-                .classed('hidden', (d: ChicletSlicerDataPoint) => {
+                .classed('hidden', () => {
                     if (settings.images.imageSplit > ChicletSlicer.MaxImageSplitToHide) { return true; }
                 });
             rowSelection.selectAll(ChicletSlicer.ItemContainerSelector.selectorName)
@@ -918,9 +918,9 @@ export class ChicletSlicer implements IVisual {
                 };
                 this.interactivityService.bind(behaviorOptions);
                 this.renderTooltip(slicerItemContainers);
-                this.behavior.styleSlicerInputs(rowSelection.select(ChicletSlicer.ItemContainerSelector.selectorName), this.interactivityService.hasSelection());
+                this.behavior.styleSlicerInputs(rowSelection.select(ChicletSlicer.ItemContainerSelector.selectorName));
             }
-            else { this.behavior.styleSlicerInputs(rowSelection.select(ChicletSlicer.ItemContainerSelector.selectorName), false); }
+            else { this.behavior.styleSlicerInputs(rowSelection.select(ChicletSlicer.ItemContainerSelector.selectorName)); }
         }
     }
 
