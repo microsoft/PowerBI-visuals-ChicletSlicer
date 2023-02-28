@@ -1,6 +1,6 @@
 {
   "name": "powerbi-visuals-chicletslicer",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "author": {
     "name": "Microsoft",
     "email": "pbicvsupport@microsoft.com"
@@ -37,7 +37,7 @@
     "karma-webpack": "^5.0.0",
     "less": "^4.1.3",
     "powerbi-models": "^1.12.6",
-    "powerbi-visuals-api": "~5.2.0",
+    "powerbi-visuals-api": "^5.1.0",
     "powerbi-visuals-tools": "^4.1.0",
     "powerbi-visuals-utils-colorutils": "^3.0.0",
     "powerbi-visuals-utils-dataviewutils": "^3.0.0",
