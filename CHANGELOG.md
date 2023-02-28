@@ -1,3 +1,6 @@
+## 2.0.4
+* API downgraded to 5.1.0
+
 ## 2.0.3
 * Capabilities update: category should be filled before others
 * API 5.2.0+
