@@ -1,3 +1,6 @@
+## 2.0.5
+* Metadata null check added to converter
+
 ## 2.0.4
 * API downgraded to 5.1.0
 

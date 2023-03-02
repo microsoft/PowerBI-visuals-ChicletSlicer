@@ -45,10 +45,10 @@ import DataView = powerbi.DataView;
 import IViewport = powerbi.IViewport;
 import DataViewObjects = powerbi.DataViewObjects;
 import VisualObjectInstance = powerbi.VisualObjectInstance;
-import DataViewCategoricalColumn = powerbi.DataViewCategoricalColumn;
 import VisualObjectInstancesToPersist = powerbi.VisualObjectInstancesToPersist;
 import EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInstancesOptions;
 import VisualObjectInstanceEnumeration = powerbiVisualsApi.VisualObjectInstanceEnumeration;
+import DataViewCategoryColumn = powerbiVisualsApi.DataViewCategoryColumn;
 
 import IVisual = powerbi.extensibility.IVisual;
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
@@ -273,22 +273,19 @@ export class ChicletSlicer implements IVisual {
         searchText: string,
         visualHost: IVisualHost): ChicletSlicerData {
 
-        if (!dataView ||
-            !dataView.categorical ||
-            !dataView.categorical.categories ||
-            !dataView.categorical.categories[0] ||
-            !dataView.categorical.categories[0].source ||
-            !dataView.categorical.categories[0].source.roles ||
-            !dataView.categorical.categories[0].source.roles["Category"] ||
-            !dataView.categorical.categories[0].values ||
-            !(dataView.categorical.categories[0].values.length > 0)) {
-            return;
+        const categories: DataViewCategoryColumn = dataView?.categorical?.categories?.length && dataView.categorical.categories[0];
+
+        if (!categories?.source?.roles ||
+            !categories.source.roles["Category"] ||
+            !categories?.values?.length) {
+                return;
         }
 
         const converter: ChicletSlicerConverter = new ChicletSlicerConverter(dataView, visualHost);
         converter.convert();
 
-        const defaultSettings: ChicletSlicerSettings = this.DEFAULT_STYLE_PROPERTIES(), objects: DataViewObjects = dataView.metadata.objects;
+        const defaultSettings: ChicletSlicerSettings = this.DEFAULT_STYLE_PROPERTIES();
+        const objects: DataViewObjects = dataView.metadata?.objects;
 
         if (objects) {
             defaultSettings.general.orientation = DataViewObjectsModule.getValue<string>(objects, chicletSlicerProps.general.orientation, defaultSettings.general.orientation);
@@ -336,8 +333,6 @@ export class ChicletSlicer implements IVisual {
             searchText = searchText.toLowerCase();
             converter.dataPoints.forEach(x => x.filtered = x.category.toLowerCase().indexOf(searchText) < 0);
         }
-
-        const categories: DataViewCategoricalColumn = dataView.categorical.categories[0];
 
         const slicerData : ChicletSlicerData = {
             categorySourceName: categories.source.displayName,
