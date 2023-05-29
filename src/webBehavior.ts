@@ -243,7 +243,7 @@ export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
                 this.slicerSettings.slicerText.unselectedColor);
         }
         else {
-            this.styleSlicerInputs(this.slicers, hasSelection);
+            this.styleSlicerInputs(this.slicers);
         }
     }
 
@@ -268,7 +268,7 @@ export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
             });
     }
 
-    public styleSlicerInputs(slicers: Selection<any>, hasSelection: boolean) {
+    public styleSlicerInputs(slicers: Selection<any>) {
         const settings = this.slicerSettings,
             isHighContrastMode = this.options.isHighContrastMode;
 

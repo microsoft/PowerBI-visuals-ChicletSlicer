@@ -5,9 +5,8 @@ export interface SelectionState {
     state: boolean;
 }
 
-export class ChicletSlicerMock extends ChicletSlicer{
-
-    protected override telemetryTrace(): void {
+export class ChicletSlicerMock extends ChicletSlicer {
+    protected telemetryTrace(): void {
         this.externalImageTelemetryTraced();
     }
 }

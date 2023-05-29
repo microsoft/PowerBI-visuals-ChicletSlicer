@@ -45,10 +45,10 @@ import DataView = powerbi.DataView;
 import IViewport = powerbi.IViewport;
 import DataViewObjects = powerbi.DataViewObjects;
 import VisualObjectInstance = powerbi.VisualObjectInstance;
-import DataViewCategoricalColumn = powerbi.DataViewCategoricalColumn;
 import VisualObjectInstancesToPersist = powerbi.VisualObjectInstancesToPersist;
 import EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInstancesOptions;
 import VisualObjectInstanceEnumeration = powerbiVisualsApi.VisualObjectInstanceEnumeration;
+import DataViewCategoryColumn = powerbiVisualsApi.DataViewCategoryColumn;
 
 import IVisual = powerbi.extensibility.IVisual;
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
@@ -92,8 +92,6 @@ import VisualTooltipDataItem = powerbiVisualsApi.extensibility.VisualTooltipData
 
 import IFilter = powerbi.IFilter;
 import ISelectionManager = powerbiVisualsApi.extensibility.ISelectionManager;
-import { FilterType, IIdentityFilter } from "powerbi-models";
-import FilterAction = powerbi.FilterAction;
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 namespace ChicletBorderStyle {
@@ -275,22 +273,19 @@ export class ChicletSlicer implements IVisual {
         searchText: string,
         visualHost: IVisualHost): ChicletSlicerData {
 
-        if (!dataView ||
-            !dataView.categorical ||
-            !dataView.categorical.categories ||
-            !dataView.categorical.categories[0] ||
-            !dataView.categorical.categories[0].source ||
-            !dataView.categorical.categories[0].source.roles ||
-            !dataView.categorical.categories[0].source.roles["Category"] ||
-            !dataView.categorical.categories[0].values ||
-            !(dataView.categorical.categories[0].values.length > 0)) {
-            return;
+        const categories: DataViewCategoryColumn = dataView?.categorical?.categories?.length && dataView.categorical.categories[0];
+
+        if (!categories?.source?.roles ||
+            !categories.source.roles["Category"] ||
+            !categories?.values?.length) {
+                return;
         }
 
         const converter: ChicletSlicerConverter = new ChicletSlicerConverter(dataView, visualHost);
         converter.convert();
 
-        const defaultSettings: ChicletSlicerSettings = this.DEFAULT_STYLE_PROPERTIES(), objects: DataViewObjects = dataView.metadata.objects;
+        const defaultSettings: ChicletSlicerSettings = this.DEFAULT_STYLE_PROPERTIES();
+        const objects: DataViewObjects = dataView.metadata?.objects;
 
         if (objects) {
             defaultSettings.general.orientation = DataViewObjectsModule.getValue<string>(objects, chicletSlicerProps.general.orientation, defaultSettings.general.orientation);
@@ -338,8 +333,6 @@ export class ChicletSlicer implements IVisual {
             searchText = searchText.toLowerCase();
             converter.dataPoints.forEach(x => x.filtered = x.category.toLowerCase().indexOf(searchText) < 0);
         }
-
-        const categories: DataViewCategoricalColumn = dataView.categorical.categories[0];
 
         const slicerData : ChicletSlicerData = {
             categorySourceName: categories.source.displayName,
@@ -436,19 +429,19 @@ export class ChicletSlicer implements IVisual {
 
         switch (options.objectName) {
             case 'rows':
-                return this.enumerateRows(data);
+                return this.enumerateRows();
             case 'header':
-                return this.enumerateHeader(data);
+                return this.enumerateHeader();
             case 'general':
-                return this.enumerateGeneral(data);
+                return this.enumerateGeneral();
             case 'images':
-                return this.enumerateImages(data);
+                return this.enumerateImages();
             default:
                 return [];
         }
     }
 
-    private enumerateHeader(data: ChicletSlicerData): VisualObjectInstance[] {
+    private enumerateHeader(): VisualObjectInstance[] {
         const slicerSettings: ChicletSlicerSettings = this.settings;
 
         return [{
@@ -467,7 +460,7 @@ export class ChicletSlicer implements IVisual {
         }];
     }
 
-    private enumerateRows(data: ChicletSlicerData): VisualObjectInstance[] {
+    private enumerateRows(): VisualObjectInstance[] {
         const slicerSettings: ChicletSlicerSettings = this.settings;
 
         return [{
@@ -493,7 +486,7 @@ export class ChicletSlicer implements IVisual {
         }];
     }
 
-    private enumerateGeneral(data: ChicletSlicerData): VisualObjectInstance[] {
+    private enumerateGeneral(): VisualObjectInstance[] {
         const slicerSettings: ChicletSlicerSettings = this.settings;
 
         return [{
@@ -510,7 +503,7 @@ export class ChicletSlicer implements IVisual {
         }];
     }
 
-    private enumerateImages(data: ChicletSlicerData): VisualObjectInstance[] {
+    private enumerateImages(): VisualObjectInstance[] {
         const slicerSettings: ChicletSlicerSettings = this.settings;
 
         return [{
@@ -546,6 +539,11 @@ export class ChicletSlicer implements IVisual {
             this.searchInput.node().value,
             this.visualHost);
 
+        if (!data) {
+            this.tableView.empty();
+            return;
+        }
+
         if (!this.getExternalImageTelemetryTracedProperty()) {
             const hasExternalImageLink: boolean = lodashSome(
                 data.slicerDataPoints,
@@ -556,11 +554,6 @@ export class ChicletSlicer implements IVisual {
             if (hasExternalImageLink) {
                 this.telemetryTrace();
             }
-        }
-
-        if (!data) {
-            this.tableView.empty();
-            return;
         }
 
         if (this.colorHelper.isHighContrast) {
@@ -876,7 +869,7 @@ export class ChicletSlicer implements IVisual {
                     if (d.imageURL) { height -= settings.images.imageSplit; }
                     return `${height}%`;
                 })
-                .classed('hidden', (d: ChicletSlicerDataPoint) => {
+                .classed('hidden', () => {
                     if (settings.images.imageSplit > ChicletSlicer.MaxImageSplitToHide) { return true; }
                 });
             rowSelection.selectAll(ChicletSlicer.ItemContainerSelector.selectorName)
@@ -920,9 +913,9 @@ export class ChicletSlicer implements IVisual {
                 };
                 this.interactivityService.bind(behaviorOptions);
                 this.renderTooltip(slicerItemContainers);
-                this.behavior.styleSlicerInputs(rowSelection.select(ChicletSlicer.ItemContainerSelector.selectorName), this.interactivityService.hasSelection());
+                this.behavior.styleSlicerInputs(rowSelection.select(ChicletSlicer.ItemContainerSelector.selectorName));
             }
-            else { this.behavior.styleSlicerInputs(rowSelection.select(ChicletSlicer.ItemContainerSelector.selectorName), false); }
+            else { this.behavior.styleSlicerInputs(rowSelection.select(ChicletSlicer.ItemContainerSelector.selectorName)); }
         }
     }
 

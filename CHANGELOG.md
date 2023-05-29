@@ -1,3 +1,17 @@
+## 2.0.5
+* Metadata null check added to converter
+
+## 2.0.4
+* API downgraded to 5.1.0
+
+## 2.0.3
+* Capabilities update: category should be filled before others
+* API 5.2.0+
+* updated powerbi-visuals packages
+
+## 2.0.2
+* Updated tools
+
 ## 2.0.1
 * FIX: select in each of several visuals
 
