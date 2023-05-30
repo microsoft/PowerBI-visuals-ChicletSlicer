@@ -28,7 +28,7 @@
         {
             "name": "WebAccess",
             "essential": true,
-            "parameters": ["https://*", "ftp://*"]
+            "parameters": ["https://*", "ftp://*", "http://*"]
         }
     ],
     "dataViewMappings": [
