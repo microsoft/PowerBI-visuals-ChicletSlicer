@@ -251,6 +251,9 @@ export class ChicletSlicer implements IVisual {
                 imageRound: false,
                 stretchImage: false,
                 bottomImage: false
+            },
+            tooltips: {
+                show: false
             }
         };
     }
@@ -327,6 +330,8 @@ export class ChicletSlicer implements IVisual {
             defaultSettings.images.imageRound = DataViewObjectsModule.getValue<boolean>(objects, chicletSlicerProps.images.imageRound, defaultSettings.images.imageRound);
             defaultSettings.images.stretchImage = DataViewObjectsModule.getValue<boolean>(objects, chicletSlicerProps.images.stretchImage, defaultSettings.images.stretchImage);
             defaultSettings.images.bottomImage = DataViewObjectsModule.getValue<boolean>(objects, chicletSlicerProps.images.bottomImage, defaultSettings.images.bottomImage);
+
+            defaultSettings.tooltips.show = DataViewObjectsModule.getValue<boolean>(objects, chicletSlicerProps.tooltips.show, defaultSettings.tooltips.show);
         }
 
         if (defaultSettings.general.selfFilterEnabled && searchText) {
@@ -436,9 +441,23 @@ export class ChicletSlicer implements IVisual {
                 return this.enumerateGeneral();
             case 'images':
                 return this.enumerateImages();
+            case 'tooltips':
+                return this.enumerateTooltips();
             default:
                 return [];
         }
+    }
+
+    private enumerateTooltips(): VisualObjectInstance[] {
+        const slicerSettings: ChicletSlicerSettings = this.settings;
+
+        return [{
+            selector: null,
+            objectName: 'tooltips',
+            properties: {
+                show: slicerSettings.tooltips.show,
+            }
+        }];
     }
 
     private enumerateHeader(): VisualObjectInstance[] {
@@ -646,10 +665,14 @@ export class ChicletSlicer implements IVisual {
     }
 
     private getTooltipData(value: any): VisualTooltipDataItem[] {
-        return [{
-            displayName: value.columnName,
-            value: value.category,
-        }];
+        if (this.settings.tooltips.show) {
+            return [{
+                displayName: value.columnName,
+                value: value.category,
+            }];
+        }
+
+        return null;
     }
 
 

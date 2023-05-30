@@ -488,6 +488,19 @@
                     }
                 }
             }
+        },
+        "tooltips": {
+            "displayName": "Tooltips",
+            "displayNameKey": "Visual_Tooltips",
+            "properties": {
+                "show": {
+                    "displayName": "Show",
+                    "displayNameKey": "Visual_show",
+                    "type": {
+                        "bool": true
+                    }
+                }
+            }
         }
     },
     "supportsHighlight": true,

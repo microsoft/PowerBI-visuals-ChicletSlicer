@@ -57,4 +57,7 @@ export interface ChicletSlicerSettings {
         stretchImage: boolean;
         bottomImage: boolean;
     };
+    tooltips: {
+        show: boolean;
+    }
 }
