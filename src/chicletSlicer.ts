@@ -1064,7 +1064,7 @@ export class ChicletSlicer implements IVisual {
     }
 
     public static IS_EXTERNAL_LINK(link: string): boolean {
-        return /^(ftp|https):\/\/[^ "]+$/.test(link);
+        return /^(ftp|https|http):\/\/[^ "]+$/.test(link);
     }
 
     public getExternalImageTelemetryTracedProperty(): boolean {
