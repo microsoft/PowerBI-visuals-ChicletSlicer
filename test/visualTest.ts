@@ -974,7 +974,7 @@ describe("ChicletSlicer", () => {
             it("default height in settings", (done) => {
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    expect(visualBuilder.instance.settings.slicerText.height).not.toEqual(0);
+                    expect(visualBuilder.instance.formattingSettings.slicerTextCardSettings.height.value).not.toEqual(0);
                     done();
                 });
 
@@ -1001,7 +1001,7 @@ describe("ChicletSlicer", () => {
             it("default width in settings", (done) => {
 
                 visualBuilder.updateRenderTimeout(dataView, () => {
-                    expect(visualBuilder.instance.settings.slicerText.width).not.toEqual(0);
+                    expect(visualBuilder.instance.formattingSettings.slicerTextCardSettings.width.value).not.toEqual(0);
                     done();
                 });
 

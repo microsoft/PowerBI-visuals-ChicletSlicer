@@ -49,7 +49,7 @@ import { FilterType, IIdentityFilterTarget, IIdentityFilter } from "powerbi-mode
 import FilterAction = powerbi.FilterAction;
 import IFilter = powerbi.IFilter;
 
-import { ChicletSlicerSettings } from "./settings";
+import { ChicletSlicerSettingsModel } from "./chicletSlicerSettingsModel";
 import { ChicletSlicer } from "./chicletSlicer";
 import { ChicletSlicerDataPoint } from "./interfaces";
 import { BaseDataPoint, InteractivityServiceOptions } from "powerbi-visuals-utils-interactivityutils/lib/interactivityBaseService";
@@ -62,7 +62,7 @@ export interface ChicletSlicerBehaviorOptions extends IBehaviorOptions<BaseDataP
     slicerClear: Selection<any>;
     dataPoints: ChicletSlicerDataPoint[];
     interactivityService: IInteractivityService<BaseDataPoint>;
-    slicerSettings: ChicletSlicerSettings;
+    slicerSettings: ChicletSlicerSettingsModel;
     identityFields: ISQExpr[] | any;
     isHighContrastMode: boolean;
     behavior: any;
@@ -75,7 +75,7 @@ export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
     private slicerItemLabels: Selection<any>;
     private slicerItemInputs: Selection<any>;
     private interactivityService: IInteractivityService<BaseDataPoint> | any;
-    private slicerSettings: ChicletSlicerSettings;
+    private slicerSettings: ChicletSlicerSettingsModel;
     private options: ChicletSlicerBehaviorOptions;
     private selectionHandler: ISelectionHandler;
     private visualHost: IVisualHost;
@@ -129,14 +129,14 @@ export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
 
             let index = dataPoint.id;
 
-            const settings: ChicletSlicerSettings = this.slicerSettings;
-            const multiselect: boolean = settings.general.multiselect;
+            const settings: ChicletSlicerSettingsModel = this.slicerSettings;
+            const multiselect: boolean = settings.generalCardSettings.multiselect.value;
 
             const selectedIndexes: number[] = this.dataPoints
                 .filter((dataPoint: ChicletSlicerDataPoint) => dataPoint.selected)
                 .map(dataPoint => dataPoint.id);
 
-            if (settings.general.forcedSelection && selectedIndexes.length === 1) {
+            if (settings.generalCardSettings.forcedSelection.value && selectedIndexes.length === 1) {
                 const availableDataPoints: ChicletSlicerDataPoint[] = this.dataPoints.map((dataPoint: ChicletSlicerDataPoint) => {
                         if (!dataPoint.filtered) {
                             return dataPoint;
@@ -173,9 +173,9 @@ export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
         });
 
         slicerClear.on("click", () => {
-            const settings: ChicletSlicerSettings = this.slicerSettings;
+            const settings: ChicletSlicerSettingsModel = this.slicerSettings;
 
-            if (settings.general.forcedSelection) {
+            if (settings.generalCardSettings.forcedSelection.value) {
                 return false;
             }
 
@@ -188,7 +188,7 @@ export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
     }
 
     private forceSelection(): void {
-        if (!this.slicerSettings.general.forcedSelection) {
+        if (!this.slicerSettings.generalCardSettings.forcedSelection.value) {
             return;
         }
 
@@ -240,7 +240,7 @@ export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
         if (!hasSelection && !this.interactivityService.isSelectionModeInverted()) {
             this.slicers.style(
                 "background",
-                this.slicerSettings.slicerText.unselectedColor);
+                this.slicerSettings.slicerTextCardSettings.unselectedColor.value.value);
         }
         else {
             this.styleSlicerInputs(this.slicers);
@@ -251,11 +251,11 @@ export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
         this.slicerItemLabels
             .style("color", (dataPoint: ChicletSlicerDataPoint) => {
                 if (dataPoint.mouseOver) {
-                    return this.slicerSettings.slicerText.hoverColor;
+                    return this.slicerSettings.slicerTextCardSettings.hoverColor.value.value;
                 }
 
                 if (dataPoint.mouseOut) {
-                    return this.slicerSettings.slicerText.fontColor;
+                    return this.slicerSettings.slicerTextCardSettings.fontColor.value.value;
                 }
             })
             .style("opacity", (dataPoint: ChicletSlicerDataPoint) => {
@@ -276,9 +276,9 @@ export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
             d3Select(this)
                 .style("background", dataPoint.selectable
                     ? (dataPoint.selected
-                        ? settings.slicerText.selectedColor
-                        : settings.slicerText.unselectedColor)
-                    : settings.slicerText.disabledColor)
+                        ? settings.slicerTextCardSettings.selectedColor.value.value
+                        : settings.slicerTextCardSettings.unselectedColor.value.value)
+                    : settings.slicerTextCardSettings.disabledColor.value.value)
                 .style("opacity", () => {
                     if (isHighContrastMode) {
                         return dataPoint.selectable ?
