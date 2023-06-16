@@ -1,6 +1,8 @@
 import powerbiVisualsApi from "powerbi-visuals-api";
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
+import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
+
 import Card = formattingSettings.Card;
 import Model = formattingSettings.Model;
 
@@ -80,7 +82,7 @@ export class GeneralCardSettings extends Card {
         name: "selfFilterEnabled",
         displayNameKey: "Visual_SelfFilterEnabled",
         value: false,
-        topLevelToggle: false
+        topLevelToggle: false,
     });
 
     orientation = new formattingSettings.ItemDropdown({
@@ -137,7 +139,7 @@ export class GeneralCardSettings extends Card {
 
     name: string = "general";
     displayNameKey: string = "Visual_General";
-    slices = [this.selfFilterEnabled, this.orientation, this.columns, this.rows, this.showDisabled, this.multiselect, this.forcedSelection];
+    slices = [this.orientation, this.columns, this.rows, this.showDisabled, this.multiselect, this.forcedSelection, this.selfFilterEnabled];
 }
 
 export class HeaderCardSettings extends Card {
@@ -341,7 +343,7 @@ export class SlicerTextCardSettings extends Card {
         name: "borderStyle",
         displayNameKey: "Visual_OutlineStyle",
         items: borderStyleOptions,
-        value: borderStyleOptions[0]
+        value: borderStyleOptions[1]
     });
 
     name: string = "rows";
@@ -433,4 +435,17 @@ export class ChicletSlicerSettingsModel extends Model {
     headerText = new HeaderText();
     
     cards = [this.generalCardSettings, this.headerCardSettings, this.slicerTextCardSettings, this.imagesCardSettings, this.tooltipsCardSettings];
+
+    setLocalizedOptions(localizationManager: ILocalizationManager) {
+        this.setLocalizedDisplayName(borderStyleOptions, localizationManager);
+        this.setLocalizedDisplayName(orientationOptions, localizationManager);
+        this.setLocalizedDisplayName(outlineOptions, localizationManager);
+        this.setLocalizedDisplayName(showDisabledOptions, localizationManager);
+    }   
+
+    public setLocalizedDisplayName(options: IEnumMember[], localizationManager: ILocalizationManager) {
+        options.forEach(option => {
+            option.displayName = localizationManager.getDisplayName(option.displayName.toString())
+        });
+    }
 }

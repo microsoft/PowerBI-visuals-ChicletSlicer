@@ -49,6 +49,7 @@ import DataViewCategoryColumn = powerbiVisualsApi.DataViewCategoryColumn;
 import IVisual = powerbi.extensibility.IVisual;
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 import IColorPalette = powerbiVisualsApi.extensibility.IColorPalette;
+import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
 import VisualUpdateOptions = powerbiVisualsApi.extensibility.visual.VisualUpdateOptions;
 import VisualConstructorOptions = powerbiVisualsApi.extensibility.visual.VisualConstructorOptions;
 
@@ -130,6 +131,8 @@ export class ChicletSlicer implements IVisual {
     private jsonFilters: IFilter[] | undefined | any;
     private tooltipService: ITooltipServiceWrapper;
     private selectionManager: ISelectionManager;
+
+    private localizationManager: ILocalizationManager;
 
     private ExternalImageTelemetryTraced: boolean = false;
 
@@ -245,8 +248,8 @@ export class ChicletSlicer implements IVisual {
         this.colorPalette = this.visualHost.colorPalette;
         this.colorHelper = new ColorHelper(this.colorPalette);
 
-        const localizationManager = options.host.createLocalizationManager();
-        this.formattingSettingsService = new FormattingSettingsService(localizationManager);
+        this.localizationManager = options.host.createLocalizationManager();
+        this.formattingSettingsService = new FormattingSettingsService(this.localizationManager);
 
         this.behavior = new ChicletSlicerWebBehavior();
         this.interactivityService = createInteractivitySelectionService(options.host);
@@ -832,6 +835,7 @@ export class ChicletSlicer implements IVisual {
     public getFormattingModel(): powerbi.visuals.FormattingModel {
 
         this.filterSettingsCards();
+        this.formattingSettings.setLocalizedOptions(this.localizationManager);
         return this.formattingSettingsService.buildFormattingModel(this.formattingSettings);
     }
 
@@ -843,8 +847,8 @@ export class ChicletSlicer implements IVisual {
 
         settings.cards.forEach(element => {
             switch (element.name) {
-                case chicletSlicerProps.general.selfFilterEnabled.propertyName:
-                    this.removeArrayItem(newCards, element);
+                case chicletSlicerProps.general.selfFilterEnabled.objectName:
+                    this.removeArrayItem(element.slices, element.slices.find(x => x.name === chicletSlicerProps.general.selfFilterEnabled.propertyName));
                     break;
 
                 default:
