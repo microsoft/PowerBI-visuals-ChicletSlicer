@@ -49,5 +49,6 @@
 	"formattingHeaderOutlineTypeFrame": "Frame",
 	"Visual_Selection": "Selection",
 	"Visual_show": "Show",
-	"Visual_Description_Transparency": "Set transparency for background color"
+	"Visual_Description_Transparency": "Set transparency for background color",
+	"Visual_Tooltips": "Tooltips"
 }
