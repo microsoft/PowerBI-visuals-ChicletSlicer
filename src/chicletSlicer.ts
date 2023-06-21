@@ -260,6 +260,7 @@ export class ChicletSlicer implements IVisual {
         );
 
         this.selectionManager = options.host.createSelectionManager();
+        this.renderContextMenu();
     }
 
     public update(options: VisualUpdateOptions) {
@@ -301,7 +302,6 @@ export class ChicletSlicer implements IVisual {
         }
 
         this.updateInternal(resetScrollbarPosition);
-        this.renderContextMenu();
     }
 
     private renderContextMenu() {
