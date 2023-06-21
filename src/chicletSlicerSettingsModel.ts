@@ -78,13 +78,6 @@ class ImagesSplitSettings {
 
 export class GeneralCardSettings extends Card {
 
-    selfFilterEnabled = new formattingSettings.ToggleSwitch({
-        name: "selfFilterEnabled",
-        displayNameKey: "Visual_SelfFilterEnabled",
-        value: false,
-        topLevelToggle: false,
-    });
-
     orientation = new formattingSettings.ItemDropdown({
         name: "orientation",
         displayNameKey: "Visual_Orientation",
@@ -139,7 +132,7 @@ export class GeneralCardSettings extends Card {
 
     name: string = "general";
     displayNameKey: string = "Visual_General";
-    slices = [this.orientation, this.columns, this.rows, this.showDisabled, this.multiselect, this.forcedSelection, this.selfFilterEnabled];
+    slices = [this.orientation, this.columns, this.rows, this.showDisabled, this.multiselect, this.forcedSelection];
 }
 
 export class HeaderCardSettings extends Card {

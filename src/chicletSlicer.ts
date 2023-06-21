@@ -218,7 +218,7 @@ export class ChicletSlicer implements IVisual {
         this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(ChicletSlicerSettingsModel, [dataView]);
         const defaultSettings: ChicletSlicerSettingsModel = this.formattingSettings;
 
-        if (defaultSettings.generalCardSettings.selfFilterEnabled.value && searchText) {
+        if (dataView.metadata.objects?.general.selfFilterEnabled && searchText) {
             searchText = searchText.toLowerCase();
             converter.dataPoints.forEach(x => x.filtered = x.category.toLowerCase().indexOf(searchText) < 0);
         }
@@ -270,6 +270,8 @@ export class ChicletSlicer implements IVisual {
             return;
         }
 
+        this.dataView = options.dataViews[0];
+
         let resetScrollbarPosition: boolean = false;
 
         this.jsonFilters = options.jsonFilters;
@@ -285,8 +287,6 @@ export class ChicletSlicer implements IVisual {
             this.currentViewport = options.viewport;
             this.initContainer();
         }
-
-        this.dataView = options.dataViews[0];
 
         // if (existingDataView) {
         //     resetScrollbarPosition = !ChicletSlicer.hasSameCategoryIdentity(existingDataView, this.dataView);
@@ -748,8 +748,8 @@ export class ChicletSlicer implements IVisual {
     }
 
     private updateSearchHeader(): void {
-        this.searchHeader.classed("show", this.slicerData.slicerSettings.generalCardSettings.selfFilterEnabled.value ? true : false);
-        this.searchHeader.classed("collapsed", this.slicerData.slicerSettings.generalCardSettings.selfFilterEnabled.value ? false : true);
+        this.searchHeader.classed("show", this.dataView.metadata.objects?.general.selfFilterEnabled ? true : false);
+        this.searchHeader.classed("collapsed", this.dataView.metadata.objects?.general.selfFilterEnabled ? false : true);
     }
 
     private getSearchHeaderHeight(): number {
@@ -761,7 +761,7 @@ export class ChicletSlicer implements IVisual {
     private getSlicerBodyViewport(currentViewport: IViewport): IViewport {
         const settings: ChicletSlicerSettingsModel = this.formattingSettings,
             headerHeight: number = (settings.headerCardSettings.show.value) ? this.getHeaderHeight() : 0,
-            searchHeight: number = (settings.generalCardSettings.selfFilterEnabled.value) ? this.getSearchHeaderHeight() : 0,
+            searchHeight: number = (this.dataView.metadata.objects?.general.selfFilterEnabled) ? this.getSearchHeaderHeight() : 0,
             borderHeight: number = settings.headerCardSettings.outlineWeight.value,
             height: number = currentViewport.height - (headerHeight + searchHeight + borderHeight + settings.headerCardSettings.borderBottomWidth),
             width: number = currentViewport.width - ChicletSlicer.WidthOfScrollbar;
@@ -834,39 +834,8 @@ export class ChicletSlicer implements IVisual {
 
     public getFormattingModel(): powerbi.visuals.FormattingModel {
 
-        this.filterSettingsCards();
         this.formattingSettings.setLocalizedOptions(this.localizationManager);
         return this.formattingSettingsService.buildFormattingModel(this.formattingSettings);
-    }
-
-    private filterSettingsCards() {
-
-        const settings: ChicletSlicerSettingsModel = this.formattingSettings;
-
-        const newCards = [...settings.cards];
-
-        settings.cards.forEach(element => {
-            switch (element.name) {
-                case chicletSlicerProps.general.selfFilterEnabled.objectName:
-                    this.removeArrayItem(element.slices, element.slices.find(x => x.name === chicletSlicerProps.general.selfFilterEnabled.propertyName));
-                    break;
-
-                default:
-                    break;
-            }
-        });
-
-        settings.cards = newCards;
-        this.formattingSettings = settings;
-    }
-
-    private removeArrayItem<T>(array: T[], item: T)
-    {
-        const index: number = array.indexOf(item);
-        if (index > -1)
-        {
-            array.splice(index, 1);
-        }
     }
 
     protected telemetryTrace()
