@@ -86,7 +86,6 @@ import VisualTooltipDataItem = powerbiVisualsApi.extensibility.VisualTooltipData
 
 import IFilter = powerbi.IFilter;
 import ISelectionManager = powerbiVisualsApi.extensibility.ISelectionManager;
-import { chicletSlicerProps } from "./chicletSlicerProps";
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 namespace ChicletBorderStyle {
@@ -218,7 +217,7 @@ export class ChicletSlicer implements IVisual {
         this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(ChicletSlicerSettingsModel, [dataView]);
         const defaultSettings: ChicletSlicerSettingsModel = this.formattingSettings;
 
-        if (dataView.metadata.objects?.general.selfFilterEnabled && searchText) {
+        if (dataView.metadata.objects?.general?.selfFilterEnabled && searchText) {
             searchText = searchText.toLowerCase();
             converter.dataPoints.forEach(x => x.filtered = x.category.toLowerCase().indexOf(searchText) < 0);
         }
@@ -748,8 +747,8 @@ export class ChicletSlicer implements IVisual {
     }
 
     private updateSearchHeader(): void {
-        this.searchHeader.classed("show", this.dataView.metadata.objects?.general.selfFilterEnabled ? true : false);
-        this.searchHeader.classed("collapsed", this.dataView.metadata.objects?.general.selfFilterEnabled ? false : true);
+        this.searchHeader.classed("show", this.dataView.metadata.objects?.general?.selfFilterEnabled ? true : false);
+        this.searchHeader.classed("collapsed", this.dataView.metadata.objects?.general?.selfFilterEnabled ? false : true);
     }
 
     private getSearchHeaderHeight(): number {
@@ -761,7 +760,7 @@ export class ChicletSlicer implements IVisual {
     private getSlicerBodyViewport(currentViewport: IViewport): IViewport {
         const settings: ChicletSlicerSettingsModel = this.formattingSettings,
             headerHeight: number = (settings.headerCardSettings.show.value) ? this.getHeaderHeight() : 0,
-            searchHeight: number = (this.dataView.metadata.objects?.general.selfFilterEnabled) ? this.getSearchHeaderHeight() : 0,
+            searchHeight: number = (this.dataView.metadata.objects?.general?.selfFilterEnabled) ? this.getSearchHeaderHeight() : 0,
             borderHeight: number = settings.headerCardSettings.outlineWeight.value,
             height: number = currentViewport.height - (headerHeight + searchHeight + borderHeight + settings.headerCardSettings.borderBottomWidth),
             width: number = currentViewport.width - ChicletSlicer.WidthOfScrollbar;
