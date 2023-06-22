@@ -133,6 +133,33 @@ export class GeneralCardSettings extends Card {
     name: string = "general";
     displayNameKey: string = "Visual_General";
     slices = [this.orientation, this.columns, this.rows, this.showDisabled, this.multiselect, this.forcedSelection];
+
+    revertToDefaultDescriptors: [
+        {
+            objectName: "general"
+            propertyName: "orientation"
+        },
+        {
+            objectName: "general"
+            propertyName: "columns"
+        },
+        {
+            objectName: "general"
+            propertyName: "rows"
+        },
+        {
+            objectName: "general"
+            propertyName: "showDisabled"
+        },
+        {
+            objectName: "general"
+            propertyName: "multiselect"
+        },
+        {
+            objectName: "general"
+            propertyName: "forcedSelection"
+        }
+    ]
 }
 
 export class HeaderCardSettings extends Card {
@@ -213,6 +240,41 @@ export class HeaderCardSettings extends Card {
     name: string = "header";
     displayNameKey: string = "Visual_Header";
     slices = [this.show, this.title, this.fontColor, this.background, this.textSize, this.outline, this.outlineColor, this.outlineWeight];
+
+    revertToDefaultDescriptors: [
+        {
+            objectName: "header"
+            propertyName: "show"
+        },
+        {
+            objectName: "header"
+            propertyName: "title"
+        },
+        {
+            objectName: "header"
+            propertyName: "fontColor"
+        },
+        {
+            objectName: "header"
+            propertyName: "background"
+        },
+        {
+            objectName: "header"
+            propertyName: "textSize"
+        },
+        {
+            objectName: "header"
+            propertyName: "outline"
+        },
+        {
+            objectName: "header"
+            propertyName: "outlineColor"
+        },
+        {
+            objectName: "header"
+            propertyName: "outlineWeight"
+        }
+    ]
 }
 
 export class SlicerTextCardSettings extends Card {
@@ -343,6 +405,65 @@ export class SlicerTextCardSettings extends Card {
     displayNameKey: string = "Visual_Chiclets";
     slices = [this.textSize, this.height, this.width, this.background, this.transparency, this.selectedColor, this.hoverColor, 
                 this.unselectedColor, this.disabledColor, this.outlineColor, this.outlineWeight, this.fontColor, this.padding, this.borderStyle]
+
+    revertToDefaultDescriptors: [
+        {
+            objectName: "rows"
+            propertyName: "textSize"
+        },
+        {
+            objectName: "rows"
+            propertyName: "height"
+        },
+        {
+            objectName: "rows"
+            propertyName: "width"
+        },
+        {
+            objectName: "rows"
+            propertyName: "background"
+        },
+        {
+            objectName: "rows"
+            propertyName: "transparency"
+        },
+        {
+            objectName: "rows"
+            propertyName: "selectedColor"
+        },
+        {
+            objectName: "rows"
+            propertyName: "hoverColor"
+        },
+        {
+            objectName: "rows"
+            propertyName: "unselectedColor"
+        },
+        {
+            objectName: "rows"
+            propertyName: "disabledColor"
+        },
+        {
+            objectName: "rows"
+            propertyName: "outlineColor"
+        },
+        {
+            objectName: "rows"
+            propertyName: "outlineWeight"
+        },
+        {
+            objectName: "rows"
+            propertyName: "fontColor"
+        },
+        {
+            objectName: "rows"
+            propertyName: "padding"
+        },
+        {
+            objectName: "rows"
+            propertyName: "borderStyle"
+        }
+    ]
 }
 
 export class ImagesCardSettings extends Card {
@@ -382,7 +503,26 @@ export class ImagesCardSettings extends Card {
 
     name: string = "images";
     displayNameKey: string = "Visual_Images";
-    slices = [this.imageSplit, this.imageRound, this.stretchImage, this.bottomImage]
+    slices = [this.imageSplit, this.imageRound, this.stretchImage, this.bottomImage];
+
+    revertToDefaultDescriptors: [
+        {
+            objectName: "images"
+            propertyName: "imageSplit"
+        },
+        {
+            objectName: "images"
+            propertyName: "imageRound"
+        },
+        {
+            objectName: "images"
+            propertyName: "stretchImage"
+        },
+        {
+            objectName: "images"
+            propertyName: "bottomImage"
+        }
+    ]
 }
 
 export class TooltipsCardSettings extends Card {
@@ -395,9 +535,15 @@ export class TooltipsCardSettings extends Card {
     });
 
     name: string = "tooltips";
-    displayName: string = "Tooltips";
     displayNameKey: string = "Visual_Tooltips";
-    slices = [this.show]
+    slices = [this.show];
+
+    revertToDefaultDescriptors: [
+        {
+            objectName: "tooltips"
+            propertyName: "show"
+        }
+    ]
 }
 
 export class SlicerItemContainer extends Card {
