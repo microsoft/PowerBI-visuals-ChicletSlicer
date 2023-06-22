@@ -735,6 +735,7 @@ export class ChicletSlicer implements IVisual {
             .attr("drag-resize-disabled", "true")
             .classed("searchInput", true);
 
+        // Persist search text when user types in search box for explicit update call
         this.searchInput.on("input", () => this.visualHost.persistProperties(<VisualObjectInstancesToPersist>{
             merge: [{
                 objectName: "general",
