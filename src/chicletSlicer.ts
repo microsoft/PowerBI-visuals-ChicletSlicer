@@ -36,14 +36,11 @@ import powerbi = powerbiVisualsApi;
 import { Selection as d3Selection } from "d3-selection";
 type Selection<T1, T2 = T1> = d3Selection<any, T1, any, T2>;
 
-import {
-    select as d3Select
-} from "d3-selection";
+import { select as d3Select } from "d3-selection";
 
 // powerbi
 import DataView = powerbi.DataView;
 import IViewport = powerbi.IViewport;
-import VisualObjectInstancesToPersist = powerbi.VisualObjectInstancesToPersist;
 import DataViewCategoryColumn = powerbiVisualsApi.DataViewCategoryColumn;
 
 import IVisual = powerbi.extensibility.IVisual;
@@ -135,6 +132,9 @@ export class ChicletSlicer implements IVisual {
 
     private ExternalImageTelemetryTraced: boolean = false;
 
+    private chicletSlicerData: ChicletSlicerData;
+    private resetScrollbarPosition: boolean;
+
     /**
      * It's public for testability.
      */
@@ -218,8 +218,7 @@ export class ChicletSlicer implements IVisual {
         const defaultSettings: ChicletSlicerSettingsModel = this.formattingSettings;
 
         if (dataView.metadata.objects?.general?.selfFilterEnabled && searchText) {
-            searchText = searchText.toLowerCase();
-            converter.dataPoints.forEach(x => x.filtered = x.category.toLowerCase().indexOf(searchText) < 0);
+            this.filterDataPoints(converter.dataPoints, searchText);
         }
 
         const slicerData : ChicletSlicerData = {
@@ -235,6 +234,11 @@ export class ChicletSlicer implements IVisual {
         slicerData.hasSelectionOverride = converter.hasSelectionOverride;
 
         return slicerData;
+    }
+
+    public filterDataPoints(dataPoints: ChicletSlicerDataPoint[], searchText: string) {
+        searchText = searchText.toLowerCase();
+        dataPoints.forEach(x => x.filtered = x.category.toLowerCase().indexOf(searchText) < 0);
     }
 
 
@@ -272,13 +276,13 @@ export class ChicletSlicer implements IVisual {
 
         this.dataView = options.dataViews[0];
 
-        let resetScrollbarPosition: boolean = false;
+        this.resetScrollbarPosition = false;
 
         this.jsonFilters = options.jsonFilters;
 
         if (this.jsonFilters && this.jsonFilters.length === 0) {
             this.interactivityService.selectionManager.clear();
-            resetScrollbarPosition = true;
+            this.resetScrollbarPosition = true;
         }
 
         this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(ChicletSlicerSettingsModel, options.dataViews);
@@ -300,7 +304,12 @@ export class ChicletSlicer implements IVisual {
             this.currentViewport = options.viewport;
         }
 
-        this.updateInternal(resetScrollbarPosition);
+        this.chicletSlicerData = this.CONVERTER(
+            this.dataView,
+            this.searchInput.node().value,
+            this.visualHost);
+
+        this.updateInternal();
     }
 
     private renderContextMenu() {
@@ -326,11 +335,9 @@ export class ChicletSlicer implements IVisual {
         settings.slicerTextCardSettings.unselectedColor.value.value = this.colorHelper.getThemeColor();
     }
 
-    private updateInternal(resetScrollbarPosition: boolean) {
-        const data = this.CONVERTER(
-            this.dataView,
-            this.searchInput.node().value,
-            this.visualHost);
+    private updateInternal() {
+
+        const data: ChicletSlicerData = this.chicletSlicerData;
 
         if (!data) {
             this.tableView.empty();
@@ -412,6 +419,10 @@ export class ChicletSlicer implements IVisual {
             }
         }
 
+        this.render();
+    }
+
+    public render() {
         this.tableView
             .rowHeight(this.formattingSettings.slicerTextCardSettings.height.value)
             .columnWidth(this.formattingSettings.slicerTextCardSettings.width.value)
@@ -419,9 +430,9 @@ export class ChicletSlicer implements IVisual {
             .rows(this.formattingSettings.generalCardSettings.rows.value)
             .columns(this.formattingSettings.generalCardSettings.columns.value)
             .data(
-                data.slicerDataPoints.filter(x => !x.filtered),
-                (d: ChicletSlicerDataPoint) => data.slicerDataPoints.indexOf(d),
-                resetScrollbarPosition)
+                this.chicletSlicerData.slicerDataPoints.filter(x => !x.filtered),
+                (d: ChicletSlicerDataPoint) => this.chicletSlicerData.slicerDataPoints.indexOf(d),
+                this.resetScrollbarPosition)
             .viewport(this.getSlicerBodyViewport(this.currentViewport))
             .render();
     }
@@ -717,7 +728,6 @@ export class ChicletSlicer implements IVisual {
     }
 
     private createSearchHeader(container: Selection<any>): void {
-        let counter: number = 0;
 
         this.searchHeader = container
             .append("div")
@@ -735,16 +745,14 @@ export class ChicletSlicer implements IVisual {
             .attr("drag-resize-disabled", "true")
             .classed("searchInput", true);
 
-        // Persist search text when user types in search box for explicit update call
-        this.searchInput.on("input", () => this.visualHost.persistProperties(<VisualObjectInstancesToPersist>{
-            merge: [{
-                objectName: "general",
-                selector: null,
-                properties: {
-                    counter: counter++
-                }
-            }]
-        }));
+        // Filter chiclets based on search input
+        this.searchInput.on("input", () => {
+            const searchText: string = this.searchInput.node().value;
+            if (this.dataView.metadata.objects?.general?.selfFilterEnabled && searchText != null) {
+                this.filterDataPoints(this.chicletSlicerData.slicerDataPoints, searchText);
+                this.render();
+            }
+        });
     }
 
     private updateSearchHeader(): void {
