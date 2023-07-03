@@ -74,6 +74,9 @@ export const chicletSlicerProps = {
         stretchImage: <DataViewObjectPropertyIdentifier>{ objectName: 'images', propertyName: 'stretchImage' },
         bottomImage: <DataViewObjectPropertyIdentifier>{ objectName: 'images', propertyName: 'bottomImage' },
     },
+    tooltips: {
+        show: <DataViewObjectPropertyIdentifier>{ objectName: 'tooltips', propertyName: 'show' },
+    },
     selectedPropertyIdentifier: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'selected' },
     filterPropertyIdentifier: <DataViewObjectPropertyIdentifier>{ objectName: 'general', propertyName: 'filter' },
     hasSavedSelection: true,

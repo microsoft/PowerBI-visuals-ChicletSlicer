@@ -1,3 +1,8 @@
+## 2.0.6
+* Formatting models update
+* Tooltips toogle added
+* Selection filter fix
+
 ## 2.0.5
 * Metadata null check added to converter
 
