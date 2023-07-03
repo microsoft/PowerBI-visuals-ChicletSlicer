@@ -198,7 +198,7 @@ export class ChicletSlicer implements IVisual {
         }
     }
 
-    public CONVERTER(
+    public converter(
         dataView: DataView,
         searchText: string,
         visualHost: IVisualHost): ChicletSlicerData {
@@ -304,7 +304,7 @@ export class ChicletSlicer implements IVisual {
             this.currentViewport = options.viewport;
         }
 
-        this.chicletSlicerData = this.CONVERTER(
+        this.chicletSlicerData = this.converter(
             this.dataView,
             this.searchInput.node().value,
             this.visualHost);

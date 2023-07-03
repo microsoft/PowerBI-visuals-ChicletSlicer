@@ -221,6 +221,9 @@ export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
 
     public saveSelection(): void {
         const filterDataPoints: any[] = this.dataPoints.filter(d => d.selected);
+
+        // Selection manager stores selection ids in the order in which they are selected by the user.
+        // This is needed because data should be sent to the host in the same order that the user selected.
         const selectionIds = this.interactivityService.selectionManager.getSelectionIds();
         const sortedDataPoints = filterDataPoints.sort((dp1, dp2) => selectionIds.findIndex(si => si.equals(dp1.identity)) - selectionIds.findIndex(si => si.equals(dp2.identity)));
 
