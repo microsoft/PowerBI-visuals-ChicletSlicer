@@ -132,7 +132,6 @@ export class ChicletSlicer implements IVisual {
 
     private ExternalImageTelemetryTraced: boolean = false;
 
-    private chicletSlicerData: ChicletSlicerData;
     private resetScrollbarPosition: boolean;
 
     /**
@@ -304,7 +303,7 @@ export class ChicletSlicer implements IVisual {
             this.currentViewport = options.viewport;
         }
 
-        this.chicletSlicerData = this.converter(
+        this.slicerData = this.converter(
             this.dataView,
             this.searchInput.node().value,
             this.visualHost);
@@ -337,7 +336,7 @@ export class ChicletSlicer implements IVisual {
 
     private updateInternal() {
 
-        const data: ChicletSlicerData = this.chicletSlicerData;
+        const data: ChicletSlicerData = this.slicerData;
 
         if (!data) {
             this.tableView.empty();
@@ -430,8 +429,8 @@ export class ChicletSlicer implements IVisual {
             .rows(this.formattingSettings.generalCardSettings.rows.value)
             .columns(this.formattingSettings.generalCardSettings.columns.value)
             .data(
-                this.chicletSlicerData.slicerDataPoints.filter(x => !x.filtered),
-                (d: ChicletSlicerDataPoint) => this.chicletSlicerData.slicerDataPoints.indexOf(d),
+                this.slicerData.slicerDataPoints.filter(x => !x.filtered),
+                (d: ChicletSlicerDataPoint) => this.slicerData.slicerDataPoints.indexOf(d),
                 this.resetScrollbarPosition)
             .viewport(this.getSlicerBodyViewport(this.currentViewport))
             .render();
@@ -749,7 +748,7 @@ export class ChicletSlicer implements IVisual {
         this.searchInput.on("input", () => {
             const searchText: string = this.searchInput.node().value;
             if (this.dataView.metadata.objects?.general?.selfFilterEnabled && searchText != null) {
-                this.filterDataPoints(this.chicletSlicerData.slicerDataPoints, searchText);
+                this.filterDataPoints(this.slicerData.slicerDataPoints, searchText);
                 this.render();
             }
         });
