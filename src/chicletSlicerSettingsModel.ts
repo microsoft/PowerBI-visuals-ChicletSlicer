@@ -42,6 +42,7 @@ class ColumnsSettings {
 class RowsSettings {
     public static readonly DefaultValue: number = 0;
     public static readonly MinValue: number = 0;
+    public static readonly MaxValue: number = 1000;
 }
 
 class TextSizeSettings {
@@ -74,6 +75,7 @@ class PaddingSettings {
 class ImagesSplitSettings {
     public static readonly DefaultValue: number = 50;
     public static readonly MinValue: number = 0;
+    public static readonly MaxValue: number = 100;
 }
 
 export class GeneralCardSettings extends Card {
@@ -105,6 +107,10 @@ export class GeneralCardSettings extends Card {
             minValue: {
                 type: powerbiVisualsApi.visuals.ValidatorType.Min,
                 value: RowsSettings.MinValue,
+            },
+            maxValue: {
+                type: powerbiVisualsApi.visuals.ValidatorType.Max,
+                value: RowsSettings.MaxValue,
             }
         }
     });
@@ -476,7 +482,11 @@ export class ImagesCardSettings extends Card {
             minValue: {
                 type: powerbiVisualsApi.visuals.ValidatorType.Min,
                 value: ImagesSplitSettings.MinValue,
-            }
+            },
+            maxValue: {
+                type: powerbiVisualsApi.visuals.ValidatorType.Max,
+                value: ImagesSplitSettings.MaxValue,
+            },
         }
     });
 

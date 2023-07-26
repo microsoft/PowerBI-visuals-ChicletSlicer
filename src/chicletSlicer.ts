@@ -121,9 +121,6 @@ export class ChicletSlicer implements IVisual {
     private colorPalette: IColorPalette;
     private colorHelper: ColorHelper;
 
-    private waitingForData: boolean;
-    private isSelectionLoaded: boolean;
-
     private jsonFilters: IFilter[] | undefined | any;
     private tooltipService: ITooltipServiceWrapper;
     private selectionManager: ISelectionManager;
@@ -164,11 +161,8 @@ export class ChicletSlicer implements IVisual {
     public static MaxImageWidth: number = 100;
     public static MaxTransparency: number = 100;
 
-    private static MaxCellPadding: number = 20;
     private static MinSizeOfViewport: number = 0;
     private static MinColumns: number = 1;
-    private static MaxColumns: number = 1000;
-    private static MaxRows: number = 1000;
     private static WidthOfScrollbar: number = 17;
 
     public static ItemContainerSelector: ClassAndSelector = createClassAndSelector('slicerItemContainer');
@@ -213,13 +207,11 @@ export class ChicletSlicer implements IVisual {
         const converter: ChicletSlicerConverter = new ChicletSlicerConverter(dataView, visualHost);
         converter.convert();
 
-        this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(ChicletSlicerSettingsModel, [dataView]);
-        const defaultSettings: ChicletSlicerSettingsModel = this.formattingSettings;
-
         if (dataView.metadata.objects?.general?.selfFilterEnabled && searchText) {
             this.filterDataPoints(converter.dataPoints, searchText);
         }
 
+        const defaultSettings: ChicletSlicerSettingsModel = this.formattingSettings;
         const slicerData : ChicletSlicerData = {
             categorySourceName: categories.source.displayName,
             formatString: valueFormatter.getFormatStringByColumn(categories.source),
@@ -286,27 +278,19 @@ export class ChicletSlicer implements IVisual {
 
         this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(ChicletSlicerSettingsModel, options.dataViews);
 
+        this.slicerData = this.converter(
+            this.dataView,
+            this.searchInput?.node().value,
+            this.visualHost);
+
         if (!this.currentViewport) {
             this.currentViewport = options.viewport;
             this.initContainer();
         }
 
-        // if (existingDataView) {
-        //     resetScrollbarPosition = !ChicletSlicer.hasSameCategoryIdentity(existingDataView, this.dataView);
-        // }
-
-        if (options.viewport.height === this.currentViewport.height
-            && options.viewport.width === this.currentViewport.width) {
-            this.waitingForData = false;
-        }
-        else {
+        if (!(options.viewport.height === this.currentViewport.height && options.viewport.width === this.currentViewport.width)) {
             this.currentViewport = options.viewport;
         }
-
-        this.slicerData = this.converter(
-            this.dataView,
-            this.searchInput.node().value,
-            this.visualHost);
 
         this.updateInternal();
     }
@@ -343,57 +327,26 @@ export class ChicletSlicer implements IVisual {
             return;
         }
 
-        if (!this.getExternalImageTelemetryTracedProperty()) {
-            const hasExternalImageLink: boolean = lodashSome(
-                data.slicerDataPoints,
-                (dataPoint: ChicletSlicerDataPoint) => {
-                    return ChicletSlicer.IS_EXTERNAL_LINK(dataPoint.imageURL);
-                }
-            );
-            if (hasExternalImageLink) {
-                this.telemetryTrace();
-            }
-        }
+        this.checkTelemetryTrace();
 
         if (this.colorHelper.isHighContrast) {
             this.changeColorsForHighContrast(data.slicerSettings);
         }
 
-        data.slicerSettings.headerCardSettings.outlineWeight.value = data.slicerSettings.headerCardSettings.outlineWeight.value < 0
-            ? 0 : data.slicerSettings.headerCardSettings.outlineWeight.value;
-
-        data.slicerSettings.slicerTextCardSettings.outlineWeight.value = data.slicerSettings.slicerTextCardSettings.outlineWeight.value < 0
-            ? 0 : data.slicerSettings.slicerTextCardSettings.outlineWeight.value;
-
-        data.slicerSettings.slicerTextCardSettings.padding.value = data.slicerSettings.slicerTextCardSettings.padding.value < 0
-            ? 0 : data.slicerSettings.slicerTextCardSettings.padding.value;
-
-        data.slicerSettings.slicerTextCardSettings.height.value = data.slicerSettings.slicerTextCardSettings.height.value < 0
-            ? 0 : data.slicerSettings.slicerTextCardSettings.height.value;
-
-        data.slicerSettings.slicerTextCardSettings.width.value = data.slicerSettings.slicerTextCardSettings.width.value < 0
-            ? 0 : data.slicerSettings.slicerTextCardSettings.width.value;
-
-        data.slicerSettings.imagesCardSettings.imageSplit.value = ChicletSlicer.GET_VALID_IMAGE_SPLIT(data.slicerSettings.imagesCardSettings.imageSplit.value);
-
-        const columns: number = data.slicerSettings.generalCardSettings.columns.value;
-        const rows: number = data.slicerSettings.generalCardSettings.rows.value;
-
-        data.slicerSettings.generalCardSettings.columns.value = columns <= 0
-            ? +(data.slicerSettings.generalCardSettings.orientation.value.value === Orientation.VERTICAL && rows <= 0) : columns;
-
-        data.slicerSettings.generalCardSettings.rows.value = rows <= 0
-            ? +(data.slicerSettings.generalCardSettings.orientation.value.value === Orientation.HORIZONTAL && columns <= 0) : rows;
-
-        data.slicerSettings.generalCardSettings.rows.value = data.slicerSettings.generalCardSettings.rows.value > ChicletSlicer.MaxRows
-            ? ChicletSlicer.MaxRows : data.slicerSettings.generalCardSettings.rows.value;
-
-        this.slicerData = data;
-        this.formattingSettings = this.slicerData.slicerSettings;
-        this.formattingSettings.headerCardSettings.title.value = this.formattingSettings.headerCardSettings.title.value.trim() || this.slicerData.categorySourceName;
+        this.formattingSettings = data.slicerSettings;
 
         this.updateSearchHeader();
         this.updateSlicerBodyDimensions();
+
+        this.setDynamicFormattingSettings();
+
+        this.render();
+    }
+
+    private setDynamicFormattingSettings(): void {
+        const data: ChicletSlicerData = this.slicerData;
+
+        this.formattingSettings.headerCardSettings.title.value = this.formattingSettings.headerCardSettings.title.value.trim() || this.slicerData.categorySourceName;
 
         if (this.formattingSettings.generalCardSettings.showDisabled.value.value === ChicletSlicerShowDisabled.BOTTOM) {
             data.slicerDataPoints = lodashSortby(data.slicerDataPoints, [x => !x.selectable]);
@@ -417,8 +370,6 @@ export class ChicletSlicer implements IVisual {
                 this.formattingSettings.slicerTextCardSettings.height.value += ChicletSlicer.MaxImageSplit;
             }
         }
-
-        this.render();
     }
 
     public render() {
@@ -845,14 +796,28 @@ export class ChicletSlicer implements IVisual {
         return this.formattingSettingsService.buildFormattingModel(this.formattingSettings);
     }
 
-    protected telemetryTrace()
-    {
-        this.visualHost.telemetry.trace(powerbiVisualsApi.VisualEventType.Trace, "External image link detected");
-        this.externalImageTelemetryTraced();
-    }
-
     public static IS_EXTERNAL_LINK(link: string): boolean {
         return /^(ftp|https|http):\/\/[^ "]+$/.test(link);
+    }
+
+    private checkTelemetryTrace(): void {
+        const data: ChicletSlicerData =  this.slicerData;
+        if (!this.getExternalImageTelemetryTracedProperty()) {
+            const hasExternalImageLink: boolean = lodashSome(
+                data.slicerDataPoints,
+                (dataPoint: ChicletSlicerDataPoint) => {
+                    return ChicletSlicer.IS_EXTERNAL_LINK(dataPoint.imageURL);
+                }
+            );
+            if (hasExternalImageLink) {
+                this.telemetryTrace();
+            }
+        }
+    }
+
+    protected telemetryTrace(): void {
+        this.visualHost.telemetry.trace(powerbiVisualsApi.VisualEventType.Trace, "External image link detected");
+        this.externalImageTelemetryTraced();
     }
 
     public getExternalImageTelemetryTracedProperty(): boolean {
