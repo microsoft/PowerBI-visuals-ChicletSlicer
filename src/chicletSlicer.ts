@@ -114,7 +114,6 @@ export class ChicletSlicer implements IVisual {
     private slicerHeader: Selection<any>;
     private slicerBody: Selection<any>;
     private tableView: ITableView;
-    private slicerData: ChicletSlicerData;
 
     private interactivityService: IInteractivityService<BaseDataPoint> | any;
     private visualHost: IVisualHost;
@@ -182,7 +181,7 @@ export class ChicletSlicer implements IVisual {
     /**
      * Public to testability.
      */
-    public static GET_VALID_IMAGE_SPLIT(imageSplit): number {
+    public static getValidImageSplit(imageSplit): number {
         if (imageSplit < ChicletSlicer.MinImageSplit) {
             return ChicletSlicer.MinImageSplit;
         } else if (imageSplit > ChicletSlicer.MaxImageSplit) {
@@ -209,8 +208,10 @@ export class ChicletSlicer implements IVisual {
         converter.convert();
 
         const selfFilterEnabled: DataViewPropertyValue = dataView?.metadata?.objects?.general?.selfFilterEnabled;
+
+        let slicerDataPoints: ChicletSlicerDataPoint[] = converter.dataPoints;
         if (selfFilterEnabled && searchText) {
-            this.filterDataPointsBySearchText(converter.dataPoints, searchText);
+            slicerDataPoints = ChicletSlicer.FILTER_DATA_POINTS_BY_TEXT(converter.dataPoints, searchText);
         }
 
         const defaultSettings: ChicletSlicerSettingsModel = this.formattingSettings;
@@ -218,20 +219,27 @@ export class ChicletSlicer implements IVisual {
             categorySourceName: categories.source.displayName,
             formatString: valueFormatter.getFormatStringByColumn(categories.source),
             slicerSettings: defaultSettings,
-            slicerDataPoints: converter.dataPoints,
+            slicerDataPoints: slicerDataPoints,
             identityFields: converter.identityFields,
-            hasHighlights: converter.hasHighlights
+            hasHighlights: converter.hasHighlights, 
+            hasSelectionOverride: converter.hasSelectionOverride, // Override hasSelection if a objects contained more scopeIds than selections we found in the data
         };
 
-        // Override hasSelection if a objects contained more scopeIds than selections we found in the data
-        slicerData.hasSelectionOverride = converter.hasSelectionOverride;
+
 
         return slicerData;
     }
 
-    public filterDataPointsBySearchText(dataPoints: ChicletSlicerDataPoint[], searchText: string) {
+    public static FILTER_DATA_POINTS_BY_TEXT(dataPoints: ChicletSlicerDataPoint[], searchText: string): ChicletSlicerDataPoint[] {
+        // const myDataPoints = Array.from(dataPoints);
         searchText = searchText.toLowerCase();
-        dataPoints.forEach(x => x.filtered = x.category.toLowerCase().indexOf(searchText) < 0);
+        return dataPoints.map((dp:ChicletSlicerDataPoint)=> {
+            return {
+                ...dp,
+                filtered: !dp.category.toLowerCase().includes(searchText)
+            }
+        })
+        // myDataPoints.forEach(x => x.filtered = x.category.toLowerCase().indexOf(searchText) < 0);
     }
 
 
@@ -280,21 +288,21 @@ export class ChicletSlicer implements IVisual {
 
         this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(ChicletSlicerSettingsModel, options.dataViews);
 
-        this.slicerData = this.converter(
+        const slicerData: ChicletSlicerData = this.converter(
             this.dataView,
             this.searchInput?.node().value,
             this.visualHost);
 
         if (!this.currentViewport) {
             this.currentViewport = options.viewport;
-            this.initContainer();
+            this.initContainer(slicerData);
         }
 
         if (!(options.viewport.height === this.currentViewport.height && options.viewport.width === this.currentViewport.width)) {
             this.currentViewport = options.viewport;
         }
 
-        this.updateInternal();
+        this.updateInternal(slicerData);
     }
 
     private renderContextMenu() {
@@ -320,9 +328,7 @@ export class ChicletSlicer implements IVisual {
         settings.slicerTextCardSettings.unselectedColor.value.value = this.colorHelper.getThemeColor();
     }
 
-    private updateInternal() {
-
-        const data: ChicletSlicerData = this.slicerData;
+    private updateInternal(data: ChicletSlicerData) {
 
         if (!data) {
             this.tableView.empty();
@@ -340,17 +346,17 @@ export class ChicletSlicer implements IVisual {
         const slicerViewport: IViewport = this.getSlicerBodyViewport(this.currentViewport);
         this.updateSlicerBodyDimensions(slicerViewport);
 
-        const selectedDataPoints: ChicletSlicerDataPoint[] = ChicletSlicer.GET_SELECTED_DATA_POINTS(data); 
+        const selectedDataPoints: ChicletSlicerDataPoint[] = ChicletSlicer.getSelectedDataPoints(data); 
         data.slicerDataPoints = selectedDataPoints;
 
-        data.slicerSettings = ChicletSlicer.GET_UPDATED_SLICER_SETTINGS(data.slicerSettings, selectedDataPoints);
+        data.slicerSettings = ChicletSlicer.getUpdatedSlicerSettings(data.slicerSettings, selectedDataPoints);
         data.slicerSettings.headerCardSettings.title.value = data.slicerSettings.headerCardSettings.title.value.trim() || data.categorySourceName;
         this.formattingSettings = data.slicerSettings;
 
-        this.render();
+        this.render(selectedDataPoints);
     }
 
-    private static GET_SELECTED_DATA_POINTS(data: ChicletSlicerData): ChicletSlicerDataPoint[] {
+    private static getSelectedDataPoints(data: ChicletSlicerData): ChicletSlicerDataPoint[] {
         const formattingSettings: ChicletSlicerSettingsModel = data.slicerSettings;
 
         if (formattingSettings.generalCardSettings.showDisabled.value.value === ChicletSlicerShowDisabled.BOTTOM) {
@@ -362,11 +368,19 @@ export class ChicletSlicer implements IVisual {
         return data.slicerDataPoints;
     }
 
-    private static GET_UPDATED_SLICER_SETTINGS(formattingSettings: ChicletSlicerSettingsModel, slicerDataPoints: ChicletSlicerDataPoint[]): ChicletSlicerSettingsModel {
+    private static getUpdatedSlicerSettings(formattingSettings: ChicletSlicerSettingsModel, slicerDataPoints: ChicletSlicerDataPoint[]): ChicletSlicerSettingsModel {
+        const rows: number = formattingSettings.generalCardSettings.rows.value,
+            columns: number = formattingSettings.generalCardSettings.columns.value;
 
-        if (formattingSettings.slicerTextCardSettings.height.value === ChicletSlicer.MinImageSplit) {
+        formattingSettings.generalCardSettings.columns.value = columns <= 0
+            ? +(formattingSettings.generalCardSettings.orientation.value.value === Orientation.VERTICAL && rows <= 0) : columns;
+
+        formattingSettings.generalCardSettings.rows.value = rows <= 0
+            ? +(formattingSettings.generalCardSettings.orientation.value.value === Orientation.HORIZONTAL && columns <= 0) : rows;
+
+        if (formattingSettings.slicerTextCardSettings.height.value <= ChicletSlicer.MinImageSplit) {
             const extraSpaceForCell = ChicletSlicer.СellTotalInnerPaddings + ChicletSlicer.СellTotalInnerBorders,
-                textProperties: TextProperties = ChicletSlicer.GET_CHICLET_TEXT_PROPERTIES(formattingSettings.slicerTextCardSettings.textSize.value);
+                textProperties: TextProperties = ChicletSlicer.getChicletTextProperties(formattingSettings.slicerTextCardSettings.textSize.value);
 
             formattingSettings.slicerTextCardSettings.height.value = textMeasurementService.estimateSvgTextHeight(textProperties) +
                 textMeasurementService.estimateSvgTextBaselineDelta(textProperties) +
@@ -384,7 +398,7 @@ export class ChicletSlicer implements IVisual {
         return formattingSettings;
     }
 
-    public render() {
+    public render(slicerDataPoints?: ChicletSlicerDataPoint[]): void {
         this.tableView
             .rowHeight(this.formattingSettings.slicerTextCardSettings.height.value)
             .columnWidth(this.formattingSettings.slicerTextCardSettings.width.value)
@@ -392,8 +406,8 @@ export class ChicletSlicer implements IVisual {
             .rows(this.formattingSettings.generalCardSettings.rows.value)
             .columns(this.formattingSettings.generalCardSettings.columns.value)
             .data(
-                this.slicerData.slicerDataPoints.filter(x => !x.filtered),
-                (d: ChicletSlicerDataPoint) => this.slicerData.slicerDataPoints.indexOf(d),
+                slicerDataPoints.filter(x => !x.filtered),
+                (d: ChicletSlicerDataPoint) => slicerDataPoints.indexOf(d),
                 this.resetScrollbarPosition)
             .viewport(this.getSlicerBodyViewport(this.currentViewport))
             .render();
@@ -423,7 +437,7 @@ export class ChicletSlicer implements IVisual {
     }
 
 
-    private initContainer() {
+    private initContainer(slicerData: ChicletSlicerData) {
         const settings: ChicletSlicerSettingsModel = this.formattingSettings,
             slicerBodyViewport: IViewport = this.getSlicerBodyViewport(this.currentViewport);
 
@@ -452,6 +466,8 @@ export class ChicletSlicer implements IVisual {
 
         this.createSearchHeader(slicerContainer);
 
+        this.handleSearchHeaderEvents(slicerData.slicerDataPoints);
+
         this.slicerBody = slicerContainer
             .append('div')
             .classed(ChicletSlicer.BodySelector.className, true)
@@ -470,7 +486,7 @@ export class ChicletSlicer implements IVisual {
         };
 
         const rowUpdate = (rowSelection: Selection<any>) => {
-            this.selection(rowSelection);
+            this.selection(rowSelection, slicerData);
         };
 
         const rowExit = (rowSelection: Selection<any>) => {
@@ -588,8 +604,8 @@ export class ChicletSlicer implements IVisual {
             .remove();
     }
 
-    private selection(rowSelection: Selection<any>): void {
-        const settings: ChicletSlicerSettingsModel = this.formattingSettings, data: ChicletSlicerData = this.slicerData;
+    private selection(rowSelection: Selection<any>, data: ChicletSlicerData): void {
+        const settings: ChicletSlicerSettingsModel = this.formattingSettings;
 
         if (data && settings) {
             this.slicerHeader.classed('hidden', !settings.headerCardSettings.show.value);
@@ -605,7 +621,7 @@ export class ChicletSlicer implements IVisual {
                             .classed(ChicletSlicer.SlicerBodyVerticalSelector.className, settings.generalCardSettings.orientation.value.value === Orientation.VERTICAL);
 
             const slicerText: Selection<any> = rowSelection.selectAll(ChicletSlicer.LabelTextSelector.selectorName),
-                textProperties: TextProperties = ChicletSlicer.GET_CHICLET_TEXT_PROPERTIES(settings.slicerTextCardSettings.textSize.value),
+                textProperties: TextProperties = ChicletSlicer.getChicletTextProperties(settings.slicerTextCardSettings.textSize.value),
                 formatString: string = data.formatString;
 
             const slicerBodyViewport: IViewport = this.getSlicerBodyViewport(this.currentViewport);
@@ -707,13 +723,17 @@ export class ChicletSlicer implements IVisual {
             .attr("drag-resize-disabled", "true")
             .classed("searchInput", true);
 
+        
+    }
+
+    private handleSearchHeaderEvents(slicerDataPoints: ChicletSlicerDataPoint[]): void {
         // Filter chiclets based on search input
         this.searchInput.on("input", () => {
             const searchText: string = this.searchInput.node().value;
             const selfFilterEnabled: DataViewPropertyValue = this.dataView.metadata.objects?.general?.selfFilterEnabled;
             if (selfFilterEnabled && searchText != null) {
-                this.filterDataPointsBySearchText(this.slicerData.slicerDataPoints, searchText);
-                this.render();
+                const filteredDataPoints: ChicletSlicerDataPoint[] = ChicletSlicer.FILTER_DATA_POINTS_BY_TEXT(slicerDataPoints, searchText);
+                this.render(filteredDataPoints);
             }
         });
     }
@@ -751,7 +771,7 @@ export class ChicletSlicer implements IVisual {
             .style("width", `${ChicletSlicer.MaxImageWidth}%`);
     }
 
-    public static GET_CHICLET_TEXT_PROPERTIES(textSize?: number): TextProperties {
+    public static getChicletTextProperties(textSize?: number): TextProperties {
         return <TextProperties>{
             fontFamily: ChicletSlicer.DefaultFontFamily,
             fontSize: PixelConverter.fromPoint(textSize || ChicletSlicer.DefaultFontSizeInPt),
@@ -760,14 +780,14 @@ export class ChicletSlicer implements IVisual {
 
     private getHeaderHeight(): number {
         return textMeasurementService.estimateSvgTextHeight(
-            ChicletSlicer.GET_CHICLET_TEXT_PROPERTIES(this.formattingSettings.headerCardSettings.textSize.value));
+            ChicletSlicer.getChicletTextProperties(this.formattingSettings.headerCardSettings.textSize.value));
     }
 
     private getRowHeight(): number {
         const textSettings = this.formattingSettings.slicerTextCardSettings;
         return textSettings.height.value !== 0
             ? textSettings.height.value
-            : textMeasurementService.estimateSvgTextHeight(ChicletSlicer.GET_CHICLET_TEXT_PROPERTIES(textSettings.textSize.value));
+            : textMeasurementService.estimateSvgTextHeight(ChicletSlicer.getChicletTextProperties(textSettings.textSize.value));
     }
 
     private getBorderStyle(outlineElement: string): string {
@@ -815,7 +835,7 @@ export class ChicletSlicer implements IVisual {
             const hasExternalImageLink: boolean = lodashSome(
                 slicerDataPoints,
                 (dataPoint: ChicletSlicerDataPoint) => {
-                    return ChicletSlicer.IS_EXTERNAL_LINK(dataPoint.imageURL);
+                    return ChicletSlicer.isExternalLink(dataPoint.imageURL);
                 }
             );
             if (hasExternalImageLink) {
@@ -830,7 +850,7 @@ export class ChicletSlicer implements IVisual {
         this.externalImageTelemetryTraced();
     }
 
-    public static IS_EXTERNAL_LINK(link: string): boolean {
+    public static isExternalLink(link: string): boolean {
         return /^(ftp|https|http):\/\/[^ "]+$/.test(link);
     }
 

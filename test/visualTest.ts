@@ -78,17 +78,17 @@ describe("ChicletSlicer", () => {
 
     describe("getValidImageSplit", () => {
         it("should return a min value when argument less than the min value", () => {
-            expect(VisualClass.GET_VALID_IMAGE_SPLIT(-9999)).toBe(VisualClass.MinImageSplit);
+            expect(VisualClass.getValidImageSplit(-9999)).toBe(VisualClass.MinImageSplit);
         });
 
         it("should return a max value when argument more than the max value", () => {
-            expect(VisualClass.GET_VALID_IMAGE_SPLIT(9999)).toBe(VisualClass.MaxImageSplit);
+            expect(VisualClass.getValidImageSplit(9999)).toBe(VisualClass.MaxImageSplit);
         });
 
         it("should return a input value when a input value between the min value and the max value", () => {
             const inputValue: number = 50;
 
-            expect(VisualClass.GET_VALID_IMAGE_SPLIT(inputValue)).toBe(inputValue);
+            expect(VisualClass.getValidImageSplit(inputValue)).toBe(inputValue);
         });
     });
 
@@ -162,7 +162,7 @@ describe("ChicletSlicer", () => {
                     .fontSize
                     .replace(/[^-\d\.]/g, ""));
 
-                const textProp: TextProperties = VisualClass.GET_CHICLET_TEXT_PROPERTIES(
+                const textProp: TextProperties = VisualClass.getChicletTextProperties(
                     PixelConverter.toPoint(slicerFontSize));
 
                 const slicerTextDelta: number = textMeasurementService.estimateSvgTextBaselineDelta(textProp);
@@ -204,7 +204,7 @@ describe("ChicletSlicer", () => {
                     .fontSize
                     .replace(/[^-\d\.]/g, ""));
 
-                const textProp: TextProperties = VisualClass.GET_CHICLET_TEXT_PROPERTIES(
+                const textProp: TextProperties = VisualClass.getChicletTextProperties(
                     PixelConverter.toPoint(slicerFontSize));
 
                 const slicerTextDelta: number = textMeasurementService.estimateSvgTextBaselineDelta(textProp);
@@ -385,9 +385,9 @@ describe("ChicletSlicer", () => {
 
             const chicletTotalColumns: number = visualBuilder
                 .visibleGroup
-                .querySelectorAll("div.row")[0]
-                .querySelectorAll(".cell")
-                .length;
+                ?.querySelectorAll("div.row")[0]
+                ?.querySelectorAll(".cell")
+                ?.length;
 
             (<any>dataView.metadata.objects).general.orientation = orientation;
             (<any>dataView.metadata.objects).general.сolumns = expectedNumber;
@@ -395,9 +395,9 @@ describe("ChicletSlicer", () => {
             visualBuilder.updateRenderTimeout(dataView, () => {
                 const chicletTotalColumns0: number = visualBuilder
                     .visibleGroup
-                    .querySelectorAll("div.row")[0]
-                    .querySelectorAll(".cell")
-                    .length;
+                    ?.querySelectorAll("div.row")[0]
+                    ?.querySelectorAll(".cell")
+                    ?.length;
 
                 expect(chicletTotalColumns).toEqual(chicletTotalColumns0);
 
@@ -1540,17 +1540,17 @@ describe("ChicletSlicer", () => {
     describe("URL Link", () => {
         it("matches to https pattern", () => {
             let link = "https://powerbi.com";
-            expect(VisualClass.IS_EXTERNAL_LINK(link).valueOf()).toBe(true);
+            expect(VisualClass.isExternalLink(link).valueOf()).toBe(true);
         });
 
         it("matches to ftp pattern", () => {
             let link = "ftp://microsoft@ftp.someserver.com/program.exe";
-            expect(VisualClass.IS_EXTERNAL_LINK(link).valueOf()).toBe(true);
+            expect(VisualClass.isExternalLink(link).valueOf()).toBe(true);
         });
 
         it("does not matches to http, https or ftp pattern", () => {
             let link = "powerbi.com";
-            expect(VisualClass.IS_EXTERNAL_LINK(link).valueOf()).toBe(false);
+            expect(VisualClass.isExternalLink(link).valueOf()).toBe(false);
         });
     });
 
@@ -1561,7 +1561,7 @@ describe("ChicletSlicer", () => {
                 let containsExternalImage: boolean = false;
                 visualBuilder.slicerItemImages
                     .forEach((element: Element) => {
-                        containsExternalImage = containsExternalImage || VisualClass.IS_EXTERNAL_LINK(element.getAttribute("src"));
+                        containsExternalImage = containsExternalImage || VisualClass.isExternalLink(element.getAttribute("src"));
                     });
                 expect(containsExternalImage.valueOf()).toBe(true);
                 done();
@@ -1578,7 +1578,7 @@ describe("ChicletSlicer", () => {
 
                 visualBuilder.slicerItemImages
                     .forEach((element: Element) => {
-                        containsExternalImage = containsExternalImage || VisualClass.IS_EXTERNAL_LINK(element.getAttribute("src"));
+                        containsExternalImage = containsExternalImage || VisualClass.isExternalLink(element.getAttribute("src"));
                     });
                 expect(containsExternalImage.valueOf()).toBe(false);
                 done();
