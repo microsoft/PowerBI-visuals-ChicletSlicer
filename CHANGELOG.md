@@ -1,3 +1,10 @@
+## 2.0.8.0
+* Code refactoring
+* Bug fixes
+
+## 2.0.7
+* JsonFilter check fix
+
 ## 2.0.6
 * Formatting models update
 * Tooltips toogle added
