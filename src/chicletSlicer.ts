@@ -211,7 +211,7 @@ export class ChicletSlicer implements IVisual {
 
         let slicerDataPoints: ChicletSlicerDataPoint[] = converter.dataPoints;
         if (selfFilterEnabled && searchText) {
-            slicerDataPoints = ChicletSlicer.FILTER_DATA_POINTS_BY_TEXT(converter.dataPoints, searchText);
+            slicerDataPoints = ChicletSlicer.filterDataPointsByText(converter.dataPoints, searchText);
         }
 
         const defaultSettings: ChicletSlicerSettingsModel = this.formattingSettings;
@@ -225,13 +225,10 @@ export class ChicletSlicer implements IVisual {
             hasSelectionOverride: converter.hasSelectionOverride, // Override hasSelection if a objects contained more scopeIds than selections we found in the data
         };
 
-
-
         return slicerData;
     }
 
-    public static FILTER_DATA_POINTS_BY_TEXT(dataPoints: ChicletSlicerDataPoint[], searchText: string): ChicletSlicerDataPoint[] {
-        // const myDataPoints = Array.from(dataPoints);
+    public static filterDataPointsByText(dataPoints: ChicletSlicerDataPoint[], searchText: string): ChicletSlicerDataPoint[] {
         searchText = searchText.toLowerCase();
         return dataPoints.map((dp:ChicletSlicerDataPoint)=> {
             return {
@@ -239,7 +236,6 @@ export class ChicletSlicer implements IVisual {
                 filtered: !dp.category.toLowerCase().includes(searchText)
             }
         })
-        // myDataPoints.forEach(x => x.filtered = x.category.toLowerCase().indexOf(searchText) < 0);
     }
 
 
@@ -346,17 +342,17 @@ export class ChicletSlicer implements IVisual {
         const slicerViewport: IViewport = this.getSlicerBodyViewport(this.currentViewport);
         this.updateSlicerBodyDimensions(slicerViewport);
 
-        const selectedDataPoints: ChicletSlicerDataPoint[] = ChicletSlicer.getSelectedDataPoints(data); 
-        data.slicerDataPoints = selectedDataPoints;
+        const filteredDataPoints: ChicletSlicerDataPoint[] = ChicletSlicer.getFilteredDataPoints(data); 
+        data.slicerDataPoints = filteredDataPoints;
 
-        data.slicerSettings = ChicletSlicer.getUpdatedSlicerSettings(data.slicerSettings, selectedDataPoints);
+        data.slicerSettings = ChicletSlicer.getUpdatedSlicerSettings(data.slicerSettings, filteredDataPoints);
         data.slicerSettings.headerCardSettings.title.value = data.slicerSettings.headerCardSettings.title.value.trim() || data.categorySourceName;
         this.formattingSettings = data.slicerSettings;
 
-        this.render(selectedDataPoints);
+        this.render(filteredDataPoints);
     }
 
-    private static getSelectedDataPoints(data: ChicletSlicerData): ChicletSlicerDataPoint[] {
+    private static getFilteredDataPoints(data: ChicletSlicerData): ChicletSlicerDataPoint[] {
         const formattingSettings: ChicletSlicerSettingsModel = data.slicerSettings;
 
         if (formattingSettings.generalCardSettings.showDisabled.value.value === ChicletSlicerShowDisabled.BOTTOM) {
@@ -732,7 +728,7 @@ export class ChicletSlicer implements IVisual {
             const searchText: string = this.searchInput.node().value;
             const selfFilterEnabled: DataViewPropertyValue = this.dataView.metadata.objects?.general?.selfFilterEnabled;
             if (selfFilterEnabled && searchText != null) {
-                const filteredDataPoints: ChicletSlicerDataPoint[] = ChicletSlicer.FILTER_DATA_POINTS_BY_TEXT(slicerDataPoints, searchText);
+                const filteredDataPoints: ChicletSlicerDataPoint[] = ChicletSlicer.filterDataPointsByText(slicerDataPoints, searchText);
                 this.render(filteredDataPoints);
             }
         });
