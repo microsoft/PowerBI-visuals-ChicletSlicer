@@ -34,13 +34,10 @@ import ISQExpr = powerbi.data.ISQExpr;
 import { interactivitySelectionService as interactivityService } from "powerbi-visuals-utils-interactivityutils";
 import SelectableDataPoint = interactivityService.SelectableDataPoint;
 
-import { ChicletSlicerSettingsModel } from "./chicletSlicerSettingsModel";
-
 export interface ChicletSlicerData {
     categorySourceName: string;
     formatString: string;
     slicerDataPoints: ChicletSlicerDataPoint[];
-    slicerSettings: ChicletSlicerSettingsModel;
     hasSelectionOverride?: boolean;
     hasHighlights: boolean;
     identityFields: ISQExpr[];

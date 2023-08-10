@@ -214,11 +214,9 @@ export class ChicletSlicer implements IVisual {
             slicerDataPoints = ChicletSlicer.filterDataPointsByText(converter.dataPoints, searchText);
         }
 
-        const defaultSettings: ChicletSlicerSettingsModel = this.formattingSettings;
         const slicerData : ChicletSlicerData = {
             categorySourceName: categories.source.displayName,
             formatString: valueFormatter.getFormatStringByColumn(categories.source),
-            slicerSettings: defaultSettings,
             slicerDataPoints: slicerDataPoints,
             identityFields: converter.identityFields,
             hasHighlights: converter.hasHighlights, 
@@ -309,19 +307,21 @@ export class ChicletSlicer implements IVisual {
         });
     }
 
-    private changeColorsForHighContrast(settings: ChicletSlicerSettingsModel): void {
-        settings.headerCardSettings.fontColor.value.value = this.colorHelper.getHighContrastColor("foreground", settings.headerCardSettings.fontColor.value.value);
-        settings.headerCardSettings.outlineColor.value.value = this.colorHelper.getHighContrastColor("foreground", settings.headerCardSettings.outlineColor.value.value);
-        settings.headerCardSettings.background.value.value = this.colorHelper.getThemeColor();
-        settings.slicerTextCardSettings.background.value.value = this.colorHelper.getThemeColor();
+    private changeColorsForHighContrast(settings: ChicletSlicerSettingsModel, colorHelper: ColorHelper): ChicletSlicerSettingsModel {
+        settings.headerCardSettings.fontColor.value.value = colorHelper.getHighContrastColor("foreground", settings.headerCardSettings.fontColor.value.value);
+        settings.headerCardSettings.outlineColor.value.value = colorHelper.getHighContrastColor("foreground", settings.headerCardSettings.outlineColor.value.value);
+        settings.headerCardSettings.background.value.value = colorHelper.getThemeColor();
+        settings.slicerTextCardSettings.background.value.value = colorHelper.getThemeColor();
 
-        settings.slicerTextCardSettings.fontColor.value.value = this.colorHelper.getHighContrastColor("foreground", settings.slicerTextCardSettings.fontColor.value.value);
-        settings.slicerTextCardSettings.outlineColor.value.value = this.colorHelper.getHighContrastColor("foreground", settings.slicerTextCardSettings.outlineColor.value.value);
-        settings.slicerTextCardSettings.hoverColor.value.value = this.colorHelper.getHighContrastColor("foreground", settings.slicerTextCardSettings.hoverColor.value.value);
+        settings.slicerTextCardSettings.fontColor.value.value = colorHelper.getHighContrastColor("foreground", settings.slicerTextCardSettings.fontColor.value.value);
+        settings.slicerTextCardSettings.outlineColor.value.value = colorHelper.getHighContrastColor("foreground", settings.slicerTextCardSettings.outlineColor.value.value);
+        settings.slicerTextCardSettings.hoverColor.value.value = colorHelper.getHighContrastColor("foreground", settings.slicerTextCardSettings.hoverColor.value.value);
 
-        settings.slicerTextCardSettings.disabledColor.value.value = this.colorHelper.getThemeColor();
-        settings.slicerTextCardSettings.selectedColor.value.value = this.colorHelper.getThemeColor();
-        settings.slicerTextCardSettings.unselectedColor.value.value = this.colorHelper.getThemeColor();
+        settings.slicerTextCardSettings.disabledColor.value.value = colorHelper.getThemeColor();
+        settings.slicerTextCardSettings.selectedColor.value.value = colorHelper.getThemeColor();
+        settings.slicerTextCardSettings.unselectedColor.value.value = colorHelper.getThemeColor();
+
+        return settings;
     }
 
     private updateInternal(data: ChicletSlicerData) {
@@ -334,7 +334,7 @@ export class ChicletSlicer implements IVisual {
         this.catchExternalImage(data.slicerDataPoints);
 
         if (this.colorHelper.isHighContrast) {
-            this.changeColorsForHighContrast(data.slicerSettings);
+            this.changeColorsForHighContrast(this.formattingSettings, this.colorHelper);
         }
 
         this.updateSearchHeader();
@@ -342,19 +342,16 @@ export class ChicletSlicer implements IVisual {
         const slicerViewport: IViewport = this.getSlicerBodyViewport(this.currentViewport);
         this.updateSlicerBodyDimensions(slicerViewport);
 
-        const filteredDataPoints: ChicletSlicerDataPoint[] = ChicletSlicer.getFilteredDataPoints(data); 
+        const filteredDataPoints: ChicletSlicerDataPoint[] = ChicletSlicer.getFilteredDataPoints(data, this.formattingSettings); 
         data.slicerDataPoints = filteredDataPoints;
 
-        data.slicerSettings = ChicletSlicer.getUpdatedSlicerSettings(data.slicerSettings, filteredDataPoints);
-        data.slicerSettings.headerCardSettings.title.value = data.slicerSettings.headerCardSettings.title.value.trim() || data.categorySourceName;
-        this.formattingSettings = data.slicerSettings;
+        this.formattingSettings = ChicletSlicer.getUpdatedSlicerSettings(this.formattingSettings, filteredDataPoints);
+        this.formattingSettings.headerCardSettings.title.value = this.formattingSettings.headerCardSettings.title.value.trim() || data.categorySourceName;
 
         this.render(filteredDataPoints);
     }
 
-    private static getFilteredDataPoints(data: ChicletSlicerData): ChicletSlicerDataPoint[] {
-        const formattingSettings: ChicletSlicerSettingsModel = data.slicerSettings;
-
+    private static getFilteredDataPoints(data: ChicletSlicerData, formattingSettings: ChicletSlicerSettingsModel): ChicletSlicerDataPoint[] {
         if (formattingSettings.generalCardSettings.showDisabled.value.value === ChicletSlicerShowDisabled.BOTTOM) {
             data.slicerDataPoints = lodashSortby(data.slicerDataPoints, [x => !x.selectable]);
         } else if (formattingSettings.generalCardSettings.showDisabled.value.value === ChicletSlicerShowDisabled.HIDE) {
@@ -685,7 +682,7 @@ export class ChicletSlicer implements IVisual {
                     slicerItemInputs: slicerItemInputs,
                     slicerClear: slicerClear,
                     interactivityService: this.interactivityService,
-                    slicerSettings: data.slicerSettings,
+                    slicerSettings: settings,
                     identityFields: data.identityFields,
                     isHighContrastMode: this.colorHelper.isHighContrast,
                     behavior: this.behavior,
