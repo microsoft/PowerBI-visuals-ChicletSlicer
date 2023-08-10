@@ -227,11 +227,11 @@ export class ChicletSlicer implements IVisual {
     }
 
     public static filterDataPointsByText(dataPoints: ChicletSlicerDataPoint[], searchText: string): ChicletSlicerDataPoint[] {
-        searchText = searchText.toLowerCase();
+        const searchTextLower: string = searchText.toLowerCase();
         return dataPoints.map((dp:ChicletSlicerDataPoint)=> {
             return {
                 ...dp,
-                filtered: !dp.category.toLowerCase().includes(searchText)
+                filtered: !dp.category.toLowerCase().includes(searchTextLower)
             }
         })
     }
