@@ -28,25 +28,19 @@ import powerbiVisualsApi from "powerbi-visuals-api";
 import powerbi = powerbiVisualsApi;
 
 import DataViewCategorical = powerbi.DataViewCategorical;
-import DataViewCategoricalColumn = powerbi.DataViewCategoricalColumn;
 import DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
 import DataViewMetadata = powerbi.DataViewMetadata;
 
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 import ISelectionId = powerbi.visuals.ISelectionId;
 import DataView = powerbi.DataView;
-import DataViewObjectPropertyIdentifier = powerbi.DataViewObjectPropertyIdentifier;
 import CustomVisualOpaqueIdentity =  powerbi.visuals.CustomVisualOpaqueIdentity;
 // powerbi.data
 import ISQExpr = powerbi.data.ISQExpr;
 
+import IFilter = powerbi.IFilter;
 // powerbi.extensibility.utils.formatting
 import { valueFormatter } from "powerbi-visuals-utils-formattingutils";
-
-// powerbi.extensibility.utils.dataview
-import { dataViewObjects as DataViewObjectsModule } from "powerbi-visuals-utils-dataviewutils";
-
-import { chicletSlicerProps } from "./chicletSlicerProps";
 import { ChicletSlicerDataPoint } from "./interfaces";
 
 export class ChicletSlicerConverter {
@@ -65,12 +59,14 @@ export class ChicletSlicerConverter {
 
     private host: IVisualHost;
     public hasSelectionOverride: boolean;
+    private jsonFilters: IFilter[] | any[];
 
-    public constructor(dataView: DataView, host: IVisualHost) {
+    public constructor(dataView: DataView, host: IVisualHost, jsonFilters: IFilter[] | any[]) {
         const dataViewCategorical: DataViewCategorical = dataView.categorical;
         this.dataViewCategorical = dataViewCategorical;
         this.dataViewMetadata = dataView.metadata;
         this.host = host;
+        this.jsonFilters = jsonFilters;
 
         if (dataViewCategorical.categories && dataViewCategorical.categories.length > 0) {
             this.category = dataViewCategorical.categories[0];
@@ -84,12 +80,6 @@ export class ChicletSlicerConverter {
         this.dataPoints = [];
 
         this.hasSelectionOverride = false;
-    }
-
-    private isCategoryColumnSelected(propertyId: DataViewObjectPropertyIdentifier, categories: DataViewCategoricalColumn, idx: number): boolean {
-        return categories.objects != null
-            && categories.objects[idx]
-            && DataViewObjectsModule.getValue<boolean>(categories.objects[idx], propertyId);
     }
 
     public convert(): void {
@@ -108,26 +98,15 @@ export class ChicletSlicerConverter {
                 }
             }
 
-            let hasSelection: boolean = undefined;
-            if (this.dataViewCategorical.values) {
-                for (let idx: number = 0; idx < this.categoryValues.length; idx++) {
-                    const selected = this.isCategoryColumnSelected(chicletSlicerProps.selectedPropertyIdentifier, this.category, idx);
-                    if (selected != null) {
-                        hasSelection = selected;
-                        break;
-                    }
-                }
-            }
+            const hasSelection: boolean =  this.jsonFilters?.length && this.jsonFilters[0]?.target.length > 0;
 
             const dataViewCategorical = this.dataViewCategorical;
             let value : number = -Infinity;
             this.hasHighlights = false;
-            for (let categoryIndex: number = 0, categoryCount = this.categoryValues.length; categoryIndex < categoryCount; categoryIndex++) {
-                let categoryIsSelected: boolean = this.isCategoryColumnSelected(
-                    chicletSlicerProps.selectedPropertyIdentifier,
-                    this.category,
-                    categoryIndex);
-
+            for (let categoryIndex: number = 0; categoryIndex < this.categoryValues.length; categoryIndex++) {
+                const identityIndex: number = (<any>this.categoryIdentities[categoryIndex]).identityIndex;
+                let categoryIsSelected = this.jsonFilters[0]?.target.includes(identityIndex);
+            
                 let selectable: boolean = true;
                 if (hasSelection != null) {
                     if (isInvertedSelectionMode) {
@@ -181,7 +160,7 @@ export class ChicletSlicerConverter {
                     category: categoryLabel,
                     imageURL: imageURL,
                     value: value,
-                    selected: false,
+                    selected: categoryIsSelected,
                     selectable: selectable,
                     id: categoryIndex,
                     columnName: this.category.source.displayName

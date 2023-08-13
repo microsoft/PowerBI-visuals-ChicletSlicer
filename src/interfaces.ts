@@ -39,8 +39,9 @@ import { ChicletSlicerSettingsModel } from "./chicletSlicerSettingsModel";
 export interface ChicletSlicerData {
     categorySourceName: string;
     formatString: string;
+    selfFilterEnabled: boolean;
     slicerDataPoints: ChicletSlicerDataPoint[];
-    slicerSettings: ChicletSlicerSettingsModel;
+    formattingSettings: ChicletSlicerSettingsModel;
     hasSelectionOverride?: boolean;
     hasHighlights: boolean;
     identityFields: ISQExpr[];

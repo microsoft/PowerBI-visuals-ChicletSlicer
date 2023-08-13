@@ -116,12 +116,10 @@ export class TableView implements ITableView {
             .attr('drag-resize-disabled', true);
 
         this.scrollContainer = options.baseContainer
-            .append('div')
-            .attr('class', 'scrollRegion');
+            .select('.scrollRegion');
 
         this.visibleGroupContainer = this.scrollContainer
-            .append('div')
-            .attr('class', 'visibleGroup');
+            .select('.visibleGroup');
 
         TableView.setDefaultOptions(options);
     }
