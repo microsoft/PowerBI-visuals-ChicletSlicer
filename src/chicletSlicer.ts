@@ -280,10 +280,7 @@ export class ChicletSlicer implements IVisual {
             formatString: valueFormatter.getFormatStringByColumn(categories.source),
             formattingSettings: formattingSettings,
             selfFilterEnabled: selfFilterEnabled,
-            slicerDataPoints: dataPoints,
-            identityFields: converter.identityFields,
-            hasHighlights: converter.hasHighlights,
-            hasSelectionOverride: converter.hasSelectionOverride // Override hasSelection if a objects contained more scopeIds than selections we found in the data
+            slicerDataPoints: dataPoints
         };
 
         return slicerData;
@@ -368,7 +365,7 @@ export class ChicletSlicer implements IVisual {
 
         if (data.formattingSettings.slicerTextCardSettings.height.value === ChicletSlicer.MinImageSplit) {
             const extraSpaceForCell = ChicletSlicer.СellTotalInnerPaddings + ChicletSlicer.СellTotalInnerBorders,
-                textProperties: TextProperties = ChicletSlicer.getChicleTextProperties(data.formattingSettings.slicerTextCardSettings.textSize.value);
+                textProperties: TextProperties = ChicletSlicer.getChicletTextProperties(data.formattingSettings.slicerTextCardSettings.textSize.value);
 
             data.formattingSettings.slicerTextCardSettings.height.value = textMeasurementService.estimateSvgTextHeight(textProperties) +
                 textMeasurementService.estimateSvgTextBaselineDelta(textProperties) +
@@ -619,7 +616,7 @@ export class ChicletSlicer implements IVisual {
                 .classed(ChicletSlicer.SlicerBodyVerticalSelector.className, settings.generalCardSettings.orientation.value.value === Orientation.VERTICAL);
 
             const slicerText: Selection<any> = rowSelection.selectAll(ChicletSlicer.LabelTextSelector.selectorName),
-                textProperties: TextProperties = ChicletSlicer.getChicleTextProperties(settings.slicerTextCardSettings.textSize.value),
+                textProperties: TextProperties = ChicletSlicer.getChicletTextProperties(settings.slicerTextCardSettings.textSize.value),
                 formatString: string = data.formatString;
 
             const slicerBodyViewport: IViewport = this.getSlicerBodyViewport(this.currentViewport, settings.headerCardSettings, data.selfFilterEnabled);
@@ -685,7 +682,6 @@ export class ChicletSlicer implements IVisual {
                 slicerItemInputs: slicerItemInputs,
                 slicerClear: slicerClear,
                 formattingSettings: data.formattingSettings,
-                identityFields: data.identityFields,
                 isHighContrastMode: this.colorHelper.isHighContrast
             };
 
@@ -757,7 +753,7 @@ export class ChicletSlicer implements IVisual {
             .style("width", `${ChicletSlicer.MaxImageWidth}%`);
     }
 
-    public static getChicleTextProperties(textSize?: number): TextProperties {
+    public static getChicletTextProperties(textSize?: number): TextProperties {
         return <TextProperties>{
             fontFamily: ChicletSlicer.DefaultFontFamily,
             fontSize: PixelConverter.fromPoint(textSize || ChicletSlicer.DefaultFontSizeInPt),
@@ -766,13 +762,13 @@ export class ChicletSlicer implements IVisual {
 
     private static getHeaderHeight(headerCardSettings: HeaderCardSettings): number {
         return textMeasurementService.estimateSvgTextHeight(
-            ChicletSlicer.getChicleTextProperties(headerCardSettings.textSize.value));
+            ChicletSlicer.getChicletTextProperties(headerCardSettings.textSize.value));
     }
 
     private static getRowHeight(textSettings: SlicerTextCardSettings): number {
         return textSettings.height.value !== 0
             ? textSettings.height.value
-            : textMeasurementService.estimateSvgTextHeight(ChicletSlicer.getChicleTextProperties(textSettings.textSize.value));
+            : textMeasurementService.estimateSvgTextHeight(ChicletSlicer.getChicletTextProperties(textSettings.textSize.value));
     }
 
     private static getBorderStyle(outlineElement: string): string {

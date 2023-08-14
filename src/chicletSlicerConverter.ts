@@ -29,14 +29,11 @@ import powerbi = powerbiVisualsApi;
 
 import DataViewCategorical = powerbi.DataViewCategorical;
 import DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
-import DataViewMetadata = powerbi.DataViewMetadata;
 
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 import ISelectionId = powerbi.visuals.ISelectionId;
 import DataView = powerbi.DataView;
-import CustomVisualOpaqueIdentity =  powerbi.visuals.CustomVisualOpaqueIdentity;
-// powerbi.data
-import ISQExpr = powerbi.data.ISQExpr;
+import CustomVisualOpaqueIdentity = powerbi.visuals.CustomVisualOpaqueIdentity;
 
 import IFilter = powerbi.IFilter;
 // powerbi.extensibility.utils.formatting
@@ -45,26 +42,21 @@ import { ChicletSlicerDataPoint } from "./interfaces";
 
 export class ChicletSlicerConverter {
     private dataViewCategorical: DataViewCategorical;
-    private dataViewMetadata: DataViewMetadata;
     private category: DataViewCategoryColumn;
     private image: DataViewCategoryColumn;
     private categoryIdentities: CustomVisualOpaqueIdentity[];
     private categoryValues: any[];
     private categoryFormatString: string;
-    public identityFields: ISQExpr[];
 
     public numberOfCategoriesSelectedInData: number;
     public dataPoints: ChicletSlicerDataPoint[];
-    public hasHighlights: boolean;
 
     private host: IVisualHost;
-    public hasSelectionOverride: boolean;
     private jsonFilters: IFilter[] | any[];
 
     public constructor(dataView: DataView, host: IVisualHost, jsonFilters: IFilter[] | any[]) {
         const dataViewCategorical: DataViewCategorical = dataView.categorical;
         this.dataViewCategorical = dataViewCategorical;
-        this.dataViewMetadata = dataView.metadata;
         this.host = host;
         this.jsonFilters = jsonFilters;
 
@@ -73,13 +65,10 @@ export class ChicletSlicerConverter {
             this.image = dataViewCategorical.categories[1]; // may be undefined
             this.categoryIdentities = this.category.identity;
             this.categoryValues = this.category.values;
-            this.identityFields = <ISQExpr[]>this.category.identityFields;
             this.categoryFormatString = valueFormatter.getFormatStringByColumn(this.category.source);
         }
 
         this.dataPoints = [];
-
-        this.hasSelectionOverride = false;
     }
 
     public convert(): void {
@@ -88,45 +77,16 @@ export class ChicletSlicerConverter {
         // If category exists, we render labels using category values. If not, we render labels
         // using measure labels.
         if (this.categoryValues) {
-            const objects = this.dataViewMetadata ? <any>this.dataViewMetadata.objects : undefined;
-            const isInvertedSelectionMode: boolean = false;
-            let numberOfScopeIds: number;
 
-            if (objects && objects.general && objects.general.filter) {
-                if (!this.identityFields) {
-                    return;
-                }
-            }
-
-            const hasSelection: boolean =  this.jsonFilters?.length && this.jsonFilters[0]?.target.length > 0;
+            const hasSelection: boolean = (this.jsonFilters?.length && this.jsonFilters[0]?.target.length > 0) ? true : false;
 
             const dataViewCategorical = this.dataViewCategorical;
-            let value : number = -Infinity;
-            this.hasHighlights = false;
+            let value: number = -Infinity;
+
             for (let categoryIndex: number = 0; categoryIndex < this.categoryValues.length; categoryIndex++) {
                 const identityIndex: number = (<any>this.categoryIdentities[categoryIndex]).identityIndex;
-                let categoryIsSelected = this.jsonFilters[0]?.target.includes(identityIndex);
-            
+                const categoryIsSelected = (hasSelection && this.jsonFilters[0].target.includes(identityIndex)) ? true : false;
                 let selectable: boolean = true;
-                if (hasSelection != null) {
-                    if (isInvertedSelectionMode) {
-                        if (this.category.objects == null)
-                            categoryIsSelected = undefined;
-                        if (categoryIsSelected != null) {
-                            categoryIsSelected = hasSelection;
-                        } else if (categoryIsSelected == null) {
-                            categoryIsSelected = !hasSelection;
-                        }
-                    } else {
-                        if (categoryIsSelected == null) {
-                            categoryIsSelected = !hasSelection;
-                        }
-                    }
-                }
-
-                if (categoryIsSelected) {
-                    this.numberOfCategoriesSelectedInData++;
-                }
 
                 const categoryValue: any = this.categoryValues[categoryIndex], categoryLabel: string = valueFormatter.format(categoryValue, this.categoryFormatString);
                 let imageURL: string = '';
@@ -138,7 +98,6 @@ export class ChicletSlicerConverter {
                             value = <number>seriesData.values[categoryIndex];
                             if (seriesData.highlights) {
                                 selectable = !(seriesData.highlights[categoryIndex] === null);
-                                this.hasHighlights = true;
                             }
                         }
                     }
@@ -165,9 +124,6 @@ export class ChicletSlicerConverter {
                     id: categoryIndex,
                     columnName: this.category.source.displayName
                 });
-            }
-            if (numberOfScopeIds != null && numberOfScopeIds > this.numberOfCategoriesSelectedInData) {
-                this.hasSelectionOverride = true;
             }
         }
     }

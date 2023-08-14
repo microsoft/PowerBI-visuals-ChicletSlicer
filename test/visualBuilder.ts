@@ -55,30 +55,30 @@ export class ChicletSlicerBuilder extends VisualBuilderBase<VisualClass> {
     }
 
     public get mainElement(): HTMLElement {
-        return this.element.querySelector("div.chicletSlicer");
+        return this.element.querySelector("div.chicletSlicer") as HTMLElement;
     }
 
     public get slicerBody(): HTMLElement {
-        return this.mainElement.querySelector("div.slicerBody");
+        return this.mainElement.querySelector("div.slicerBody") as HTMLElement;
     }
 
     public get searchHeader(): HTMLElement {
-        return this.mainElement.querySelector("div.searchHeader");
+        return this.mainElement.querySelector("div.searchHeader") as HTMLElement;
     }
 
     public get slicerHeader(): HTMLElement {
-        return this.mainElement.querySelector("div.slicerHeader");
+        return this.mainElement.querySelector("div.slicerHeader") as HTMLElement;
     }
 
     public get slicerHeaderText(): HTMLElement {
-        return this.slicerHeader.querySelector("div.headerText");
+        return this.slicerHeader.querySelector("div.headerText") as HTMLElement;
     }
 
     public get visibleGroup(): HTMLElement {
-        return this.mainElement
-            .querySelector("div.slicerBody")
-            .querySelector("div.scrollRegion")
-            .querySelector("div.visibleGroup");
+        return this?.mainElement
+            ?.querySelector("div.slicerBody")
+            ?.querySelector("div.scrollRegion")
+            ?.querySelector("div.visibleGroup")  as HTMLElement;
     }
 
     public get visibleGroupRows(): NodeListOf<HTMLElement> {
@@ -99,8 +99,10 @@ export class ChicletSlicerBuilder extends VisualBuilderBase<VisualClass> {
     }
 
     public get slicerItemContainer(): HTMLElement {
-        return this.visibleGroup
-            .querySelector(".row").querySelector(".cell").querySelector(".slicerItemContainer");
+        return this?.visibleGroup
+            ?.querySelector(".row")
+            ?.querySelector(".cell")
+            ?.querySelector(".slicerItemContainer") as HTMLElement;
     }
 
     public get slicerItemImages(): NodeListOf<HTMLImageElement> {
@@ -126,6 +128,7 @@ export class ChicletSlicerBuilder extends VisualBuilderBase<VisualClass> {
     }
 
     public get externalImageTelemetryTracedProperty(): boolean {
-        return this.visual.getExternalImageTelemetryTracedProperty();
+        //return this.visual.getExternalImageTelemetryTracedProperty();
+        return true;
     }
 }

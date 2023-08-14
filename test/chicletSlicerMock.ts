@@ -7,6 +7,6 @@ export interface SelectionState {
 
 export class ChicletSlicerMock extends ChicletSlicer {
     protected telemetryTrace(): void {
-        this.externalImageTelemetryTraced();
+        //this.externalImageTelemetryTraced();
     }
 }

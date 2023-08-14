@@ -24,16 +24,6 @@
  *  THE SOFTWARE.
  */
 
-import powerbiVisualsApi from "powerbi-visuals-api";
-import powerbi = powerbiVisualsApi;
-
-// powerbi.data
-import ISQExpr = powerbi.data.ISQExpr;
-
-// powerbi.extensibility.utils.interactivity
-import { interactivitySelectionService as interactivityService } from "powerbi-visuals-utils-interactivityutils";
-import SelectableDataPoint = interactivityService.SelectableDataPoint;
-
 import { ChicletSlicerSettingsModel } from "./chicletSlicerSettingsModel";
 
 export interface ChicletSlicerData {
@@ -42,12 +32,9 @@ export interface ChicletSlicerData {
     selfFilterEnabled: boolean;
     slicerDataPoints: ChicletSlicerDataPoint[];
     formattingSettings: ChicletSlicerSettingsModel;
-    hasSelectionOverride?: boolean;
-    hasHighlights: boolean;
-    identityFields: ISQExpr[];
 }
 
-export interface ChicletSlicerDataPoint extends SelectableDataPoint {
+export interface ChicletSlicerDataPoint {
     identity: any;
     selected: any;
     category?: string;

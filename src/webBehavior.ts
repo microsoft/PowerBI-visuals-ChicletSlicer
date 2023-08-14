@@ -31,9 +31,6 @@ import powerbi = powerbiVisualsApi;
 import { Selection as d3Selection, select as d3Select } from "d3-selection";
 type Selection<T1, T2 = T1> = d3Selection<any, T1, any, T2>;
 
-// powerbi.data
-import ISQExpr = powerbi.data.ISQExpr;
-
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 import { FilterType, IIdentityFilterTarget, IIdentityFilter } from "powerbi-models";
 import FilterAction = powerbi.FilterAction;
@@ -51,7 +48,6 @@ export interface ChicletSlicerBehaviorOptions{
     slicerClear: Selection<any>;
     dataPoints: ChicletSlicerDataPoint[];
     formattingSettings: ChicletSlicerSettingsModel;
-    identityFields: ISQExpr[] | any;
     isHighContrastMode: boolean;
     jsonFilters: IFilter[] | undefined | any;
 }
