@@ -130,8 +130,6 @@ export class ChicletSlicerWebBehavior {
             } else {
                 this.handleSelection(dataPoint, false /* isMultiSelect */);
             }
-
-            this.saveSelection();
         });
 
         slicerClear.on("click", () => {
@@ -144,6 +142,7 @@ export class ChicletSlicerWebBehavior {
             this.handleClearSelection();
         });
 
+        this.renderSelection();
         this.forceSelection();
     }
 
@@ -154,8 +153,13 @@ export class ChicletSlicerWebBehavior {
 
         const isSelected: boolean = this.dataPoints.some((dataPoint: ChicletSlicerDataPoint) => dataPoint.selected);
         if (!isSelected) {
-            this.dataPoints.find((dataPoint: ChicletSlicerDataPoint) => !dataPoint.selectable && !dataPoint.filtered).selected = true;
-            this.saveSelection();
+            const dataPoint = this.dataPoints.find((dataPoint: ChicletSlicerDataPoint) => dataPoint.selectable && !dataPoint.filtered);
+            if (dataPoint) {
+                dataPoint.selected = true;
+
+                this.renderSelection();
+                this.saveSelection();
+            }
         }
     }
 
@@ -169,6 +173,7 @@ export class ChicletSlicerWebBehavior {
             }
         });
 
+        this.renderSelection();
         this.saveSelection();
     }
 
@@ -177,6 +182,7 @@ export class ChicletSlicerWebBehavior {
             dataPoint.selected = false;
         });
 
+        this.renderSelection();
         this.saveSelection();
     }
 
@@ -202,18 +208,6 @@ export class ChicletSlicerWebBehavior {
         this.visualHost.applyJsonFilter(filter, "general", "filter", FilterAction.merge);
     }
 
-    public renderSelection(hasSelection: boolean): void {
-        //if (!hasSelection && !this.interactivityService.isSelectionModeInverted()) {
-        if (!hasSelection) {
-            this.slicers.style(
-                "background",
-                this.formattingSettings.slicerTextCardSettings.unselectedColor.value.value);
-        }
-        else {
-            this.styleSlicerInputs(this.slicers);
-        }
-    }
-
     private renderMouseover(): void {
         this.slicerItemLabels
             .style("color", (dataPoint: ChicletSlicerDataPoint) => {
@@ -235,11 +229,11 @@ export class ChicletSlicerWebBehavior {
             });
     }
 
-    public styleSlicerInputs(slicers: Selection<any>) {
+    private renderSelection() {
         const settings = this.formattingSettings,
             isHighContrastMode = this.options.isHighContrastMode;
 
-        slicers.each(function (dataPoint: ChicletSlicerDataPoint) {
+            this.slicers.each(function (dataPoint: ChicletSlicerDataPoint) {
             d3Select(this)
                 .style("background", dataPoint.selectable
                     ? (dataPoint.selected

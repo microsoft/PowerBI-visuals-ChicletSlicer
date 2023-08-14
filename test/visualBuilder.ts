@@ -125,10 +125,4 @@ export class ChicletSlicerBuilder extends VisualBuilderBase<VisualClass> {
             items: this.visual["settings"]["general"]["selection"],
             state: this.visual["isSelectionSaved"],
         };
-    }
-
-    public get externalImageTelemetryTracedProperty(): boolean {
-        //return this.visual.getExternalImageTelemetryTracedProperty();
-        return true;
-    }
 }

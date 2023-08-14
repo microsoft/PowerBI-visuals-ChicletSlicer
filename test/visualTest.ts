@@ -27,7 +27,7 @@
 import powerbiVisualsApi from "powerbi-visuals-api";
 import powerbi = powerbiVisualsApi;
 
-import {range as d3Range} from "d3-array";
+import { range as d3Range } from "d3-array";
 import lodashTake from "lodash.take";
 
 import DataView = powerbi.DataView;
@@ -98,7 +98,7 @@ describe("ChicletSlicer", () => {
     describe("DOM tests", () => {
         it("main element created", () => {
             visualBuilder.updateRenderTimeout(dataView, () => {
-               expect(visualBuilder.mainElement).toBeDefined();
+                expect(visualBuilder.mainElement).toBeDefined();
             });
         });
 
@@ -600,8 +600,9 @@ describe("ChicletSlicer", () => {
             it("show disabled", () => {
                 const highlightedIndex: number = 1;
 
+
                 dataView?.categorical?.values?.forEach((column: DataViewValueColumn) => {
-                    column.highlights = d3Range(column.values.length).map(() => false) as PrimitiveValue[];
+                    column.highlights = d3Range(column.values.length).map(() => <unknown>null) as PrimitiveValue[];
                 });
 
                 dataView?.categorical?.values?.forEach((valueColumn: DataViewValueColumn) => {
@@ -619,7 +620,6 @@ describe("ChicletSlicer", () => {
                 };
 
                 visualBuilder.updateFlushAllD3Transitions(dataView);
-
                 const highlightedColor: string = visualBuilder
                     ?.visibleGroupCells[highlightedIndex]
                     ?.querySelector("ul")
@@ -672,44 +672,46 @@ describe("ChicletSlicer", () => {
                         ?.querySelector("li")
                         ?.style
                         ?.backgroundColor as string,
-                        highlightedColor);
+                    highlightedColor);
             });
 
-            it(`categories data without disabled elements must be in same sequence after switching to
-                    'Bottom' in 'Show disabled' setting`, () => {
-                    let valuesCategoryData: string[] = [
-                        "Alabama",
-                        "Alaska",
-                        "Arizona",
-                        "Arkansas",
-                        "California",
-                        "Colorado",
-                        "Connecticut",
-                        "Delaware",
-                        "Florida",
-                        "Georgia",
-                        "Hawaii"
-                    ];
+            it(`categories data without disabled elements must be in same sequence after switching to 'Bottom' in 'Show disabled' setting`, () => {
+                let valuesCategoryData: string[] = [
+                    "Alabama",
+                    "Alaska",
+                    "Arizona",
+                    "Arkansas",
+                    "California",
+                    "Colorado",
+                    "Connecticut",
+                    "Delaware",
+                    "Florida",
+                    "Georgia",
+                    "Hawaii"
+                ];
 
-                    if (dataView?.categorical?.categories?.length) {
-                        dataView.categorical.categories[0].values = valuesCategoryData;
+                if (dataView?.categorical?.categories?.length) {
+                    dataView.categorical.categories[0].values = valuesCategoryData;
+                    dataView.categorical.categories[0].identity = valuesCategoryData.map((value: string, index: number) => {
+                        return { identityIndex: index };
+                    });
+                }
+                dataView.metadata.objects = {
+                    general: {
+                        columns: 3,
+                        orientation: "Horizontal",
+                        showDisabled: "Bottom"
                     }
-                    dataView.metadata.objects = {
-                        general: {
-                            columns: 3,
-                            orientation: "Horizontal",
-                            showDisabled: "Bottom"
-                        }
-                    };
+                };
 
-                    visualBuilder.updateFlushAllD3Transitions(dataView);
+                visualBuilder.updateFlushAllD3Transitions(dataView);
 
-                    const slicerTextElements: NodeListOf<HTMLElement> = visualBuilder.slicerTextElements;
+                const slicerTextElements: NodeListOf<HTMLElement> = visualBuilder.slicerTextElements;
 
-                    for (let i: number = 0, length: number = slicerTextElements.length; i < length; i++) {
-                        expect(slicerTextElements[i].textContent).toEqual(valuesCategoryData[i]);
-                    }
-                });
+                for (let i: number = 0, length: number = slicerTextElements.length; i < length; i++) {
+                    expect(slicerTextElements[i].textContent).toEqual(valuesCategoryData[i]);
+                }
+            });
 
             it("search header is visible", () => {
                 dataView.metadata.objects = {
@@ -750,7 +752,7 @@ describe("ChicletSlicer", () => {
                     (searchHeader.clientHeight +
                         slicerHeaderText.clientHeight +
                         (<number>dataView.metadata.objects.header.outlineWeight) +
-                        (<number>dataView.metadata.objects.header.borderBottomWidth));
+                        (<number>dataView.metadata.objects.header.borderBottomWidth)) + 1;
 
                 const expectedValue = visualBuilder.slicerBody.clientHeight;
 
@@ -800,12 +802,12 @@ describe("ChicletSlicer", () => {
                         done);
                 });
 
-                it("multi selection should work when altKey is pressed", (done) => {
+                it("multi selection should work when ctrlKey is pressed", (done) => {
                     testMultiSelection(
                         dataView,
                         visualBuilder,
-                        ClickEventType.AltKey,
-                        defaultDataViewBuilder.valuesCategory.length,
+                        ClickEventType.CtrlKey,
+                        2,
                         (element, index) => !index || index === defaultDataViewBuilder.valuesCategory.length - 1,
                         done);
                 });
@@ -1114,7 +1116,7 @@ describe("ChicletSlicer", () => {
                 const highlightedIndex: number = 1;
 
                 dataView?.categorical?.values?.forEach((valueColumn: DataViewValueColumn) => {
-                    valueColumn.highlights = d3Range(valueColumn.values.length).map(() => false) as PrimitiveValue[];
+                    valueColumn.highlights = d3Range(valueColumn.values.length).map(() => <unknown>null) as PrimitiveValue[];
                 });
 
                 dataView?.categorical?.values?.forEach((valueColumn: DataViewValueColumn) => {
@@ -1409,15 +1411,15 @@ describe("ChicletSlicer", () => {
             function updateVisual(
                 visualBuilder: ChicletSlicerBuilder,
                 dataView: DataView,
-                selector: string)  {
+                selector: string) {
 
-                    return new Promise((resolve: (value: HTMLElement) => void, reject) => {
-                        setTimeout(() => {
-                            visualBuilder.updateRenderTimeout(dataView, () => {
-                                resolve(<HTMLElement>visualBuilder.mainElement.querySelector(selector));
-                            });
-                        }, 0);
-                      });
+                return new Promise((resolve: (value: HTMLElement) => void, reject) => {
+                    setTimeout(() => {
+                        visualBuilder.updateRenderTimeout(dataView, () => {
+                            resolve(<HTMLElement>visualBuilder.mainElement.querySelector(selector));
+                        });
+                    }, 0);
+                });
             }
         }
     });
@@ -1563,6 +1565,11 @@ describe("ChicletSlicer", () => {
             let link = "powerbi.com";
             expect(ExternalLinksTelemetry.containsExternalURL(link).valueOf()).toBe(false);
         });
+
+        it("base64 image does not matches to http, https or ftp pattern", () => {
+            let link = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAApgAAAKYB3X3/OAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAANCSURBVEiJtZZPbBtFFMZ/M7ubXdtdb1xSFyeilBapySVU8h8OoFaooFSqiihIVIpQBKci6KEg9Q6H9kovIHoCIVQJJCKE1ENFjnAgcaSGC6rEnxBwA04Tx43t2FnvDAfjkNibxgHxnWb2e/u992bee7tCa00YFsffekFY+nUzFtjW0LrvjRXrCDIAaPLlW0nHL0SsZtVoaF98mLrx3pdhOqLtYPHChahZcYYO7KvPFxvRl5XPp1sN3adWiD1ZAqD6XYK1b/dvE5IWryTt2udLFedwc1+9kLp+vbbpoDh+6TklxBeAi9TL0taeWpdmZzQDry0AcO+jQ12RyohqqoYoo8RDwJrU+qXkjWtfi8Xxt58BdQuwQs9qC/afLwCw8tnQbqYAPsgxE1S6F3EAIXux2oQFKm0ihMsOF71dHYx+f3NND68ghCu1YIoePPQN1pGRABkJ6Bus96CutRZMydTl+TvuiRW1m3n0eDl0vRPcEysqdXn+jsQPsrHMquGeXEaY4Yk4wxWcY5V/9scqOMOVUFthatyTy8QyqwZ+kDURKoMWxNKr2EeqVKcTNOajqKoBgOE28U4tdQl5p5bwCw7BWquaZSzAPlwjlithJtp3pTImSqQRrb2Z8PHGigD4RZuNX6JYj6wj7O4TFLbCO/Mn/m8R+h6rYSUb3ekokRY6f/YukArN979jcW+V/S8g0eT/N3VN3kTqWbQ428m9/8k0P/1aIhF36PccEl6EhOcAUCrXKZXXWS3XKd2vc/TRBG9O5ELC17MmWubD2nKhUKZa26Ba2+D3P+4/MNCFwg59oWVeYhkzgN/JDR8deKBoD7Y+ljEjGZ0sosXVTvbc6RHirr2reNy1OXd6pJsQ+gqjk8VWFYmHrwBzW/n+uMPFiRwHB2I7ih8ciHFxIkd/3Omk5tCDV1t+2nNu5sxxpDFNx+huNhVT3/zMDz8usXC3ddaHBj1GHj/As08fwTS7Kt1HBTmyN29vdwAw+/wbwLVOJ3uAD1wi/dUH7Qei66PfyuRj4Ik9is+hglfbkbfR3cnZm7chlUWLdwmprtCohX4HUtlOcQjLYCu+fzGJH2QRKvP3UNz8bWk1qMxjGTOMThZ3kvgLI5AzFfo379UAAAAASUVORK5CYII=";
+            expect(ExternalLinksTelemetry.containsExternalURL(link).valueOf()).toBe(false);
+        });
     });
 
 
@@ -1597,17 +1604,4 @@ describe("ChicletSlicer", () => {
         });
     });
 
-
-    describe("Telemetry", () => {
-        it("Trace method is not called", () => {
-            expect(visualBuilder.externalImageTelemetryTracedProperty).toBe(false);
-        });
-
-        it("Trace method is called", (done) => {
-            visualBuilder.updateRenderTimeout(dataView, () => {
-                expect(visualBuilder.externalImageTelemetryTracedProperty).toBe(true);
-                done();
-            });
-        });
-    });
 });

@@ -194,7 +194,8 @@ export class ChicletSlicer implements IVisual {
         this.selectionManager = options.host.createSelectionManager();
 
         this.initContainer();
-        this.renderContextMenu();
+        /* Disable ContectMenu by default */
+        //this.renderContextMenu();
     }
 
     public update(options: VisualUpdateOptions) {
@@ -686,7 +687,6 @@ export class ChicletSlicer implements IVisual {
             };
 
             this.behavior.bindEvents(behaviorOptions);
-            this.behavior.styleSlicerInputs(rowSelection.select(ChicletSlicer.ItemContainerSelector.selectorName));
 
             this.renderTooltip(slicerItemContainers, settings.tooltipsCardSettings);
         }
