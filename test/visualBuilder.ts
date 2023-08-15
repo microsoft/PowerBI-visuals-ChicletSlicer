@@ -125,4 +125,5 @@ export class ChicletSlicerBuilder extends VisualBuilderBase<VisualClass> {
             items: this.visual["settings"]["general"]["selection"],
             state: this.visual["isSelectionSaved"],
         };
+    }
 }
