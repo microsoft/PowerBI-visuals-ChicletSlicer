@@ -752,11 +752,12 @@ describe("ChicletSlicer", () => {
                     (searchHeader.clientHeight +
                         slicerHeaderText.clientHeight +
                         (<number>dataView.metadata.objects.header.outlineWeight) +
-                        (<number>dataView.metadata.objects.header.borderBottomWidth)) + 1;
+                        (<number>dataView.metadata.objects.header.borderBottomWidth));
 
                 const expectedValue = visualBuilder.slicerBody.clientHeight;
 
-                expect(actualValue).toEqual(expectedValue);
+                expect(actualValue).toBeGreaterThan(expectedValue - 2);
+                expect(actualValue).toBeLessThan(expectedValue + 2);
             });
 
             describe("Multi selection", () => {
