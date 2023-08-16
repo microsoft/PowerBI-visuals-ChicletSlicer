@@ -64,12 +64,12 @@ import { hexToRGBString, ColorHelper } from "powerbi-visuals-utils-colorutils";
 import { textMeasurementService, valueFormatter, interfaces } from "powerbi-visuals-utils-formattingutils";
 import TextProperties = interfaces.TextProperties;
 
-import { ChicletSlicerData, ChicletSlicerDataPoint } from "./interfaces";
+import { ChicletSlicerData, ChicletSlicerDataPoint, Orientation } from "./interfaces";
 import { ChicletSlicerSettingsModel, TooltipsCardSettings, SlicerTextCardSettings, HeaderCardSettings, SlicerItemContainer } from "./chicletSlicerSettingsModel";
 import { FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel";
 import { ChicletSlicerBehaviorOptions, ChicletSlicerWebBehavior } from "./webBehavior";
 import { ChicletSlicerConverter } from "./chicletSlicerConverter";
-import { ITableView, TableViewFactory, TableViewViewOptions } from "./tableView";
+import { ITableView, TableView, TableViewViewOptions } from "./tableView";
 
 import { createTooltipServiceWrapper, ITooltipServiceWrapper } from "powerbi-visuals-utils-tooltiputils";
 import VisualTooltipDataItem = powerbiVisualsApi.extensibility.VisualTooltipDataItem;
@@ -79,26 +79,17 @@ import { ExternalLinksTelemetry } from "./telemetry";
 import IFilter = powerbi.IFilter;
 import ISelectionManager = powerbiVisualsApi.extensibility.ISelectionManager;
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
-namespace ChicletBorderStyle {
-    export const ROUNDED: string = 'Rounded';
-    export const CUT: string = 'Cut';
-    export const SQUARE: string = 'Square';
+const enum ChicletBorderStyle {
+    ROUNDED = "Rounded",
+    CUT = "Cut",
+    SQUARE = "Square"
 }
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
-namespace ChicletSlicerShowDisabled {
-    export const INPLACE: string = 'Inplace';
-    export const BOTTOM: string = 'Bottom';
-    export const HIDE: string = 'Hide';
+const enum ChicletSlicerShowDisabled {
+    INPLACE = "Inplace",
+    BOTTOM = "Bottom",
+    HIDE = "Hide"
 }
-
-// eslint-disable-next-line @typescript-eslint/no-namespace
-export namespace Orientation {
-    export const HORIZONTAL: string = 'Horizontal';
-    export const VERTICAL: string = 'Vertical';
-}
-
 export class ChicletSlicer implements IVisual {
     private root: Selection<any>;
     private searchHeader: Selection<any>;
@@ -128,10 +119,6 @@ export class ChicletSlicer implements IVisual {
      * It's public for testability.
      */
     public behavior: ChicletSlicerWebBehavior;
-
-    /**
-     * It's public for testability.
-     */
     private formattingSettingsService: FormattingSettingsService;
 
     public static DefaultOpacity: number = 1;
@@ -198,7 +185,7 @@ export class ChicletSlicer implements IVisual {
         //this.renderContextMenu();
     }
 
-    public update(options: VisualUpdateOptions) {
+    public update(options: VisualUpdateOptions) {        
         this.visualHost.eventService.renderingStarted(options);
 
         if (!options ||
@@ -217,6 +204,7 @@ export class ChicletSlicer implements IVisual {
         }
 
         this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(ChicletSlicerSettingsModel, options.dataViews);
+        this.formattingSettings.setLocalizedOptions(this.localizationManager);
 
         const slicerData: ChicletSlicerData = ChicletSlicer.converter(
             options.dataViews[0],
@@ -264,7 +252,6 @@ export class ChicletSlicer implements IVisual {
             return;
         }
 
-
         const converter: ChicletSlicerConverter = new ChicletSlicerConverter(dataView, visualHost, jsonFilters);
         converter.convert();
 
@@ -272,7 +259,6 @@ export class ChicletSlicer implements IVisual {
 
         let dataPoints: ChicletSlicerDataPoint[] = converter.dataPoints;
         if (selfFilterEnabled && searchText) {
-            //this.filterDataPoints(converter.dataPoints, searchText);
             dataPoints = ChicletSlicer.filterDataPoints(converter.dataPoints, searchText);
         }
 
@@ -355,7 +341,7 @@ export class ChicletSlicer implements IVisual {
 
         data.formattingSettings.headerCardSettings.title.value = data.formattingSettings.headerCardSettings.title.value.trim() || data.categorySourceName;
 
-        this.updateSearchHeader(data.selfFilterEnabled);
+        this.updateSearchHeader(data.slicerDataPoints, data.formattingSettings, data.selfFilterEnabled);
         this.updateSlicerBodyDimensions(data.formattingSettings.headerCardSettings, data.selfFilterEnabled);
 
         if (data.formattingSettings.generalCardSettings.showDisabled.value.value === ChicletSlicerShowDisabled.BOTTOM) {
@@ -384,7 +370,7 @@ export class ChicletSlicer implements IVisual {
         this.render(data.slicerDataPoints, data.formattingSettings, data.selfFilterEnabled);
     }
 
-    public render(datapoints: ChicletSlicerDataPoint[], formattingSettings: ChicletSlicerSettingsModel, selfFilterEnabled: boolean) {
+    private render(datapoints: ChicletSlicerDataPoint[], formattingSettings: ChicletSlicerSettingsModel, selfFilterEnabled: boolean) {
         this.tableView
             .rowHeight(formattingSettings.slicerTextCardSettings.height.value)
             .columnWidth(formattingSettings.slicerTextCardSettings.width.value)
@@ -505,7 +491,7 @@ export class ChicletSlicer implements IVisual {
             baseContainer: this.slicerBody,
         };
 
-        this.tableView = TableViewFactory.createTableView(tableViewOptions);
+        this.tableView = new TableView(tableViewOptions);
     }
 
     private static enterSelection(rowSelection: Selection<any>, slicerTextCardSettings: SlicerTextCardSettings, slicerItemContainer: SlicerItemContainer): void {
@@ -709,22 +695,19 @@ export class ChicletSlicer implements IVisual {
             .attr("drag-resize-disabled", "true")
             .classed("searchInput", true);
     }
-    /*
-    
-            // Filter chiclets based on search input
-            this.searchInput.on("input", () => {
-                const searchText: string = this.searchInput.node().value;
-                if (data.selfFilterEnabled && searchText != null) {
-                    const dataPoints: ChicletSlicerDataPoint[] = ChicletSlicer.filterDataPoints(data.slicerDataPoints, searchText);
-                    this.render(dataPoints, data.formattingSettings, data.selfFilterEnabled);
-                }
-            });
-    
-    */
 
-    private updateSearchHeader(selfFilterEnabled: boolean): void {
+    private updateSearchHeader(slicerDataPoints: ChicletSlicerDataPoint[], formattingSettings: ChicletSlicerSettingsModel, selfFilterEnabled: boolean): void {
         this.searchHeader.classed("show", selfFilterEnabled);
         this.searchHeader.classed("collapsed", !selfFilterEnabled);
+
+        // Filter chiclets based on search input
+        this.searchInput.on("input", () => {
+            const searchText: string = this.searchInput.node().value;
+            if (selfFilterEnabled && searchText != null) {
+                const dataPoints: ChicletSlicerDataPoint[] = ChicletSlicer.filterDataPoints(slicerDataPoints, searchText);
+                this.render(dataPoints, formattingSettings, selfFilterEnabled);
+            }
+        });
     }
 
     private getSearchHeaderHeight(): number {
@@ -806,7 +789,6 @@ export class ChicletSlicer implements IVisual {
     }
 
     public getFormattingModel(): powerbi.visuals.FormattingModel {
-        this.formattingSettings.setLocalizedOptions(this.localizationManager);
         return this.formattingSettingsService.buildFormattingModel(this.formattingSettings)
     }
 }

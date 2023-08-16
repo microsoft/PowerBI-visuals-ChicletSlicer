@@ -37,7 +37,7 @@ import ClassAndSelector = SVGUtil.CssConstants.ClassAndSelector;
 import createClassAndSelector = SVGUtil.CssConstants.createClassAndSelector;
 
 import { ChicletSlicerDataPoint } from "./interfaces";
-import { Orientation } from "./chicletSlicer";
+import { Orientation } from "./interfaces";
 
 export interface ITableView {
     data(data: any[], dataIdFunction: (d) => any, dataAppended: boolean): ITableView;
@@ -51,13 +51,6 @@ export interface ITableView {
     empty(): void;
     computedColumns: number;
     computedRows: number;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-namespace
-export namespace TableViewFactory {
-    export function createTableView(options): ITableView {
-        return new TableView(options);
-    }
 }
 
 export interface TableViewViewOptions {

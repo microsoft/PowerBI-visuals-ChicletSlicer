@@ -40,7 +40,7 @@ import { ChicletSlicerSettingsModel } from "./chicletSlicerSettingsModel";
 import { ChicletSlicer } from "./chicletSlicer";
 import { ChicletSlicerDataPoint } from "./interfaces";
 
-export interface ChicletSlicerBehaviorOptions{
+export interface ChicletSlicerBehaviorOptions {
     visualHost: IVisualHost;
     slicerItemContainers: Selection<any>;
     slicerItemLabels: Selection<any>;
@@ -114,10 +114,10 @@ export class ChicletSlicerWebBehavior {
 
             if (settings.generalCardSettings.forcedSelection.value && selectedIndexes.length === 1) {
                 const availableDataPoints: ChicletSlicerDataPoint[] = this.dataPoints.map((dataPoint: ChicletSlicerDataPoint) => {
-                        if (!dataPoint.filtered) {
-                            return dataPoint;
-                        }
-                    });
+                    if (!dataPoint.filtered) {
+                        return dataPoint;
+                    }
+                });
 
                 if (availableDataPoints[index]
                     && this.dataPoints[selectedIndexes[0]].identity === availableDataPoints[index].identity) {
@@ -164,7 +164,6 @@ export class ChicletSlicerWebBehavior {
     }
 
     private handleSelection(selecteDataPoint: ChicletSlicerDataPoint, multiSelect: boolean): void {
-
         this.dataPoints.forEach((dataPoint: ChicletSlicerDataPoint) => {
             if (selecteDataPoint.id === dataPoint.id) {
                 dataPoint.selected = !dataPoint.selected;
@@ -187,25 +186,34 @@ export class ChicletSlicerWebBehavior {
     }
 
     private saveSelection(): void {
-        const filterDataPoints: any[] = this.dataPoints.filter(d => d.selected);
+        const filterTargets: IIdentityFilterTarget = this.dataPoints
+            .filter(d => d.selected)
+            .map(d => d.id);
 
         // Selection manager stores selection ids in the order in which they are selected by the user.
         // This is needed because data should be sent to the host in the same order that the user selected.
-        //const selectionIds = this.interactivityService.selectionManager.getSelectionIds();
-        //const sortedDataPoints = filterDataPoints.sort((dp1, dp2) => selectionIds.findIndex(si => si.equals(dp1.identity)) - selectionIds.findIndex(si => si.equals(dp2.identity)));
-    
-        const filterTargets: IIdentityFilterTarget = filterDataPoints.map((dataPoint: any) => {
-            return dataPoint.id;
-        });
+        // If the order is not maintained, the host will show incorrect data in the visual.
+
+        const target = (this.jsonFilters?.length && this.jsonFilters[0]?.target) ? this.jsonFilters[0].target : [];
+        const sortedTargers = ChicletSlicerWebBehavior.sortByJSONFilterTarget(filterTargets, target);
 
         const filter: IIdentityFilter = {
             $schema: "https://powerbi.com/product/schema#identity",
             filterType: FilterType.Identity,
             operator: "In",
-            target: filterTargets
+            target: sortedTargers
         }
 
         this.visualHost.applyJsonFilter(filter, "general", "filter", FilterAction.merge);
+    }
+
+    public static sortByJSONFilterTarget(selected, jsonFilters: number[]): number[] {
+        const reversed = jsonFilters.reverse();
+
+        function compareIndexes(a, b: number) {
+            return reversed.indexOf(b) - reversed.indexOf(a);
+        }
+        return selected.toSorted(compareIndexes);
     }
 
     private renderMouseover(): void {
@@ -233,7 +241,7 @@ export class ChicletSlicerWebBehavior {
         const settings = this.formattingSettings,
             isHighContrastMode = this.options.isHighContrastMode;
 
-            this.slicers.each(function (dataPoint: ChicletSlicerDataPoint) {
+        this.slicers.each(function (dataPoint: ChicletSlicerDataPoint) {
             d3Select(this)
                 .style("background", dataPoint.selectable
                     ? (dataPoint.selected

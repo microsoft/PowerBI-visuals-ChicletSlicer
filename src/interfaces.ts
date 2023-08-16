@@ -36,7 +36,7 @@ export interface ChicletSlicerData {
 
 export interface ChicletSlicerDataPoint {
     identity: any;
-    selected: any;
+    selected: boolean;
     category?: string;
     value?: number;
     mouseOver?: boolean;
@@ -47,4 +47,9 @@ export interface ChicletSlicerDataPoint {
     filtered?: boolean;
     id?: number;
     columnName?: any;
+}
+
+export const enum Orientation {
+    HORIZONTAL = 'Horizontal',
+    VERTICAL = 'Vertical'
 }

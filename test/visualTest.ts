@@ -64,6 +64,8 @@ import { ChicletSlicerConverter } from "../src/chicletSlicerConverter";
 import { ChicletSlicerDataPoint } from "../src/interfaces";
 import { TableView } from "../src/tableView";
 
+import { ChicletSlicerWebBehavior } from "../src/webBehavior";
+
 describe("ChicletSlicer", () => {
     let visualBuilder: ChicletSlicerBuilder = new ChicletSlicerBuilder(1000, 500),
         defaultDataViewBuilder: ChicletSlicerData,
@@ -1605,4 +1607,14 @@ describe("ChicletSlicer", () => {
         });
     });
 
+    describe("JSONFilter order", () => {
+        it("sortByJsonFilterTarget set the correct order for new selections", () => {
+            const jsonFilter = [4, 3, 2, 1, 0];
+            const selected = [1, 3, 4, 5, 6];
+
+            const sortedTargers = ChicletSlicerWebBehavior.sortByJSONFilterTarget(selected, jsonFilter);
+
+            expect(sortedTargers).toEqual([4, 3, 1, 5, 6]);
+        });
+    });
 });
