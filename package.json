@@ -56,7 +56,7 @@
     "lodash.take": "^4.1.1",
     "lodash.takeright": "^4.1.1",
     "powerbi-models": "^1.12.6",
-    "powerbi-visuals-api": "~5.1.0",
+    "powerbi-visuals-api": "~5.4.0",
     "powerbi-visuals-utils-colorutils": "^6.0.1",
     "powerbi-visuals-utils-dataviewutils": "^6.0.1",
     "powerbi-visuals-utils-formattingutils": "^6.0.1",

@@ -185,7 +185,7 @@ export class ChicletSlicer implements IVisual {
         //this.renderContextMenu();
     }
 
-    public update(options: VisualUpdateOptions) {        
+    public update(options: VisualUpdateOptions) {
         this.visualHost.eventService.renderingStarted(options);
 
         if (!options ||
