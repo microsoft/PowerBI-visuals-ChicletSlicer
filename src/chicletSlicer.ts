@@ -190,8 +190,12 @@ export class ChicletSlicer implements IVisual {
 
         if (!options ||
             !options.dataViews ||
-            !options.dataViews[0] ||
+            !options.dataViews.length ||
+            !options.dataViews[0]?.categorical?.categories?.length ||
+            !options.dataViews[0]?.categorical?.categories[0]?.values ||
             !options.viewport) {
+
+            this.clear();
             this.visualHost.eventService.renderingFailed(options, "No data or viewport");
             return;
         }
@@ -213,6 +217,11 @@ export class ChicletSlicer implements IVisual {
             this.visualHost,
             options.jsonFilters);
 
+        if (!slicerData) {
+            this.clear();
+            this.visualHost.eventService.renderingFailed(options, "No data or viewport");
+            return;
+        }
 
         this.currentViewport = options.viewport;
 
@@ -223,6 +232,10 @@ export class ChicletSlicer implements IVisual {
         this.visualHost.eventService.renderingFinished(options);
 
         this.telemetry.detectExternalImages(slicerData.slicerDataPoints);
+    }
+
+    private clear() {
+        this.tableView && this.tableView.empty();
     }
 
     /**
@@ -305,7 +318,7 @@ export class ChicletSlicer implements IVisual {
 
     private updateInternal(data: ChicletSlicerData) {
         if (!data) {
-            this.tableView.empty();
+            this.clear();
             return;
         }
 
