@@ -24,17 +24,17 @@
  *  THE SOFTWARE.
  */
 
-import powerbiVisualsApi from "powerbi-visuals-api";
-import IViewport = powerbiVisualsApi.IViewport;
+import powerbi from "powerbi-visuals-api";
+import IViewport = powerbi.IViewport;
 
 // d3
 import { Selection as d3Selection } from "d3-selection";
 type Selection<T1, T2 = T1> = d3Selection<any, T1, any, T2>;
 
 // powerbi.extensibility.utils.svg
-import * as SVGUtil from "powerbi-visuals-utils-svgutils";
-import ClassAndSelector = SVGUtil.CssConstants.ClassAndSelector;
-import createClassAndSelector = SVGUtil.CssConstants.createClassAndSelector;
+import { CssConstants } from "powerbi-visuals-utils-svgutils";
+import ClassAndSelector = CssConstants.ClassAndSelector;
+import createClassAndSelector = CssConstants.createClassAndSelector;
 
 import { ChicletSlicerDataPoint } from "./interfaces";
 import { Orientation } from "./interfaces";

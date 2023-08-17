@@ -24,8 +24,7 @@
  *  THE SOFTWARE.
  */
 
-import powerbiVisualsApi from "powerbi-visuals-api";
-import powerbi = powerbiVisualsApi;
+import powerbi from "powerbi-visuals-api";
 
 import DataViewCategorical = powerbi.DataViewCategorical;
 import DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
@@ -48,7 +47,6 @@ export class ChicletSlicerConverter {
     private categoryValues: any[];
     private categoryFormatString: string;
 
-    public numberOfCategoriesSelectedInData: number;
     public dataPoints: ChicletSlicerDataPoint[];
 
     private host: IVisualHost;
@@ -73,7 +71,6 @@ export class ChicletSlicerConverter {
 
     public convert(): void {
         this.dataPoints = [];
-        this.numberOfCategoriesSelectedInData = 0;
         // If category exists, we render labels using category values. If not, we render labels
         // using measure labels.
         if (this.categoryValues) {

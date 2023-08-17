@@ -1,4 +1,4 @@
-import powerbiVisualsApi from "powerbi-visuals-api";
+import powerbi from "powerbi-visuals-api";
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
 import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
@@ -93,7 +93,7 @@ export class GeneralCardSettings extends Card {
         value: ColumnsSettings.DefaultValue,
         options: {
             minValue: {
-                type: powerbiVisualsApi.visuals.ValidatorType.Min,
+                type: powerbi.visuals.ValidatorType.Min,
                 value: ColumnsSettings.MinValue,
             }
         }
@@ -105,11 +105,11 @@ export class GeneralCardSettings extends Card {
         value: RowsSettings.DefaultValue,
         options: {
             minValue: {
-                type: powerbiVisualsApi.visuals.ValidatorType.Min,
+                type: powerbi.visuals.ValidatorType.Min,
                 value: RowsSettings.MinValue,
             },
             maxValue: {
-                type: powerbiVisualsApi.visuals.ValidatorType.Max,
+                type: powerbi.visuals.ValidatorType.Max,
                 value: RowsSettings.MaxValue,
             }
         }
@@ -204,11 +204,11 @@ export class HeaderCardSettings extends Card {
         value: TextSizeSettings.DefaultValue,
         options: {
             minValue: {
-                type: powerbiVisualsApi.visuals.ValidatorType.Min,
+                type: powerbi.visuals.ValidatorType.Min,
                 value: TextSizeSettings.MinValue,
             },
             maxValue: {
-                type: powerbiVisualsApi.visuals.ValidatorType.Max,
+                type: powerbi.visuals.ValidatorType.Max,
                 value: TextSizeSettings.MaxValue,
             }
         }
@@ -233,11 +233,11 @@ export class HeaderCardSettings extends Card {
         value: OutlineWeightSettings.DefaultValue,
         options: {
             minValue: {
-                type: powerbiVisualsApi.visuals.ValidatorType.Min,
+                type: powerbi.visuals.ValidatorType.Min,
                 value: OutlineWeightSettings.MinValue,
             },
             maxValue: {
-                type: powerbiVisualsApi.visuals.ValidatorType.Max,
+                type: powerbi.visuals.ValidatorType.Max,
                 value: OutlineWeightSettings.MaxValue,
             }
         }
@@ -293,11 +293,11 @@ export class SlicerTextCardSettings extends Card {
         value: TextSizeSettings.DefaultValue,
         options: {
             minValue: {
-                type: powerbiVisualsApi.visuals.ValidatorType.Min,
+                type: powerbi.visuals.ValidatorType.Min,
                 value: TextSizeSettings.MinValue,
             },
             maxValue: {
-                type: powerbiVisualsApi.visuals.ValidatorType.Max,
+                type: powerbi.visuals.ValidatorType.Max,
                 value: TextSizeSettings.MaxValue,
             }
         }
@@ -309,7 +309,7 @@ export class SlicerTextCardSettings extends Card {
         value: TextHeightSettings.DefaultValue,
         options: {
             minValue: {
-                type: powerbiVisualsApi.visuals.ValidatorType.Min,
+                type: powerbi.visuals.ValidatorType.Min,
                 value: TextHeightSettings.MinValue,
             }
         }
@@ -321,7 +321,7 @@ export class SlicerTextCardSettings extends Card {
         value: TextWidthSettings.DefaultValue,
         options: {
             minValue: {
-                type: powerbiVisualsApi.visuals.ValidatorType.Min,
+                type: powerbi.visuals.ValidatorType.Min,
                 value: TextWidthSettings.MinValue,
             }
         }
@@ -376,7 +376,7 @@ export class SlicerTextCardSettings extends Card {
         value: OutlineWeightSettings.DefaultValue,
         options: {
             minValue: {
-                type: powerbiVisualsApi.visuals.ValidatorType.Min,
+                type: powerbi.visuals.ValidatorType.Min,
                 value: OutlineWeightSettings.MinValue,
             }
         }
@@ -394,7 +394,7 @@ export class SlicerTextCardSettings extends Card {
         value: PaddingSettings.DefaultValue,
         options: {
             minValue: {
-                type: powerbiVisualsApi.visuals.ValidatorType.Min,
+                type: powerbi.visuals.ValidatorType.Min,
                 value: PaddingSettings.MinValue,
             }
         }
@@ -480,11 +480,11 @@ export class ImagesCardSettings extends Card {
         value: ImagesSplitSettings.DefaultValue,
         options: {
             minValue: {
-                type: powerbiVisualsApi.visuals.ValidatorType.Min,
+                type: powerbi.visuals.ValidatorType.Min,
                 value: ImagesSplitSettings.MinValue,
             },
             maxValue: {
-                type: powerbiVisualsApi.visuals.ValidatorType.Max,
+                type: powerbi.visuals.ValidatorType.Max,
                 value: ImagesSplitSettings.MaxValue,
             },
         }

@@ -24,8 +24,7 @@
  *  THE SOFTWARE.
  */
 
-import powerbiVisualsApi from "powerbi-visuals-api";
-import powerbi = powerbiVisualsApi;
+import powerbi from "powerbi-visuals-api";
 
 // d3
 import { Selection as d3Selection, select as d3Select } from "d3-selection";

@@ -1,7 +1,7 @@
-import powerbiVisualsApi from "powerbi-visuals-api";
-import VisualEventType = powerbiVisualsApi.VisualEventType;
-import ITelemetryService = powerbiVisualsApi.extensibility.ITelemetryService;
-import {ChicletSlicerDataPoint} from "./interfaces";
+import powerbi from "powerbi-visuals-api";
+import VisualEventType = powerbi.VisualEventType;
+import ITelemetryService = powerbi.extensibility.ITelemetryService;
+import { ChicletSlicerDataPoint } from "./interfaces";
 
 export class ExternalLinksTelemetry {
     private telemetry: ITelemetryService;
@@ -23,7 +23,7 @@ export class ExternalLinksTelemetry {
         const hasExternalImageLink: boolean = dataPoints.some((dataPoint: ChicletSlicerDataPoint) => {
             return ExternalLinksTelemetry.containsExternalURL(dataPoint.imageURL)
         });
-    
+
         if (hasExternalImageLink) {
             this.traceDetected();
         }
