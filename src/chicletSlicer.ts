@@ -192,7 +192,7 @@ export class ChicletSlicer implements IVisual {
             !options.dataViews ||
             !options.dataViews.length ||
             !options.dataViews[0]?.categorical?.categories?.length ||
-            !options.dataViews[0]?.categorical?.categories[0]?.values ||
+            !options.dataViews[0]?.categorical?.categories[0]?.values?.length ||
             !options.viewport) {
 
             this.clear();
