@@ -153,6 +153,7 @@ export class ChicletSlicer implements IVisual {
     public static BodySelector: ClassAndSelector = createClassAndSelector('slicerBody');
 
     private telemetry: ExternalLinksTelemetry;
+    private renderFiltered: (searchText: string) => void;
 
     constructor(options: VisualConstructorOptions) {
         this.root = d3Select(options.element);
@@ -224,6 +225,7 @@ export class ChicletSlicer implements IVisual {
     }
 
     private clear() {
+        this.renderFiltered = null; // reset the renderFiltered function when data is epmty
         if (this.tableView) {
             this.tableView.empty();
         }
@@ -361,10 +363,17 @@ export class ChicletSlicer implements IVisual {
             }
         }
 
-        this.updateSearchHeader(data, data.selfFilterEnabled);
+        this.updateSearchHeader(data.selfFilterEnabled);
         this.updateSlicerBodyDimensions(data.formattingSettings.headerCardSettings, data.selfFilterEnabled);
 
         this.render(data.slicerDataPoints, data.formattingSettings, data.selfFilterEnabled);
+
+        this.renderFiltered = (searchText: string) => {
+            if (data.selfFilterEnabled && (searchText != null)) {
+                data.slicerDataPoints = ChicletSlicer.filterDataPoints(data.slicerDataPoints, searchText);
+                this.render(data.slicerDataPoints, data.formattingSettings, data.selfFilterEnabled);
+            }
+        }
     }
 
     private render(datapoints: ChicletSlicerDataPoint[], formattingSettings: ChicletSlicerSettingsModel, selfFilterEnabled: boolean) {
@@ -610,7 +619,7 @@ export class ChicletSlicer implements IVisual {
             slicerText.text((d: ChicletSlicerDataPoint) => {
                 textProperties.text = valueFormatter.format(d.category, formatString);
                 if (settings.slicerTextCardSettings.width.value === 0) {
-                    settings.slicerTextCardSettings.width.value = Math.round(slicerBodyViewport.width / (this.tableView.computedColumns || ChicletSlicer.MinColumns));
+                    settings.slicerTextCardSettings.width.value = Math.floor(slicerBodyViewport.width / (this.tableView.computedColumns || ChicletSlicer.MinColumns));
                 }
                 const maxWidth: number = settings.slicerTextCardSettings.width.value -
                     ChicletSlicer.СhicletTotalInnerRightLeftPaddings -
@@ -692,21 +701,18 @@ export class ChicletSlicer implements IVisual {
             .append('input')
             .attr("type", "text")
             .attr("drag-resize-disabled", "true")
-            .classed("searchInput", true);
+            .classed("searchInput", true)
+            .on("input", (event: InputEvent) => {
+                const searchText: string = (event.target as HTMLInputElement).value;
+                if (this.renderFiltered) {
+                    this.renderFiltered(searchText);
+                }
+            });
     }
 
-    private updateSearchHeader(slicerData: ChicletSlicerData, selfFilterEnabled: boolean): void {
+    private updateSearchHeader(selfFilterEnabled: boolean): void {
         this.searchHeader.classed("show", selfFilterEnabled);
         this.searchHeader.classed("collapsed", !selfFilterEnabled);
-
-        // Filter chiclets based on search input
-        this.searchInput.on("input", () => {
-            const searchText: string = this.searchInput.node().value;
-            if (selfFilterEnabled && searchText != null) {
-                slicerData.slicerDataPoints = ChicletSlicer.filterDataPoints(slicerData.slicerDataPoints, searchText);
-                this.updateContainer(this.currentViewport, slicerData);
-            }
-        });
     }
 
     private getSearchHeaderHeight(): number {

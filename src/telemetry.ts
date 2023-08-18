@@ -5,18 +5,18 @@ import { ChicletSlicerDataPoint } from "./interfaces";
 
 export class ExternalLinksTelemetry {
     private telemetry: ITelemetryService;
-    private is_traced = false;
+    private isTraced = false;
 
     constructor(telemetry: ITelemetryService) {
         this.telemetry = telemetry;
     }
 
     private traceDetected() {
-        if (this.is_traced) {
+        if (this.isTraced) {
             return;
         }
         this.telemetry.trace(VisualEventType.Trace, "External image link detected");
-        this.is_traced = true;
+        this.isTraced = true;
     }
 
     public detectExternalImages(dataPoints: ChicletSlicerDataPoint[]): void {
