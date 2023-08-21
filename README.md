@@ -1,4 +1,4 @@
-[![build](https://github.com/microsoft/PowerBI-visuals-ChicletSlicer/actions/workflows/build.yml/badge.svg)](https://github.com/microsoft/PowerBI-visuals-ChicletSlicer/actions/workflows/build.yml)
+[![build](https://github.com/microsoft/PowerBI-visuals-ChicletSlicer/actions/workflows/build.yml/badge.svg)](https://github.com/microsoft/PowerBI-visuals-ChicletSlicer/actions/workflows/build.yml) [![CodeQL](https://github.com/microsoft/PowerBI-visuals-ChicletSlicer/actions/workflows/codeql.yml/badge.svg)](https://github.com/microsoft/PowerBI-visuals-ChicletSlicer/actions/workflows/codeql.yml)
 # PowerBI-visuals-ChicletSlicer
 > Use this slicer to display image and/or text buttons that act as an in-canvas filter. Define additional properties for the layout & selection to customize this slicer to meet your specific needs
 
