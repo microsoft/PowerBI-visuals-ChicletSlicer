@@ -72,8 +72,8 @@ export function convertColorToRgbColor(color: string): RgbColor {
     return parseColorString(color);
 }
 
-export function assertNumberMatch(actual: number, expected: number, round: number, invert?: boolean) {
-    const expectedResult = roundTo(actual, round);
+export function assertNumberMatch(actual: number | undefined, expected: number, round: number, invert?: boolean) {
+    const expectedResult = roundTo(Number(actual), round);
     const result = roundTo(expected, round);
 
     if (invert) {

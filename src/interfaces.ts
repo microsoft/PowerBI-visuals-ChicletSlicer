@@ -24,31 +24,19 @@
  *  THE SOFTWARE.
  */
 
-import powerbiVisualsApi from "powerbi-visuals-api";
-import powerbi = powerbiVisualsApi;
-
-// powerbi.data
-import ISQExpr = powerbi.data.ISQExpr;
-
-// powerbi.extensibility.utils.interactivity
-import { interactivitySelectionService as interactivityService } from "powerbi-visuals-utils-interactivityutils";
-import SelectableDataPoint = interactivityService.SelectableDataPoint;
-
 import { ChicletSlicerSettingsModel } from "./chicletSlicerSettingsModel";
 
 export interface ChicletSlicerData {
     categorySourceName: string;
     formatString: string;
+    selfFilterEnabled: boolean;
     slicerDataPoints: ChicletSlicerDataPoint[];
-    slicerSettings: ChicletSlicerSettingsModel;
-    hasSelectionOverride?: boolean;
-    hasHighlights: boolean;
-    identityFields: ISQExpr[];
+    formattingSettings: ChicletSlicerSettingsModel;
 }
 
-export interface ChicletSlicerDataPoint extends SelectableDataPoint {
+export interface ChicletSlicerDataPoint {
     identity: any;
-    selected: any;
+    selected: boolean;
     category?: string;
     value?: number;
     mouseOver?: boolean;
@@ -59,4 +47,9 @@ export interface ChicletSlicerDataPoint extends SelectableDataPoint {
     filtered?: boolean;
     id?: number;
     columnName?: any;
+}
+
+export const enum Orientation {
+    HORIZONTAL = 'Horizontal',
+    VERTICAL = 'Vertical'
 }

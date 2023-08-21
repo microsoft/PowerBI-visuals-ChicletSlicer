@@ -24,25 +24,11 @@
  *  THE SOFTWARE.
  */
 
-import powerbiVisualsApi from "powerbi-visuals-api";
-import powerbi = powerbiVisualsApi;
+import powerbi from "powerbi-visuals-api";
 
 // d3
 import { Selection as d3Selection, select as d3Select } from "d3-selection";
 type Selection<T1, T2 = T1> = d3Selection<any, T1, any, T2>;
-
-import lodashSome from "lodash.some";
-
-// powerbi.data
-import ISQExpr = powerbi.data.ISQExpr;
-
-// powerbi.extensibility.utils.interactivity
-import { interactivityBaseService as interactivityService, interactivitySelectionService } from "powerbi-visuals-utils-interactivityutils";
-import IInteractiveBehavior = interactivityService.IInteractiveBehavior;
-import IBehaviorOptions = interactivityService.IBehaviorOptions;
-import IInteractivityService = interactivityService.IInteractivityService;
-import ISelectionHandler = interactivityService.ISelectionHandler;
-import SelectableDataPoint = interactivitySelectionService.SelectableDataPoint;
 
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 import { FilterType, IIdentityFilterTarget, IIdentityFilter } from "powerbi-models";
@@ -52,32 +38,25 @@ import IFilter = powerbi.IFilter;
 import { ChicletSlicerSettingsModel } from "./chicletSlicerSettingsModel";
 import { ChicletSlicer } from "./chicletSlicer";
 import { ChicletSlicerDataPoint } from "./interfaces";
-import { BaseDataPoint, InteractivityServiceOptions } from "powerbi-visuals-utils-interactivityutils/lib/interactivityBaseService";
 
-export interface ChicletSlicerBehaviorOptions extends IBehaviorOptions<BaseDataPoint> {
+export interface ChicletSlicerBehaviorOptions {
     visualHost: IVisualHost;
-    slicerItemContainers: Selection<SelectableDataPoint>;
+    slicerItemContainers: Selection<any>;
     slicerItemLabels: Selection<any>;
     slicerItemInputs: Selection<any>;
     slicerClear: Selection<any>;
     dataPoints: ChicletSlicerDataPoint[];
-    interactivityService: IInteractivityService<BaseDataPoint>;
-    slicerSettings: ChicletSlicerSettingsModel;
-    identityFields: ISQExpr[] | any;
+    formattingSettings: ChicletSlicerSettingsModel;
     isHighContrastMode: boolean;
-    behavior: any;
-    interactivityServiceOptions: InteractivityServiceOptions;
     jsonFilters: IFilter[] | undefined | any;
 }
 
-export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
-    private slicers: Selection<SelectableDataPoint>;
+export class ChicletSlicerWebBehavior {
+    private slicers: Selection<any>;
     private slicerItemLabels: Selection<any>;
     private slicerItemInputs: Selection<any>;
-    private interactivityService: IInteractivityService<BaseDataPoint> | any;
-    private slicerSettings: ChicletSlicerSettingsModel;
+    private formattingSettings: ChicletSlicerSettingsModel;
     private options: ChicletSlicerBehaviorOptions;
-    private selectionHandler: ISelectionHandler;
     private visualHost: IVisualHost;
     private jsonFilters: IFilter[] | undefined | any;
 
@@ -86,21 +65,18 @@ export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
      */
     public dataPoints: ChicletSlicerDataPoint[];
 
-    public bindEvents(options: ChicletSlicerBehaviorOptions, selectionHandler: ISelectionHandler): void {
-        const slicers: Selection<SelectableDataPoint> = this.slicers = options.slicerItemContainers,
+    public bindEvents(options: ChicletSlicerBehaviorOptions): void {
+        const slicers: Selection<any> = this.slicers = options.slicerItemContainers,
             slicerClear: Selection<any> = options.slicerClear;
 
         this.slicerItemLabels = options.slicerItemLabels;
         this.slicerItemInputs = options.slicerItemInputs;
         this.dataPoints = options.dataPoints;
-        this.interactivityService = options.interactivityService;
-        this.slicerSettings = options.slicerSettings;
+
+        this.formattingSettings = options.formattingSettings;
         this.options = options;
         this.visualHost = options.visualHost;
-        this.selectionHandler = selectionHandler;
         this.jsonFilters = options.jsonFilters;
-
-        this.loadSelection();
 
         slicers.on("mouseover", (event, dataPoint: ChicletSlicerDataPoint) => {
             if (dataPoint.selectable) {
@@ -124,12 +100,11 @@ export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
             if (!dataPoint.selectable) {
                 return;
             }
-
             (<MouseEvent>event).preventDefault();
 
-            let index = dataPoint.id;
+            const index = dataPoint.id;
 
-            const settings: ChicletSlicerSettingsModel = this.slicerSettings;
+            const settings: ChicletSlicerSettingsModel = this.formattingSettings;
             const multiselect: boolean = settings.generalCardSettings.multiselect.value;
 
             const selectedIndexes: number[] = this.dataPoints
@@ -138,10 +113,10 @@ export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
 
             if (settings.generalCardSettings.forcedSelection.value && selectedIndexes.length === 1) {
                 const availableDataPoints: ChicletSlicerDataPoint[] = this.dataPoints.map((dataPoint: ChicletSlicerDataPoint) => {
-                        if (!dataPoint.filtered) {
-                            return dataPoint;
-                        }
-                    });
+                    if (!dataPoint.filtered) {
+                        return dataPoint;
+                    }
+                });
 
                 if (availableDataPoints[index]
                     && this.dataPoints[selectedIndexes[0]].identity === availableDataPoints[index].identity) {
@@ -149,118 +124,106 @@ export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
                 }
             }
 
-            if ((<MouseEvent>event).altKey && multiselect) {
-                let selIndex: number = selectedIndexes.length > 0
-                    ? (selectedIndexes[selectedIndexes.length - 1])
-                    : 0;
-
-                if (selIndex > index) {
-                    [index, selIndex] = [selIndex, index];
-                }
-
-                selectionHandler.handleClearSelection();
-
-                for (let i: number = selIndex; i <= index; i++) {
-                    selectionHandler.handleSelection(this.dataPoints[i], true /* isMultiSelect */);
-                }
-            } else if ((((<MouseEvent>event).ctrlKey || (<MouseEvent>event).metaKey)) || multiselect) {
-                selectionHandler.handleSelection(dataPoint, true /* isMultiSelect */);
+            if ((((<MouseEvent>event).ctrlKey || (<MouseEvent>event).metaKey)) || multiselect) {
+                this.handleSelection(dataPoint, true /* isMultiSelect */);
             } else {
-                selectionHandler.handleSelection(dataPoint, false /* isMultiSelect */);
+                this.handleSelection(dataPoint, false /* isMultiSelect */);
             }
-
-            this.saveSelection();
         });
 
         slicerClear.on("click", () => {
-            const settings: ChicletSlicerSettingsModel = this.slicerSettings;
+            const settings: ChicletSlicerSettingsModel = this.formattingSettings;
 
             if (settings.generalCardSettings.forcedSelection.value) {
                 return false;
             }
 
-            selectionHandler.handleClearSelection();
-
-            this.saveSelection();
+            this.handleClearSelection();
         });
 
+        this.renderSelection();
         this.forceSelection();
     }
 
     private forceSelection(): void {
-        if (!this.slicerSettings.generalCardSettings.forcedSelection.value) {
+        if (!this.formattingSettings.generalCardSettings.forcedSelection.value) {
             return;
         }
 
-        const isSelected: boolean = lodashSome(
-            this.dataPoints,
-            (dataPoint: ChicletSlicerDataPoint) => dataPoint.selected);
-
+        const isSelected: boolean = this.dataPoints.some((dataPoint: ChicletSlicerDataPoint) => dataPoint.selected);
         if (!isSelected) {
-            for (let i: number = 0; i < this.dataPoints.length; i++) {
-                const dataPoint: ChicletSlicerDataPoint = this.dataPoints[i];
+            const dataPoint = this.dataPoints.find((dataPoint: ChicletSlicerDataPoint) => dataPoint.selectable && !dataPoint.filtered);
+            if (dataPoint) {
+                dataPoint.selected = true;
 
-                if (dataPoint.selectable && !dataPoint.filtered) {
-                    this.selectionHandler.handleSelection(dataPoint, false);
-
-                    this.saveSelection();
-
-                    break;
-                }
+                this.renderSelection();
+                this.saveSelection();
             }
         }
     }
 
-    public loadSelection(): void {
-        if (this.jsonFilters && this.jsonFilters[0]) {
-            const targets = this.jsonFilters[0].target;
-            this.interactivityService.selectionManager.clear();
-            targets.forEach(target => this.selectionHandler.handleSelection(this.dataPoints[target], true))
-        }
+    private handleSelection(selecteDataPoint: ChicletSlicerDataPoint, multiSelect: boolean): void {
+        this.dataPoints.forEach((dataPoint: ChicletSlicerDataPoint) => {
+            if (selecteDataPoint.id === dataPoint.id) {
+                dataPoint.selected = !dataPoint.selected;
+            } else if (!multiSelect) {
+                dataPoint.selected = false;
+            }
+        });
+
+        this.renderSelection();
+        this.saveSelection();
     }
 
-    public saveSelection(): void {
-        const filterDataPoints: any[] = this.dataPoints.filter(d => d.selected);
+    private handleClearSelection() {
+        this.dataPoints.forEach((dataPoint: ChicletSlicerDataPoint) => {
+            dataPoint.selected = false;
+        });
+
+        this.renderSelection();
+        this.saveSelection();
+    }
+
+    private saveSelection(): void {
+        const filterTargets: IIdentityFilterTarget = this.dataPoints
+            .filter(d => d.selected)
+            .map(d => d.id);
 
         // Selection manager stores selection ids in the order in which they are selected by the user.
         // This is needed because data should be sent to the host in the same order that the user selected.
-        const selectionIds = this.interactivityService.selectionManager.getSelectionIds();
-        const sortedDataPoints = filterDataPoints.sort((dp1, dp2) => selectionIds.findIndex(si => si.equals(dp1.identity)) - selectionIds.findIndex(si => si.equals(dp2.identity)));
+        // If the order is not maintained, the host will show incorrect data in the visual.
 
-        const filterTargets: IIdentityFilterTarget = sortedDataPoints.map((dataPoint: any) => {
-            return dataPoint.id;
-        });
+        const target = (this.jsonFilters?.length && this.jsonFilters[0]?.target) ? this.jsonFilters[0].target : [];
+        const sortedTargers = ChicletSlicerWebBehavior.sortByJSONFilterTarget(filterTargets, target);
 
         const filter: IIdentityFilter = {
             $schema: "https://powerbi.com/product/schema#identity",
             filterType: FilterType.Identity,
             operator: "In",
-            target: filterTargets
+            target: sortedTargers
         }
 
         this.visualHost.applyJsonFilter(filter, "general", "filter", FilterAction.merge);
     }
 
-    public renderSelection(hasSelection: boolean): void {
-        if (!hasSelection && !this.interactivityService.isSelectionModeInverted()) {
-            this.slicers.style(
-                "background",
-                this.slicerSettings.slicerTextCardSettings.unselectedColor.value.value);
+    public static sortByJSONFilterTarget(selected, jsonFilters: number[]): number[] {
+        const reversed = jsonFilters.reverse();
+
+        function compareIndexes(a, b: number) {
+            return reversed.indexOf(b) - reversed.indexOf(a);
         }
-        else {
-            this.styleSlicerInputs(this.slicers);
-        }
+        return selected.toSorted(compareIndexes);
     }
 
     private renderMouseover(): void {
         this.slicerItemLabels
             .style("color", (dataPoint: ChicletSlicerDataPoint) => {
                 if (dataPoint.mouseOver) {
-                    return this.slicerSettings.slicerTextCardSettings.hoverColor.value.value;
+                    return this.formattingSettings.slicerTextCardSettings.hoverColor.value.value;
                 }
 
                 if (dataPoint.mouseOut) {
-                    return this.slicerSettings.slicerTextCardSettings.fontColor.value.value;
+                    return this.formattingSettings.slicerTextCardSettings.fontColor.value.value;
                 }
             })
             .style("opacity", (dataPoint: ChicletSlicerDataPoint) => {
@@ -273,11 +236,11 @@ export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
             });
     }
 
-    public styleSlicerInputs(slicers: Selection<any>) {
-        const settings = this.slicerSettings,
+    private renderSelection() {
+        const settings = this.formattingSettings,
             isHighContrastMode = this.options.isHighContrastMode;
 
-        slicers.each(function (dataPoint: ChicletSlicerDataPoint) {
+        this.slicers.each(function (dataPoint: ChicletSlicerDataPoint) {
             d3Select(this)
                 .style("background", dataPoint.selectable
                     ? (dataPoint.selected
@@ -291,9 +254,8 @@ export class ChicletSlicerWebBehavior implements IInteractiveBehavior {
                             : ChicletSlicer.DisabledOpacity;
                     }
                     return ChicletSlicer.DefaultOpacity;
-                });
-
-            d3Select(this).classed("slicerItem-disabled", !dataPoint.selectable);
+                })
+                .classed("slicerItem-disabled", !dataPoint.selectable);
         });
     }
 }

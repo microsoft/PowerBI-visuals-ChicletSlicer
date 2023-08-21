@@ -24,20 +24,20 @@
  *  THE SOFTWARE.
  */
 
-import powerbiVisualsApi from "powerbi-visuals-api";
-import IViewport = powerbiVisualsApi.IViewport;
+import powerbi from "powerbi-visuals-api";
+import IViewport = powerbi.IViewport;
 
 // d3
 import { Selection as d3Selection } from "d3-selection";
 type Selection<T1, T2 = T1> = d3Selection<any, T1, any, T2>;
 
 // powerbi.extensibility.utils.svg
-import * as SVGUtil from "powerbi-visuals-utils-svgutils";
-import ClassAndSelector = SVGUtil.CssConstants.ClassAndSelector;
-import createClassAndSelector = SVGUtil.CssConstants.createClassAndSelector;
+import { CssConstants } from "powerbi-visuals-utils-svgutils";
+import ClassAndSelector = CssConstants.ClassAndSelector;
+import createClassAndSelector = CssConstants.createClassAndSelector;
 
 import { ChicletSlicerDataPoint } from "./interfaces";
-import { Orientation } from "./chicletSlicer";
+import { Orientation } from "./interfaces";
 
 export interface ITableView {
     data(data: any[], dataIdFunction: (d) => any, dataAppended: boolean): ITableView;
@@ -51,13 +51,6 @@ export interface ITableView {
     empty(): void;
     computedColumns: number;
     computedRows: number;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-namespace
-export namespace TableViewFactory {
-    export function createTableView(options): ITableView {
-        return new TableView(options);
-    }
 }
 
 export interface TableViewViewOptions {
@@ -116,12 +109,10 @@ export class TableView implements ITableView {
             .attr('drag-resize-disabled', true);
 
         this.scrollContainer = options.baseContainer
-            .append('div')
-            .attr('class', 'scrollRegion');
+            .select('.scrollRegion');
 
         this.visibleGroupContainer = this.scrollContainer
-            .append('div')
-            .attr('class', 'visibleGroup');
+            .select('.visibleGroup');
 
         TableView.setDefaultOptions(options);
     }

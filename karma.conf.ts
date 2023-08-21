@@ -67,7 +67,7 @@ module.exports = (config) => {
             }
         ],
         preprocessors: {
-            [testRecursivePath]: ["webpack"]
+            ['test/**/*.ts']: ["webpack", "sourcemap"]
         },
         typescriptPreprocessor: {
             options: tsconfig.compilerOptions
