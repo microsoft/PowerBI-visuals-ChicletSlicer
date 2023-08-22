@@ -215,8 +215,8 @@ export class TableView implements ITableView {
             totalItems: number = this._data.length;
 
         let totalRows: number = options.rows > totalItems
-                ? totalItems
-                : options.rows,
+            ? totalItems
+            : options.rows,
             totalColumns: number = options.columns > totalItems
                 ? totalItems
                 : options.columns;
@@ -313,7 +313,7 @@ export class TableView implements ITableView {
 
     private getComputedOptions(data: any[], orientation: string): TableViewComputedOptions {
         let columns: number = 0;
-        const rows : number = data ? data.length : 0;
+        const rows: number = data ? data.length : 0;
 
         for (let i: number = 0; i < rows; i++) {
             const currentRow: any[] = data[i];
@@ -342,18 +342,17 @@ export class TableView implements ITableView {
             rowHeight: number = options.rowHeight || TableView.defaultRowHeight,
             groupedData: TableViewGroupedData = this.getGroupedData();
 
-        const rowSelection : Selection<any> = visibleGroupContainer
+        const rowSelection: Selection<any> = visibleGroupContainer
             .selectAll(TableView.RowSelector.selectorName)
             .data(<ChicletSlicerDataPoint[]>groupedData.data);
 
         const rowSelectionMerged = rowSelection
             .enter()
-            .append("div")
-            .merge(rowSelection);
+            .append("ul")
+            .merge(rowSelection)
+            .classed(TableView.RowSelector.className, true);
 
-        rowSelectionMerged.classed(TableView.RowSelector.className, true);
-
-        const cellSelection : Selection<any> = rowSelectionMerged
+        const cellSelection: Selection<any> = rowSelectionMerged
             .selectAll(TableView.CellSelector.selectorName)
             .data((dataPoints: ChicletSlicerDataPoint[]) => {
                 return dataPoints;
@@ -361,20 +360,9 @@ export class TableView implements ITableView {
 
         const cellSelectionMerged = cellSelection
             .enter()
-            .append('div')
-            .merge(cellSelection);
-
-        cellSelectionMerged.classed(TableView.CellSelector.className, true);
-
-        cellSelectionMerged.call((selection: Selection<any>) => {
-            options.enter(selection);
-        });
-
-        cellSelectionMerged.call((selection: Selection<any>) => {
-            options.update(selection);
-        });
-
-        cellSelectionMerged.style("height", (rowHeight > 0) ? rowHeight + "px" : "auto");
+            .append('li')
+            .merge(cellSelection)
+            .classed(TableView.CellSelector.className, true);
 
         if (this.options.orientation === Orientation.VERTICAL) {
             let realColumnNumber: number = 0;
@@ -392,13 +380,20 @@ export class TableView implements ITableView {
                     : (100 / realColumnNumber) + '%');
         }
         else {
-            cellSelectionMerged.style("width", (options.columnWidth > 0)
-                ? options.columnWidth + 'px'
-                : (100 / groupedData.totalColumns) + '%');
+            let newColumnWidth: string = options.columnWidth + 'px';
+            const maxWidth: number = this.options.viewport.width;
+            if (((options.columnWidth * groupedData.totalColumns) > maxWidth) || (options.columnWidth === 0)) {
+                newColumnWidth = (100 / groupedData.totalColumns) + '%';
+            }
 
-            rowSelectionMerged.style("width", null);
+            cellSelectionMerged.style("width", newColumnWidth);
         }
 
+        options.enter(cellSelectionMerged);
+        options.update(cellSelectionMerged);
+
+        cellSelectionMerged.style("height", (rowHeight > 0) ? rowHeight + "px" : "auto");
+    
         cellSelection
             .exit()
             .remove();

@@ -64,7 +64,7 @@ import { textMeasurementService, valueFormatter, interfaces } from "powerbi-visu
 import TextProperties = interfaces.TextProperties;
 
 import { ChicletSlicerData, ChicletSlicerDataPoint, Orientation } from "./interfaces";
-import { ChicletSlicerSettingsModel, TooltipsCardSettings, SlicerTextCardSettings, HeaderCardSettings, SlicerItemContainer } from "./chicletSlicerSettingsModel";
+import { ChicletSlicerSettingsModel, TooltipsCardSettings, SlicerTextCardSettings, HeaderCardSettings } from "./chicletSlicerSettingsModel";
 import { FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel";
 import { ChicletSlicerBehaviorOptions, ChicletSlicerWebBehavior } from "./webBehavior";
 import { ChicletSlicerConverter } from "./chicletSlicerConverter";
@@ -370,8 +370,14 @@ export class ChicletSlicer implements IVisual {
 
         this.renderFiltered = (searchText: string) => {
             if (data.selfFilterEnabled && (searchText != null)) {
-                data.slicerDataPoints = ChicletSlicer.filterDataPoints(data.slicerDataPoints, searchText);
-                this.render(data.slicerDataPoints, data.formattingSettings, data.selfFilterEnabled);
+                const datapoints = ChicletSlicer.filterDataPoints(data.slicerDataPoints, searchText);
+
+                this.tableView
+                    .data(
+                        datapoints.filter(x => !x.filtered),
+                        (d: ChicletSlicerDataPoint) => datapoints.indexOf(d),
+                        this.resetScrollbarPosition)
+                    .render();
             }
         }
     }
@@ -472,11 +478,11 @@ export class ChicletSlicer implements IVisual {
             .style("width", `${ChicletSlicer.MaxImageWidth}%`);
 
         const rowEnter = (rowSelection: Selection<any>) => {
-            ChicletSlicer.enterSelection(rowSelection, settings.slicerTextCardSettings, settings.slicerItemContainer);
+            ChicletSlicer.cellsEnter(rowSelection, settings.slicerTextCardSettings);
         };
 
         const rowUpdate = (rowSelection: Selection<any>) => {
-            this.selection(rowSelection, data);
+            this.cellsUpdate(rowSelection, data);
         };
 
         const rowExit = (rowSelection: Selection<any>) => {
@@ -502,84 +508,45 @@ export class ChicletSlicer implements IVisual {
         this.updateInternal(data);
     }
 
-    private static enterSelection(rowSelection: Selection<any>, slicerTextCardSettings: SlicerTextCardSettings, slicerItemContainer: SlicerItemContainer): void {
-        const ulItemElement: Selection<any> = rowSelection
-            .selectAll('ul')
-            .data((dataPoint: ChicletSlicerDataPoint) => {
-                return [dataPoint];
-            });
-
-        const ulItemElementMerged = ulItemElement
-            .enter()
-            .append('ul')
-            .merge(ulItemElement);
-
-        ulItemElement
-            .exit()
-            .remove();
-
-        const listItemElement: Selection<any> = ulItemElementMerged
-            .selectAll(ChicletSlicer.ItemContainerSelector.selectorName)
-            .data((dataPoint: ChicletSlicerDataPoint) => {
-                return [dataPoint];
-            });
-
-        const listItemElementMerged = listItemElement
-            .enter()
-            .append('li')
-            .merge(listItemElement);
-
-        listItemElementMerged.classed(ChicletSlicer.ItemContainerSelector.className, true);
-
-        listItemElementMerged.style("margin-left", PixelConverter.toString(slicerItemContainer.marginLeft));
-
-        const slicerImgWrapperSelection: Selection<any> = listItemElementMerged
+    private static cellsEnter(cellSelection: Selection<any>, slicerTextCardSettings: SlicerTextCardSettings): void {
+        const slicerImgWrapperSelection: Selection<any> = cellSelection
+            .classed(ChicletSlicer.ItemContainerSelector.className, true)
             .selectAll(ChicletSlicer.SlicerImgWrapperSelector.selectorName)
             .data((dataPoint: ChicletSlicerDataPoint) => {
                 return [dataPoint];
             });
 
-        const slicerImgWrapperSelectionMerged = slicerImgWrapperSelection
+        slicerImgWrapperSelection
             .enter()
             .append('img')
-            .merge(slicerImgWrapperSelection);
-
-        slicerImgWrapperSelectionMerged.classed(ChicletSlicer.SlicerImgWrapperSelector.className, true);
-
-        slicerImgWrapperSelection
+            .classed(ChicletSlicer.SlicerImgWrapperSelector.className, true)
             .exit()
             .remove();
 
-        const slicerTextWrapperSelection: Selection<any> = listItemElementMerged
+        const slicerTextWrapperSelection: Selection<any> = cellSelection
             .selectAll(ChicletSlicer.SlicerTextWrapperSelector.selectorName)
             .data((dataPoint: ChicletSlicerDataPoint) => {
                 return [dataPoint];
-            });
-
-        const slicerTextWrapperSelectionMerged = slicerTextWrapperSelection
+            })
             .enter()
             .append('div')
-            .merge(slicerTextWrapperSelection);
+            .classed(ChicletSlicer.SlicerTextWrapperSelector.className, true);
 
-        slicerTextWrapperSelectionMerged.classed(ChicletSlicer.SlicerTextWrapperSelector.className, true);
-
-        const labelTextSelection: Selection<any> = slicerTextWrapperSelectionMerged
+        const labelTextSelection: Selection<any> = slicerTextWrapperSelection
             .selectAll(ChicletSlicer.LabelTextSelector.selectorName)
             .data((dataPoint: ChicletSlicerDataPoint) => {
                 return [dataPoint];
             });
 
-        const labelTextSelectionMerged = labelTextSelection
+        labelTextSelection
             .enter()
             .append('span')
-            .merge(labelTextSelection);
+            .classed(ChicletSlicer.LabelTextSelector.className, true);
 
-        labelTextSelectionMerged.classed(ChicletSlicer.LabelTextSelector.className, true);
-
-        labelTextSelectionMerged
+        labelTextSelection
             .style("font-size", PixelConverter.fromPoint(slicerTextCardSettings.textSize.value))
             .style("color", slicerTextCardSettings.fontColor.value.value)
-            .style("opacity", ChicletSlicer.DefaultOpacity);
+            .style("opacity", ChicletSlicer.DefaultOpacity)
 
         labelTextSelection
             .exit()
@@ -589,14 +556,10 @@ export class ChicletSlicer implements IVisual {
             .exit()
             .remove();
 
-        listItemElement
-            .exit()
-            .remove();
     }
 
-    private selection(rowSelection: Selection<any>, data: ChicletSlicerData): void {
+    private cellsUpdate(rowSelection: Selection<any>, data: ChicletSlicerData): void {
         const settings = data.formattingSettings;
-
         if (data && settings) {
             this.slicerHeader.classed('hidden', !settings.headerCardSettings.show.value);
 
@@ -610,23 +573,12 @@ export class ChicletSlicer implements IVisual {
             this.slicerBody.classed(ChicletSlicer.SlicerBodyHorizontalSelector.className, settings.generalCardSettings.orientation.value.value === Orientation.HORIZONTAL)
                 .classed(ChicletSlicer.SlicerBodyVerticalSelector.className, settings.generalCardSettings.orientation.value.value === Orientation.VERTICAL);
 
-            const slicerText: Selection<any> = rowSelection.selectAll(ChicletSlicer.LabelTextSelector.selectorName),
-                textProperties: TextProperties = ChicletSlicer.getChicletTextProperties(settings.slicerTextCardSettings.textSize.value),
-                formatString: string = data.formatString;
-
-            const slicerBodyViewport: IViewport = this.getSlicerBodyViewport(this.currentViewport, settings.headerCardSettings, data.selfFilterEnabled);
-
-            slicerText.text((d: ChicletSlicerDataPoint) => {
-                textProperties.text = valueFormatter.format(d.category, formatString);
-                if (settings.slicerTextCardSettings.width.value === 0) {
-                    settings.slicerTextCardSettings.width.value = Math.floor(slicerBodyViewport.width / (this.tableView.computedColumns || ChicletSlicer.MinColumns));
-                }
-                const maxWidth: number = settings.slicerTextCardSettings.width.value -
-                    ChicletSlicer.СhicletTotalInnerRightLeftPaddings -
-                    ChicletSlicer.СellTotalInnerBorders -
-                    settings.slicerTextCardSettings.outlineWeight.value;
-                return textMeasurementService.getTailoredTextOrDefault(textProperties, maxWidth);
-            });
+            rowSelection
+                .style("color", settings.slicerTextCardSettings.fontColor.value.value).style("border-style", ChicletSlicer.getBorderStyle(settings.slicerTextCardSettings.outline))
+                .style("border-color", settings.slicerTextCardSettings.outlineColor.value.value)
+                .style("border-width", ChicletSlicer.getBorderWidth(settings.slicerTextCardSettings.outline, settings.slicerTextCardSettings.outlineWeight.value))
+                .style("font-size", PixelConverter.fromPoint(settings.slicerTextCardSettings.textSize.value))
+                .style("border-radius", ChicletSlicer.getBorderRadius(settings.slicerTextCardSettings.borderStyle.value.value.toString()));
 
             rowSelection.style("padding", PixelConverter.toString(settings.slicerTextCardSettings.padding.value));
             rowSelection
@@ -639,6 +591,7 @@ export class ChicletSlicer implements IVisual {
                 })
                 .classed("imageRound", settings.imagesCardSettings.imageRound.value).classed("stretchImage", settings.imagesCardSettings.stretchImage.value)
                 .classed("bottomImage", settings.imagesCardSettings.bottomImage.value).attr("src", (d: ChicletSlicerDataPoint) => { return d.imageURL ? d.imageURL : ''; });
+
             rowSelection.selectAll(ChicletSlicer.SlicerTextWrapperSelector.selectorName)
                 .style('height', (d: ChicletSlicerDataPoint): string => {
                     let height: number = ChicletSlicer.MaxImageSplit;
@@ -648,12 +601,30 @@ export class ChicletSlicer implements IVisual {
                 .classed('hidden', () => {
                     if (settings.imagesCardSettings.imageSplit.value > ChicletSlicer.MaxImageSplitToHide) { return true; }
                 });
-            rowSelection.selectAll(ChicletSlicer.ItemContainerSelector.selectorName)
-                .style("color", settings.slicerTextCardSettings.fontColor.value.value).style("border-style", ChicletSlicer.getBorderStyle(settings.slicerTextCardSettings.outline))
-                .style("border-color", settings.slicerTextCardSettings.outlineColor.value.value)
-                .style("border-width", ChicletSlicer.getBorderWidth(settings.slicerTextCardSettings.outline, settings.slicerTextCardSettings.outlineWeight.value))
-                .style("font-size", PixelConverter.fromPoint(settings.slicerTextCardSettings.textSize.value))
-                .style("border-radius", ChicletSlicer.getBorderRadius(settings.slicerTextCardSettings.borderStyle.value.value.toString()));
+
+            const textProperties: TextProperties = ChicletSlicer.getChicletTextProperties(settings.slicerTextCardSettings.textSize.value),
+                formatString: string = data.formatString;
+
+            const slicerBodyViewport: IViewport = this.getSlicerBodyViewport(this.currentViewport, settings.headerCardSettings, data.selfFilterEnabled);
+
+            rowSelection
+                .selectAll(ChicletSlicer.LabelTextSelector.selectorName)
+                .data((dataPoint: ChicletSlicerDataPoint) => {
+                    return [dataPoint];
+                })
+                .text((d: ChicletSlicerDataPoint) => {
+                    textProperties.text = valueFormatter.format(d.category, formatString);
+                    //if (settings.slicerTextCardSettings.width.value === 0) {
+                    settings.slicerTextCardSettings.width.value = Math.floor(slicerBodyViewport.width / (this.tableView.computedColumns || ChicletSlicer.MinColumns));
+                    //}
+
+                    const maxWidth: number = settings.slicerTextCardSettings.width.value -
+                        ChicletSlicer.СhicletTotalInnerRightLeftPaddings -
+                        ChicletSlicer.СellTotalInnerBorders -
+                        settings.slicerTextCardSettings.outlineWeight.value;
+                    return textMeasurementService.getTailoredTextOrDefault(textProperties, maxWidth);
+                });
+
 
             if (settings.slicerTextCardSettings.background.value.value) {
                 const backgroundColor: string = hexToRGBString(settings.slicerTextCardSettings.background.value.value,
