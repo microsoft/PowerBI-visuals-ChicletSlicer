@@ -55,7 +55,6 @@ export interface ITableView {
 
 export interface TableViewViewOptions {
     enter: (selection: Selection<any>) => void;
-    exit: (selection: Selection<any>) => void;
     update: (selection: Selection<any>) => void;
     baseContainer: Selection<any>;
     rowHeight: number;

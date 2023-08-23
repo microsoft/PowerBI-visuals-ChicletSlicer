@@ -486,10 +486,6 @@ export class ChicletSlicer implements IVisual {
             this.selection(rowSelection, data);
         };
 
-        const rowExit = (rowSelection: Selection<any>) => {
-            rowSelection.remove();
-        };
-
         const tableViewOptions: TableViewViewOptions = {
             rowHeight: ChicletSlicer.getRowHeight(settings.slicerTextCardSettings),
             columnWidth: settings.slicerTextCardSettings.width.value,
@@ -497,7 +493,6 @@ export class ChicletSlicer implements IVisual {
             rows: settings.generalCardSettings.rows.value,
             columns: settings.generalCardSettings.columns.value,
             enter: rowEnter,
-            exit: rowExit,
             update: rowUpdate,
             scrollEnabled: true,
             viewport: slicerBodyViewport,
