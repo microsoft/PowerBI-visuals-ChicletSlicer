@@ -55,7 +55,6 @@ export interface ITableView {
 
 export interface TableViewViewOptions {
     enter: (selection: Selection<any>) => void;
-    exit: (selection: Selection<any>) => void;
     update: (selection: Selection<any>) => void;
     baseContainer: Selection<any>;
     rowHeight: number;
@@ -215,8 +214,8 @@ export class TableView implements ITableView {
             totalItems: number = this._data.length;
 
         let totalRows: number = options.rows > totalItems
-                ? totalItems
-                : options.rows,
+            ? totalItems
+            : options.rows,
             totalColumns: number = options.columns > totalItems
                 ? totalItems
                 : options.columns;
@@ -313,7 +312,7 @@ export class TableView implements ITableView {
 
     private getComputedOptions(data: any[], orientation: string): TableViewComputedOptions {
         let columns: number = 0;
-        const rows : number = data ? data.length : 0;
+        const rows: number = data ? data.length : 0;
 
         for (let i: number = 0; i < rows; i++) {
             const currentRow: any[] = data[i];
@@ -342,39 +341,28 @@ export class TableView implements ITableView {
             rowHeight: number = options.rowHeight || TableView.defaultRowHeight,
             groupedData: TableViewGroupedData = this.getGroupedData();
 
-        const rowSelection : Selection<any> = visibleGroupContainer
+        const rowSelection: Selection<any> = visibleGroupContainer
             .selectAll(TableView.RowSelector.selectorName)
-            .data(<ChicletSlicerDataPoint[]>groupedData.data);
+            .data(<ChicletSlicerDataPoint[]>groupedData.data)
+            .join("div")
+            .classed(TableView.RowSelector.className, true);
 
-        const rowSelectionMerged = rowSelection
-            .enter()
-            .append("div")
-            .merge(rowSelection);
-
-        rowSelectionMerged.classed(TableView.RowSelector.className, true);
-
-        const cellSelection : Selection<any> = rowSelectionMerged
+        const cellSelection: Selection<any> = rowSelection
             .selectAll(TableView.CellSelector.selectorName)
             .data((dataPoints: ChicletSlicerDataPoint[]) => {
                 return dataPoints;
-            });
+            })
+            .join("div")
+            .classed(TableView.CellSelector.className, true)
+            .style("height", (rowHeight > 0) ? rowHeight + "px" : "auto");
 
-        const cellSelectionMerged = cellSelection
-            .enter()
-            .append('div')
-            .merge(cellSelection);
-
-        cellSelectionMerged.classed(TableView.CellSelector.className, true);
-
-        cellSelectionMerged.call((selection: Selection<any>) => {
+        cellSelection.call((selection: Selection<any>) => {
             options.enter(selection);
         });
 
-        cellSelectionMerged.call((selection: Selection<any>) => {
+        cellSelection.call((selection: Selection<any>) => {
             options.update(selection);
         });
-
-        cellSelectionMerged.style("height", (rowHeight > 0) ? rowHeight + "px" : "auto");
 
         if (this.options.orientation === Orientation.VERTICAL) {
             let realColumnNumber: number = 0;
@@ -384,28 +372,20 @@ export class TableView implements ITableView {
                     realColumnNumber = i + 1;
             }
 
-            cellSelectionMerged.style("width", "100%");
+            cellSelection.style("width", "100%");
 
-            rowSelectionMerged
+            rowSelection
                 .style("width", (options.columnWidth > 0)
                     ? options.columnWidth + 'px'
                     : (100 / realColumnNumber) + '%');
         }
         else {
-            cellSelectionMerged.style("width", (options.columnWidth > 0)
+            cellSelection.style("width", (options.columnWidth > 0)
                 ? options.columnWidth + 'px'
-                : (100 / groupedData.totalColumns) + '%');
+                : (100 / groupedData.totalColumns) + '%'
+            );
 
-            rowSelectionMerged.style("width", null);
+            rowSelection.style("width", null);
         }
-
-        cellSelection
-            .exit()
-            .remove();
-
-        rowSelection
-            .exit()
-            .call(d => options.exit(d))
-            .remove();
     }
 }
