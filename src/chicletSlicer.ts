@@ -25,12 +25,10 @@
  */
 
 import lodashSortby from "lodash.sortby";
-import lodashSome from "lodash.some";
 
 import "../style/chicletSlicer.less";
 
-import powerbiVisualsApi from "powerbi-visuals-api";
-import powerbi = powerbiVisualsApi;
+import powerbi from "powerbi-visuals-api";
 
 // d3
 import { Selection as d3Selection } from "d3-selection";
@@ -41,22 +39,17 @@ import { select as d3Select } from "d3-selection";
 // powerbi
 import DataView = powerbi.DataView;
 import IViewport = powerbi.IViewport;
-import DataViewCategoryColumn = powerbiVisualsApi.DataViewCategoryColumn;
+import DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
 
 import IVisual = powerbi.extensibility.IVisual;
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
-import IColorPalette = powerbiVisualsApi.extensibility.IColorPalette;
+import IColorPalette = powerbi.extensibility.IColorPalette;
 import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
-import VisualUpdateOptions = powerbiVisualsApi.extensibility.visual.VisualUpdateOptions;
-import VisualConstructorOptions = powerbiVisualsApi.extensibility.visual.VisualConstructorOptions;
+import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
+import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
 
 // powerbi.extensibility.utils.type
 import { pixelConverter as PixelConverter } from "powerbi-visuals-utils-typeutils";
-
-// powerbi.extensibility.utils.interactivity
-import { interactivityBaseService as interactivityService, interactivitySelectionService } from "powerbi-visuals-utils-interactivityutils";
-import IInteractivityService = interactivityService.IInteractivityService;
-import createInteractivitySelectionService = interactivitySelectionService.createInteractivitySelectionService;
 
 // powerbi.extensibility.utils.svg
 import * as SVGUtil from "powerbi-visuals-utils-svgutils";
@@ -67,83 +60,60 @@ import createClassAndSelector = SVGUtil.CssConstants.createClassAndSelector;
 import { hexToRGBString, ColorHelper } from "powerbi-visuals-utils-colorutils";
 
 // powerbi.extensibility.utils.formatting
-import { textMeasurementService, valueFormatter, interfaces} from "powerbi-visuals-utils-formattingutils";
+import { textMeasurementService, valueFormatter, interfaces } from "powerbi-visuals-utils-formattingutils";
 import TextProperties = interfaces.TextProperties;
 
-import { ChicletSlicerData, ChicletSlicerDataPoint } from "./interfaces";
-import { ChicletSlicerSettingsModel } from "./chicletSlicerSettingsModel";
+import { ChicletSlicerData, ChicletSlicerDataPoint, Orientation } from "./interfaces";
+import { ChicletSlicerSettingsModel, TooltipsCardSettings, SlicerTextCardSettings, HeaderCardSettings, SlicerItemContainer } from "./chicletSlicerSettingsModel";
 import { FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel";
 import { ChicletSlicerBehaviorOptions, ChicletSlicerWebBehavior } from "./webBehavior";
 import { ChicletSlicerConverter } from "./chicletSlicerConverter";
-import { ITableView, TableViewFactory, TableViewViewOptions } from "./tableView";
-import { BaseDataPoint, InteractivityServiceOptions } from "powerbi-visuals-utils-interactivityutils/lib/interactivityBaseService";
+import { ITableView, TableView, TableViewViewOptions } from "./tableView";
 
 import { createTooltipServiceWrapper, ITooltipServiceWrapper } from "powerbi-visuals-utils-tooltiputils";
-import VisualTooltipDataItem = powerbiVisualsApi.extensibility.VisualTooltipDataItem;
+import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
+
+import { ExternalLinksTelemetry } from "./telemetry";
 
 import IFilter = powerbi.IFilter;
-import ISelectionManager = powerbiVisualsApi.extensibility.ISelectionManager;
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
-namespace ChicletBorderStyle {
-    export const ROUNDED: string = 'Rounded';
-    export const CUT: string = 'Cut';
-    export const SQUARE: string = 'Square';
+const enum ChicletBorderStyle {
+    ROUNDED = "Rounded",
+    CUT = "Cut",
+    SQUARE = "Square"
 }
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
-namespace ChicletSlicerShowDisabled {
-    export const INPLACE: string = 'Inplace';
-    export const BOTTOM: string = 'Bottom';
-    export const HIDE: string = 'Hide';
+const enum ChicletSlicerShowDisabled {
+    INPLACE = "Inplace",
+    BOTTOM = "Bottom",
+    HIDE = "Hide"
 }
-
-// eslint-disable-next-line @typescript-eslint/no-namespace
-export namespace Orientation {
-    export const HORIZONTAL: string = 'Horizontal';
-    export const VERTICAL: string = 'Vertical';
-}
-
 export class ChicletSlicer implements IVisual {
     private root: Selection<any>;
     private searchHeader: Selection<any>;
     private searchInput: Selection<any>;
     private currentViewport: IViewport;
-    private dataView: DataView;
     private slicerHeader: Selection<any>;
     private slicerBody: Selection<any>;
     private tableView: ITableView;
-    private slicerData: ChicletSlicerData;
 
-    private interactivityService: IInteractivityService<BaseDataPoint> | any;
+    public formattingSettings: ChicletSlicerSettingsModel;
+
     private visualHost: IVisualHost;
 
     private colorPalette: IColorPalette;
     private colorHelper: ColorHelper;
 
-    private waitingForData: boolean;
-    private isSelectionLoaded: boolean;
-
-    private jsonFilters: IFilter[] | undefined | any;
+    private jsonFilters: IFilter[] | any[];
     private tooltipService: ITooltipServiceWrapper;
-    private selectionManager: ISelectionManager;
 
     private localizationManager: ILocalizationManager;
-
-    private ExternalImageTelemetryTraced: boolean = false;
-
-    private chicletSlicerData: ChicletSlicerData;
     private resetScrollbarPosition: boolean;
 
     /**
      * It's public for testability.
      */
     public behavior: ChicletSlicerWebBehavior;
-
-    /**
-     * It's public for testability.
-     */
-    public formattingSettings: ChicletSlicerSettingsModel;
     private formattingSettingsService: FormattingSettingsService;
 
     public static DefaultOpacity: number = 1;
@@ -165,11 +135,8 @@ export class ChicletSlicer implements IVisual {
     public static MaxImageWidth: number = 100;
     public static MaxTransparency: number = 100;
 
-    private static MaxCellPadding: number = 20;
     private static MinSizeOfViewport: number = 0;
     private static MinColumns: number = 1;
-    private static MaxColumns: number = 1000;
-    private static MaxRows: number = 1000;
     private static WidthOfScrollbar: number = 17;
 
     public static ItemContainerSelector: ClassAndSelector = createClassAndSelector('slicerItemContainer');
@@ -185,67 +152,11 @@ export class ChicletSlicer implements IVisual {
     public static ClearSelector: ClassAndSelector = createClassAndSelector('clear');
     public static BodySelector: ClassAndSelector = createClassAndSelector('slicerBody');
 
-    /**
-     * Public to testability.
-     */
-    public static GET_VALID_IMAGE_SPLIT(imageSplit): number {
-        if (imageSplit < ChicletSlicer.MinImageSplit) {
-            return ChicletSlicer.MinImageSplit;
-        } else if (imageSplit > ChicletSlicer.MaxImageSplit) {
-            return ChicletSlicer.MaxImageSplit;
-        } else {
-            return imageSplit;
-        }
-    }
-
-    public converter(
-        dataView: DataView,
-        searchText: string,
-        visualHost: IVisualHost): ChicletSlicerData {
-
-        const categories: DataViewCategoryColumn = dataView?.categorical?.categories?.length && dataView.categorical.categories[0];
-
-        if (!categories?.source?.roles ||
-            !categories.source.roles["Category"] ||
-            !categories?.values?.length) {
-                return;
-        }
-
-        const converter: ChicletSlicerConverter = new ChicletSlicerConverter(dataView, visualHost);
-        converter.convert();
-
-        this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(ChicletSlicerSettingsModel, [dataView]);
-        const defaultSettings: ChicletSlicerSettingsModel = this.formattingSettings;
-
-        if (dataView.metadata.objects?.general?.selfFilterEnabled && searchText) {
-            this.filterDataPoints(converter.dataPoints, searchText);
-        }
-
-        const slicerData : ChicletSlicerData = {
-            categorySourceName: categories.source.displayName,
-            formatString: valueFormatter.getFormatStringByColumn(categories.source),
-            slicerSettings: defaultSettings,
-            slicerDataPoints: converter.dataPoints,
-            identityFields: converter.identityFields,
-            hasHighlights: converter.hasHighlights
-        };
-
-        // Override hasSelection if a objects contained more scopeIds than selections we found in the data
-        slicerData.hasSelectionOverride = converter.hasSelectionOverride;
-
-        return slicerData;
-    }
-
-    public filterDataPoints(dataPoints: ChicletSlicerDataPoint[], searchText: string) {
-        searchText = searchText.toLowerCase();
-        dataPoints.forEach(x => x.filtered = x.category.toLowerCase().indexOf(searchText) < 0);
-    }
-
+    private telemetry: ExternalLinksTelemetry;
+    private renderFiltered: (searchText: string) => void;
 
     constructor(options: VisualConstructorOptions) {
-
         this.root = d3Select(options.element);
-
         this.visualHost = options.host;
 
         this.colorPalette = this.visualHost.colorPalette;
@@ -255,72 +166,126 @@ export class ChicletSlicer implements IVisual {
         this.formattingSettingsService = new FormattingSettingsService(this.localizationManager);
 
         this.behavior = new ChicletSlicerWebBehavior();
-        this.interactivityService = createInteractivitySelectionService(options.host);
 
         this.tooltipService = createTooltipServiceWrapper(
             this.visualHost.tooltipService,
             options.element
         );
 
-        this.selectionManager = options.host.createSelectionManager();
-        this.renderContextMenu();
+        this.telemetry = new ExternalLinksTelemetry(this.visualHost.telemetry);
+
+        this.initContainer();
     }
 
     public update(options: VisualUpdateOptions) {
+        this.visualHost.eventService.renderingStarted(options);
+
         if (!options ||
             !options.dataViews ||
-            !options.dataViews[0] ||
+            !options.dataViews.length ||
+            !options.dataViews[0]?.categorical?.categories?.length ||
+            !options.dataViews[0]?.categorical?.categories[0]?.values?.length ||
             !options.viewport) {
+
+            this.clear();
+            this.visualHost.eventService.renderingFailed(options, "No data or viewport");
             return;
         }
-
-        this.dataView = options.dataViews[0];
 
         this.resetScrollbarPosition = false;
 
         this.jsonFilters = options.jsonFilters;
-
         if (this.jsonFilters && this.jsonFilters[0] && this.jsonFilters[0]?.target.length === 0) {
-            this.interactivityService.selectionManager.clear();
             this.resetScrollbarPosition = true;
         }
 
         this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(ChicletSlicerSettingsModel, options.dataViews);
+        this.formattingSettings.setLocalizedOptions(this.localizationManager);
 
-        if (!this.currentViewport) {
-            this.currentViewport = options.viewport;
-            this.initContainer();
+        const slicerData: ChicletSlicerData = ChicletSlicer.converter(
+            options.dataViews[0],
+            this?.searchInput?.node()?.value,
+            this.formattingSettings,
+            this.visualHost,
+            options.jsonFilters);
+
+        if (!slicerData) {
+            this.clear();
+            this.visualHost.eventService.renderingFailed(options, "No data or viewport");
+            return;
         }
 
-        // if (existingDataView) {
-        //     resetScrollbarPosition = !ChicletSlicer.hasSameCategoryIdentity(existingDataView, this.dataView);
-        // }
+        this.currentViewport = options.viewport;
 
-        if (options.viewport.height === this.currentViewport.height
-            && options.viewport.width === this.currentViewport.width) {
-            this.waitingForData = false;
-        }
-        else {
-            this.currentViewport = options.viewport;
-        }
+        this.updateContainer(options.viewport, slicerData);
 
-        this.chicletSlicerData = this.converter(
-            this.dataView,
-            this.searchInput.node().value,
-            this.visualHost);
+        this.visualHost.eventService.renderingFinished(options);
 
-        this.updateInternal();
+        this.telemetry.detectExternalImages(slicerData.slicerDataPoints);
     }
 
-    private renderContextMenu() {
-        this.root.on('contextmenu', (event) => {
-            const dataPoint: any = d3Select(event.target).datum();
-            this.selectionManager.showContextMenu((dataPoint && dataPoint.identity) ? dataPoint.identity : {}, {x: event.clientX, y: event.clientY});
-            event.preventDefault();
-        });
+    private clear() {
+        this.renderFiltered = null; // reset the renderFiltered function when data is epmty
+        if (this.tableView) {
+            this.tableView.empty();
+        }
     }
 
-    private changeColorsForHighContrast(settings: ChicletSlicerSettingsModel): void {
+    /**
+     * Public to testability.
+     */
+    public static getValidImageSplit(imageSplit): number {
+        if (imageSplit < ChicletSlicer.MinImageSplit) {
+            return ChicletSlicer.MinImageSplit;
+        } else if (imageSplit > ChicletSlicer.MaxImageSplit) {
+            return ChicletSlicer.MaxImageSplit;
+        } else {
+            return imageSplit;
+        }
+    }
+
+    public static converter(
+        dataView: DataView,
+        searchText: string,
+        formattingSettings: ChicletSlicerSettingsModel,
+        visualHost: IVisualHost,
+        jsonFilters: IFilter[] | any[]): ChicletSlicerData {
+        const categories: DataViewCategoryColumn = dataView?.categorical?.categories?.length && dataView.categorical.categories[0];
+
+        if (!categories?.source?.roles ||
+            !categories.source.roles["Category"] ||
+            !categories?.values?.length) {
+            return;
+        }
+
+        const converter: ChicletSlicerConverter = new ChicletSlicerConverter(dataView, visualHost, jsonFilters);
+        converter.convert();
+
+        const selfFilterEnabled: boolean = !!(dataView.metadata.objects?.general?.selfFilterEnabled);
+
+        let dataPoints: ChicletSlicerDataPoint[] = converter.dataPoints;
+        if (selfFilterEnabled && searchText) {
+            dataPoints = ChicletSlicer.filterDataPoints(converter.dataPoints, searchText);
+        }
+
+        const slicerData: ChicletSlicerData = {
+            categorySourceName: categories.source.displayName,
+            formatString: valueFormatter.getFormatStringByColumn(categories.source),
+            formattingSettings: formattingSettings,
+            selfFilterEnabled: selfFilterEnabled,
+            slicerDataPoints: dataPoints
+        };
+
+        return slicerData;
+    }
+
+    public static filterDataPoints(dataPoints: ChicletSlicerDataPoint[], searchText: string): ChicletSlicerDataPoint[] {
+        searchText = searchText.toLowerCase();
+        dataPoints.forEach(x => x.filtered = x.category.toLowerCase().indexOf(searchText) < 0);
+        return dataPoints;
+    }
+
+    private changeColorsForHighContrast(settings: ChicletSlicerSettingsModel): ChicletSlicerSettingsModel {
         settings.headerCardSettings.fontColor.value.value = this.colorHelper.getHighContrastColor("foreground", settings.headerCardSettings.fontColor.value.value);
         settings.headerCardSettings.outlineColor.value.value = this.colorHelper.getHighContrastColor("foreground", settings.headerCardSettings.outlineColor.value.value);
         settings.headerCardSettings.background.value.value = this.colorHelper.getThemeColor();
@@ -333,124 +298,120 @@ export class ChicletSlicer implements IVisual {
         settings.slicerTextCardSettings.disabledColor.value.value = this.colorHelper.getThemeColor();
         settings.slicerTextCardSettings.selectedColor.value.value = this.colorHelper.getThemeColor();
         settings.slicerTextCardSettings.unselectedColor.value.value = this.colorHelper.getThemeColor();
+
+        return settings;
     }
 
-    private updateInternal() {
-
-        const data: ChicletSlicerData = this.chicletSlicerData;
-
+    private updateInternal(data: ChicletSlicerData) {
         if (!data) {
-            this.tableView.empty();
+            this.clear();
             return;
         }
 
-        if (!this.getExternalImageTelemetryTracedProperty()) {
-            const hasExternalImageLink: boolean = lodashSome(
-                data.slicerDataPoints,
-                (dataPoint: ChicletSlicerDataPoint) => {
-                    return ChicletSlicer.IS_EXTERNAL_LINK(dataPoint.imageURL);
-                }
-            );
-            if (hasExternalImageLink) {
-                this.telemetryTrace();
-            }
-        }
-
         if (this.colorHelper.isHighContrast) {
-            this.changeColorsForHighContrast(data.slicerSettings);
+            data.formattingSettings = this.changeColorsForHighContrast(data.formattingSettings);
         }
 
-        data.slicerSettings.headerCardSettings.outlineWeight.value = data.slicerSettings.headerCardSettings.outlineWeight.value < 0
-            ? 0 : data.slicerSettings.headerCardSettings.outlineWeight.value;
+        data.formattingSettings.headerCardSettings.outlineWeight.value = data.formattingSettings.headerCardSettings.outlineWeight.value < 0
+            ? 0 : data.formattingSettings.headerCardSettings.outlineWeight.value;
 
-        data.slicerSettings.slicerTextCardSettings.outlineWeight.value = data.slicerSettings.slicerTextCardSettings.outlineWeight.value < 0
-            ? 0 : data.slicerSettings.slicerTextCardSettings.outlineWeight.value;
+        data.formattingSettings.slicerTextCardSettings.outlineWeight.value = data.formattingSettings.slicerTextCardSettings.outlineWeight.value < 0
+            ? 0 : data.formattingSettings.slicerTextCardSettings.outlineWeight.value;
 
-        data.slicerSettings.slicerTextCardSettings.padding.value = data.slicerSettings.slicerTextCardSettings.padding.value < 0
-            ? 0 : data.slicerSettings.slicerTextCardSettings.padding.value;
+        data.formattingSettings.slicerTextCardSettings.padding.value = data.formattingSettings.slicerTextCardSettings.padding.value < 0
+            ? 0 : data.formattingSettings.slicerTextCardSettings.padding.value;
 
-        data.slicerSettings.slicerTextCardSettings.height.value = data.slicerSettings.slicerTextCardSettings.height.value < 0
-            ? 0 : data.slicerSettings.slicerTextCardSettings.height.value;
+        data.formattingSettings.slicerTextCardSettings.height.value = data.formattingSettings.slicerTextCardSettings.height.value < 0
+            ? 0 : data.formattingSettings.slicerTextCardSettings.height.value;
 
-        data.slicerSettings.slicerTextCardSettings.width.value = data.slicerSettings.slicerTextCardSettings.width.value < 0
-            ? 0 : data.slicerSettings.slicerTextCardSettings.width.value;
+        data.formattingSettings.slicerTextCardSettings.width.value = data.formattingSettings.slicerTextCardSettings.width.value < 0
+            ? 0 : data.formattingSettings.slicerTextCardSettings.width.value;
 
-        data.slicerSettings.imagesCardSettings.imageSplit.value = ChicletSlicer.GET_VALID_IMAGE_SPLIT(data.slicerSettings.imagesCardSettings.imageSplit.value);
+        data.formattingSettings.imagesCardSettings.imageSplit.value = ChicletSlicer.getValidImageSplit(data.formattingSettings.imagesCardSettings.imageSplit.value);
 
-        const columns: number = data.slicerSettings.generalCardSettings.columns.value;
-        const rows: number = data.slicerSettings.generalCardSettings.rows.value;
+        const columns: number = data.formattingSettings.generalCardSettings.columns.value;
+        const rows: number = data.formattingSettings.generalCardSettings.rows.value;
 
-        data.slicerSettings.generalCardSettings.columns.value = columns <= 0
-            ? +(data.slicerSettings.generalCardSettings.orientation.value.value === Orientation.VERTICAL && rows <= 0) : columns;
+        data.formattingSettings.generalCardSettings.columns.value = columns <= 0
+            ? +(data.formattingSettings.generalCardSettings.orientation.value.value === Orientation.VERTICAL && rows <= 0) : columns;
 
-        data.slicerSettings.generalCardSettings.rows.value = rows <= 0
-            ? +(data.slicerSettings.generalCardSettings.orientation.value.value === Orientation.HORIZONTAL && columns <= 0) : rows;
+        data.formattingSettings.generalCardSettings.rows.value = rows <= 0
+            ? +(data.formattingSettings.generalCardSettings.orientation.value.value === Orientation.HORIZONTAL && columns <= 0) : rows;
 
-        data.slicerSettings.generalCardSettings.rows.value = data.slicerSettings.generalCardSettings.rows.value > ChicletSlicer.MaxRows
-            ? ChicletSlicer.MaxRows : data.slicerSettings.generalCardSettings.rows.value;
+        data.formattingSettings.headerCardSettings.title.value = data.formattingSettings.headerCardSettings.title.value.trim() || data.categorySourceName;
 
-        this.slicerData = data;
-        this.formattingSettings = this.slicerData.slicerSettings;
-        this.formattingSettings.headerCardSettings.title.value = this.formattingSettings.headerCardSettings.title.value.trim() || this.slicerData.categorySourceName;
-
-        this.updateSearchHeader();
-        this.updateSlicerBodyDimensions();
-
-        if (this.formattingSettings.generalCardSettings.showDisabled.value.value === ChicletSlicerShowDisabled.BOTTOM) {
+        if (data.formattingSettings.generalCardSettings.showDisabled.value.value === ChicletSlicerShowDisabled.BOTTOM) {
             data.slicerDataPoints = lodashSortby(data.slicerDataPoints, [x => !x.selectable]);
-        } else if (this.formattingSettings.generalCardSettings.showDisabled.value.value === ChicletSlicerShowDisabled.HIDE) {
+        } else if (data.formattingSettings.generalCardSettings.showDisabled.value.value === ChicletSlicerShowDisabled.HIDE) {
             data.slicerDataPoints = data.slicerDataPoints.filter(x => x.selectable);
         }
 
-        if (this.formattingSettings.slicerTextCardSettings.height.value === ChicletSlicer.MinImageSplit) {
+        if (data.formattingSettings.slicerTextCardSettings.height.value === ChicletSlicer.MinImageSplit) {
             const extraSpaceForCell = ChicletSlicer.СellTotalInnerPaddings + ChicletSlicer.СellTotalInnerBorders,
-                textProperties: TextProperties = ChicletSlicer.GET_CHICLET_TEXT_PROPERTIES(this.formattingSettings.slicerTextCardSettings.textSize.value);
+                textProperties: TextProperties = ChicletSlicer.getChicletTextProperties(data.formattingSettings.slicerTextCardSettings.textSize.value);
 
-            this.formattingSettings.slicerTextCardSettings.height.value = textMeasurementService.estimateSvgTextHeight(textProperties) +
+            data.formattingSettings.slicerTextCardSettings.height.value = textMeasurementService.estimateSvgTextHeight(textProperties) +
                 textMeasurementService.estimateSvgTextBaselineDelta(textProperties) +
                 extraSpaceForCell;
 
-            const hasImage: boolean = lodashSome(data.slicerDataPoints, (dataPoint: ChicletSlicerDataPoint) => {
-                return dataPoint.imageURL !== '' && typeof dataPoint.imageURL !== undefined;
+            const hasImage: boolean = data.slicerDataPoints.some((dataPoint: ChicletSlicerDataPoint) => {
+                return dataPoint?.imageURL && dataPoint.imageURL !== '';
             });
 
             if (hasImage) {
-                this.formattingSettings.slicerTextCardSettings.height.value += ChicletSlicer.MaxImageSplit;
+                data.formattingSettings.slicerTextCardSettings.height.value += ChicletSlicer.MaxImageSplit;
             }
         }
 
-        this.render();
+        this.updateSearchHeader(data.selfFilterEnabled);
+        this.updateSlicerBodyDimensions(data.formattingSettings.headerCardSettings, data.selfFilterEnabled);
+
+        this.render(data.slicerDataPoints, data.formattingSettings, data.selfFilterEnabled);
+
+        this.renderFiltered = (searchText: string) => {
+            if (data.selfFilterEnabled && (searchText != null)) {
+                const datapoints = ChicletSlicer.filterDataPoints(data.slicerDataPoints, searchText);
+
+                this.tableView
+                    .columnWidth(0) // reset column width before search
+                    .data(
+                        datapoints.filter(x => !x.filtered),
+                        (d: ChicletSlicerDataPoint) => datapoints.indexOf(d),
+                        this.resetScrollbarPosition)
+                    .render();
+            }
+        }
     }
 
-    public render() {
+    private render(datapoints: ChicletSlicerDataPoint[], formattingSettings: ChicletSlicerSettingsModel, selfFilterEnabled: boolean) {
         this.tableView
-            .rowHeight(this.formattingSettings.slicerTextCardSettings.height.value)
-            .columnWidth(this.formattingSettings.slicerTextCardSettings.width.value)
-            .orientation(this.formattingSettings.generalCardSettings.orientation.value.value.toString())
-            .rows(this.formattingSettings.generalCardSettings.rows.value)
-            .columns(this.formattingSettings.generalCardSettings.columns.value)
+            .rowHeight(formattingSettings.slicerTextCardSettings.height.value)
+            .columnWidth(formattingSettings.slicerTextCardSettings.width.value)
+            .orientation(formattingSettings.generalCardSettings.orientation.value.value.toString())
+            .rows(formattingSettings.generalCardSettings.rows.value)
+            .columns(formattingSettings.generalCardSettings.columns.value)
             .data(
-                this.chicletSlicerData.slicerDataPoints.filter(x => !x.filtered),
-                (d: ChicletSlicerDataPoint) => this.chicletSlicerData.slicerDataPoints.indexOf(d),
+                datapoints.filter(x => !x.filtered),
+                (d: ChicletSlicerDataPoint) => datapoints.indexOf(d),
                 this.resetScrollbarPosition)
-            .viewport(this.getSlicerBodyViewport(this.currentViewport))
+            .viewport(this.getSlicerBodyViewport(this.currentViewport, formattingSettings.headerCardSettings, selfFilterEnabled))
             .render();
     }
 
-    private renderTooltip(selection: Selection<any>): void {
+    private renderTooltip(selection: Selection<any>, tooltipsCardSettings: TooltipsCardSettings): void {
         if (!this.tooltipService) {
             return;
         }
 
         this.tooltipService.addTooltip(
             selection,
-            (data: ChicletSlicerDataPoint) => this.getTooltipData(data),
+            (data: ChicletSlicerDataPoint) => ChicletSlicer.getTooltipData(data, tooltipsCardSettings),
             (data: ChicletSlicerDataPoint) => data.identity
         );
     }
 
-    private getTooltipData(value: any): VisualTooltipDataItem[] {
-        if (this.formattingSettings.tooltipsCardSettings.show.value) {
+    private static getTooltipData(value: any, tooltipsCardSettings: TooltipsCardSettings): VisualTooltipDataItem[] {
+        if (tooltipsCardSettings.show.value) {
             return [{
                 displayName: value.columnName,
                 value: value.category,
@@ -460,11 +421,7 @@ export class ChicletSlicer implements IVisual {
         return null;
     }
 
-
     private initContainer() {
-        const settings: ChicletSlicerSettingsModel = this.formattingSettings,
-            slicerBodyViewport: IViewport = this.getSlicerBodyViewport(this.currentViewport);
-
         const slicerContainer: Selection<any> = this.root
             .append('div')
             .classed(ChicletSlicer.ContainerSelector.className, true);
@@ -481,18 +438,36 @@ export class ChicletSlicer implements IVisual {
         this.slicerHeader
             .append('div')
             .classed(ChicletSlicer.HeaderTextSelector.className, true)
-            .style("margin-left", PixelConverter.toString(settings.headerText.marginLeft))
-            .style("margin-top", PixelConverter.toString(settings.headerText.marginTop))
-            .style("border-style", this.getBorderStyle(settings.headerCardSettings.outline.value.value.toString()))
-            .style("border-color", settings.headerCardSettings.outlineColor.value.value)
-            .style("border-width", this.getBorderWidth(settings.headerCardSettings.outline.value.value.toString(), settings.headerCardSettings.outlineWeight.value))
-            .style("font-size", PixelConverter.fromPoint(settings.headerCardSettings.textSize.value));
 
         this.createSearchHeader(slicerContainer);
 
         this.slicerBody = slicerContainer
             .append('div')
             .classed(ChicletSlicer.BodySelector.className, true)
+
+        this.slicerBody
+            .append('div')
+            .classed('scrollRegion', true)
+            .append('div')
+            .classed('visibleGroup', true);
+
+        return;
+    }
+
+
+    private updateContainer(currentViewport: IViewport, data: ChicletSlicerData) {
+        const settings: ChicletSlicerSettingsModel = data.formattingSettings,
+            slicerBodyViewport: IViewport = this.getSlicerBodyViewport(currentViewport, settings.headerCardSettings, data.selfFilterEnabled);
+
+        this.slicerHeader
+            .style("margin-left", PixelConverter.toString(settings.headerText.marginLeft))
+            .style("margin-top", PixelConverter.toString(settings.headerText.marginTop))
+            .style("border-style", ChicletSlicer.getBorderStyle(settings.headerCardSettings.outline.value.value.toString()))
+            .style("border-color", settings.headerCardSettings.outlineColor.value.value)
+            .style("border-width", ChicletSlicer.getBorderWidth(settings.headerCardSettings.outline.value.value.toString(), settings.headerCardSettings.outlineWeight.value))
+            .style("font-size", PixelConverter.fromPoint(settings.headerCardSettings.textSize.value));
+
+        this.slicerBody
             .classed(
                 ChicletSlicer.SlicerBodyHorizontalSelector.className,
                 settings.generalCardSettings.orientation.value.value === Orientation.HORIZONTAL)
@@ -504,156 +479,94 @@ export class ChicletSlicer implements IVisual {
             .style("width", `${ChicletSlicer.MaxImageWidth}%`);
 
         const rowEnter = (rowSelection: Selection<any>) => {
-            this.enterSelection(rowSelection);
+            ChicletSlicer.enterSelection(rowSelection, settings.slicerTextCardSettings, settings.slicerItemContainer);
         };
 
         const rowUpdate = (rowSelection: Selection<any>) => {
-            this.selection(rowSelection);
-        };
-
-        const rowExit = (rowSelection: Selection<any>) => {
-            rowSelection.remove();
+            this.selection(rowSelection, data);
         };
 
         const tableViewOptions: TableViewViewOptions = {
-            rowHeight: this.getRowHeight(),
-            columnWidth: this.formattingSettings.slicerTextCardSettings.width.value,
-            orientation: this.formattingSettings.generalCardSettings.orientation.value.value.toString(),
-            rows: this.formattingSettings.generalCardSettings.rows.value,
-            columns: this.formattingSettings.generalCardSettings.columns.value,
+            rowHeight: ChicletSlicer.getRowHeight(settings.slicerTextCardSettings),
+            columnWidth: settings.slicerTextCardSettings.width.value,
+            orientation: settings.generalCardSettings.orientation.value.value.toString(),
+            rows: settings.generalCardSettings.rows.value,
+            columns: settings.generalCardSettings.columns.value,
             enter: rowEnter,
-            exit: rowExit,
             update: rowUpdate,
             scrollEnabled: true,
-            viewport: this.getSlicerBodyViewport(this.currentViewport),
+            viewport: slicerBodyViewport,
             baseContainer: this.slicerBody,
         };
 
-        this.tableView = TableViewFactory.createTableView(tableViewOptions);
+        this.tableView = new TableView(tableViewOptions);
+
+        this.updateInternal(data);
     }
 
-    private enterSelection(rowSelection: Selection<any>): void {
-        const settings: ChicletSlicerSettingsModel = this.formattingSettings;
-
+    private static enterSelection(rowSelection: Selection<any>, slicerTextCardSettings: SlicerTextCardSettings, slicerItemContainer: SlicerItemContainer): void {
         const ulItemElement: Selection<any> = rowSelection
             .selectAll('ul')
-            .data((dataPoint: ChicletSlicerDataPoint) => {
-                return [dataPoint];
-            });
+            .data(d => [d])
+            .join('ul');
 
-        const ulItemElementMerged = ulItemElement
-            .enter()
-            .append('ul')
-            .merge(ulItemElement);
-
-        ulItemElement
-            .exit()
-            .remove();
-
-        const listItemElement: Selection<any> = ulItemElementMerged
+        const listItemElement: Selection<any> = ulItemElement
             .selectAll(ChicletSlicer.ItemContainerSelector.selectorName)
-            .data((dataPoint: ChicletSlicerDataPoint) => {
-                return [dataPoint];
-            });
-
-        const listItemElementMerged = listItemElement
-            .enter()
-            .append('li')
-            .merge(listItemElement);
-
-        listItemElementMerged.classed(ChicletSlicer.ItemContainerSelector.className, true);
-
-        listItemElementMerged.style("margin-left", PixelConverter.toString(settings.slicerItemContainer.marginLeft));
-
-        const slicerImgWrapperSelection: Selection<any> = listItemElementMerged
-            .selectAll(ChicletSlicer.SlicerImgWrapperSelector.selectorName)
-            .data((dataPoint: ChicletSlicerDataPoint) => {
-                return [dataPoint];
-            });
-
-        const slicerImgWrapperSelectionMerged = slicerImgWrapperSelection
-            .enter()
-            .append('img')
-            .merge(slicerImgWrapperSelection);
-
-        slicerImgWrapperSelectionMerged.classed(ChicletSlicer.SlicerImgWrapperSelector.className, true);
-
-        slicerImgWrapperSelection
-            .exit()
-            .remove();
-
-        const slicerTextWrapperSelection: Selection<any> = listItemElementMerged
-            .selectAll(ChicletSlicer.SlicerTextWrapperSelector.selectorName)
-            .data((dataPoint: ChicletSlicerDataPoint) => {
-                return [dataPoint];
-            });
-
-        const slicerTextWrapperSelectionMerged = slicerTextWrapperSelection
-            .enter()
-            .append('div')
-            .merge(slicerTextWrapperSelection);
-
-        slicerTextWrapperSelectionMerged.classed(ChicletSlicer.SlicerTextWrapperSelector.className, true);
-
-        const labelTextSelection: Selection<any> = slicerTextWrapperSelectionMerged
-            .selectAll(ChicletSlicer.LabelTextSelector.selectorName)
-            .data((dataPoint: ChicletSlicerDataPoint) => {
-                return [dataPoint];
-            });
-
-        const labelTextSelectionMerged = labelTextSelection
-            .enter()
-            .append('span')
-            .merge(labelTextSelection);
-
-        labelTextSelectionMerged.classed(ChicletSlicer.LabelTextSelector.className, true);
-
-        labelTextSelectionMerged
-            .style("font-size", PixelConverter.fromPoint(settings.slicerTextCardSettings.textSize.value))
-            .style("color", settings.slicerTextCardSettings.fontColor.value.value)
-            .style("opacity", ChicletSlicer.DefaultOpacity);
-
-        labelTextSelection
-            .exit()
-            .remove();
-
-        slicerTextWrapperSelection
-            .exit()
-            .remove();
+            .data(d => [d])
+            .join('li')
+            .classed(ChicletSlicer.ItemContainerSelector.className, true)
+            .style("margin-left", PixelConverter.toString(slicerItemContainer.marginLeft));
 
         listItemElement
-            .exit()
-            .remove();
+            .selectAll(ChicletSlicer.SlicerImgWrapperSelector.selectorName)
+            .data(d => [d])
+            .join('img')
+            .classed(ChicletSlicer.SlicerImgWrapperSelector.className, true);
+
+        const slicerTextWrapperSelection: Selection<any> = listItemElement
+            .selectAll(ChicletSlicer.SlicerTextWrapperSelector.selectorName)
+            .data(d => [d])
+            .join('div')
+            .classed(ChicletSlicer.SlicerTextWrapperSelector.className, true);
+
+        slicerTextWrapperSelection
+            .selectAll(ChicletSlicer.LabelTextSelector.selectorName)
+            .data(d => [d])
+            .join('span')
+            .classed(ChicletSlicer.LabelTextSelector.className, true)
+            .style("font-size", PixelConverter.fromPoint(slicerTextCardSettings.textSize.value))
+            .style("color", slicerTextCardSettings.fontColor.value.value)
+            .style("opacity", ChicletSlicer.DefaultOpacity);
     }
 
-    private selection(rowSelection: Selection<any>): void {
-        const settings: ChicletSlicerSettingsModel = this.formattingSettings, data: ChicletSlicerData = this.slicerData;
+    private selection(rowSelection: Selection<any>, data: ChicletSlicerData): void {
+        const settings = data.formattingSettings;
 
         if (data && settings) {
             this.slicerHeader.classed('hidden', !settings.headerCardSettings.show.value);
 
             this.slicerHeader
                 .select(ChicletSlicer.HeaderTextSelector.selectorName).text(settings.headerCardSettings.title.value.trim())
-                .style("border-style", this.getBorderStyle(settings.headerCardSettings.outline.value.value.toString())).style("border-color", settings.headerCardSettings.outlineColor.value.value)
-                .style("border-width", this.getBorderWidth(settings.headerCardSettings.outline.value.value.toString(), settings.headerCardSettings.outlineWeight.value))
+                .style("border-style", ChicletSlicer.getBorderStyle(settings.headerCardSettings.outline.value.value.toString())).style("border-color", settings.headerCardSettings.outlineColor.value.value)
+                .style("border-width", ChicletSlicer.getBorderWidth(settings.headerCardSettings.outline.value.value.toString(), settings.headerCardSettings.outlineWeight.value))
                 .style("color", settings.headerCardSettings.fontColor.value.value).style("background-color", settings.headerCardSettings.background.value.value)
                 .style("font-size", PixelConverter.fromPoint(settings.headerCardSettings.textSize.value));
 
             this.slicerBody.classed(ChicletSlicer.SlicerBodyHorizontalSelector.className, settings.generalCardSettings.orientation.value.value === Orientation.HORIZONTAL)
-                            .classed(ChicletSlicer.SlicerBodyVerticalSelector.className, settings.generalCardSettings.orientation.value.value === Orientation.VERTICAL);
+                .classed(ChicletSlicer.SlicerBodyVerticalSelector.className, settings.generalCardSettings.orientation.value.value === Orientation.VERTICAL);
 
             const slicerText: Selection<any> = rowSelection.selectAll(ChicletSlicer.LabelTextSelector.selectorName),
-                textProperties: TextProperties = ChicletSlicer.GET_CHICLET_TEXT_PROPERTIES(settings.slicerTextCardSettings.textSize.value),
+                textProperties: TextProperties = ChicletSlicer.getChicletTextProperties(settings.slicerTextCardSettings.textSize.value),
                 formatString: string = data.formatString;
 
-            const slicerBodyViewport: IViewport = this.getSlicerBodyViewport(this.currentViewport);
+            const slicerBodyViewport: IViewport = this.getSlicerBodyViewport(this.currentViewport, settings.headerCardSettings, data.selfFilterEnabled);
 
             slicerText.text((d: ChicletSlicerDataPoint) => {
                 textProperties.text = valueFormatter.format(d.category, formatString);
-                if (this.formattingSettings.slicerTextCardSettings.width.value === 0) {
-                    this.formattingSettings.slicerTextCardSettings.width.value = Math.round(slicerBodyViewport.width / (this.tableView.computedColumns || ChicletSlicer.MinColumns));
-                }
-                const maxWidth: number = this.formattingSettings.slicerTextCardSettings.width.value -
+                //if (settings.slicerTextCardSettings.width.value === 0) {
+                settings.slicerTextCardSettings.width.value = Math.floor(slicerBodyViewport.width / (this.tableView.computedColumns || ChicletSlicer.MinColumns));
+                //}
+                const maxWidth: number = settings.slicerTextCardSettings.width.value -
                     ChicletSlicer.СhicletTotalInnerRightLeftPaddings -
                     ChicletSlicer.СellTotalInnerBorders -
                     settings.slicerTextCardSettings.outlineWeight.value;
@@ -664,7 +577,7 @@ export class ChicletSlicer implements IVisual {
             rowSelection
                 .selectAll(ChicletSlicer.SlicerImgWrapperSelector.selectorName)
                 .style("max-height", settings.imagesCardSettings.imageSplit.value + '%')
-                .style("display", (dataPoint: ChicletSlicerDataPoint) => (dataPoint.imageURL)? 'flex' : 'none')
+                .style("display", (dataPoint: ChicletSlicerDataPoint) => (dataPoint.imageURL) ? 'flex' : 'none')
                 .classed("hidden", (dataPoint: ChicletSlicerDataPoint) => {
                     if (!(dataPoint.imageURL)) { return true; }
                     if (settings.imagesCardSettings.imageSplit.value < ChicletSlicer.MinImageSplitToHide) { return true; }
@@ -681,54 +594,44 @@ export class ChicletSlicer implements IVisual {
                     if (settings.imagesCardSettings.imageSplit.value > ChicletSlicer.MaxImageSplitToHide) { return true; }
                 });
             rowSelection.selectAll(ChicletSlicer.ItemContainerSelector.selectorName)
-                .style("color", settings.slicerTextCardSettings.fontColor.value.value).style("border-style", this.getBorderStyle(settings.slicerTextCardSettings.outline))
+                .style("color", settings.slicerTextCardSettings.fontColor.value.value).style("border-style", ChicletSlicer.getBorderStyle(settings.slicerTextCardSettings.outline))
                 .style("border-color", settings.slicerTextCardSettings.outlineColor.value.value)
-                .style("border-width", this.getBorderWidth(settings.slicerTextCardSettings.outline, settings.slicerTextCardSettings.outlineWeight.value))
+                .style("border-width", ChicletSlicer.getBorderWidth(settings.slicerTextCardSettings.outline, settings.slicerTextCardSettings.outlineWeight.value))
                 .style("font-size", PixelConverter.fromPoint(settings.slicerTextCardSettings.textSize.value))
-                .style("border-radius", this.getBorderRadius(settings.slicerTextCardSettings.borderStyle.value.value.toString()));
+                .style("border-radius", ChicletSlicer.getBorderRadius(settings.slicerTextCardSettings.borderStyle.value.value.toString()));
 
             if (settings.slicerTextCardSettings.background.value.value) {
                 const backgroundColor: string = hexToRGBString(settings.slicerTextCardSettings.background.value.value,
-                                                (ChicletSlicer.MaxTransparency - settings.slicerTextCardSettings.transparency.value) / ChicletSlicer.MaxTransparency);
+                    (ChicletSlicer.MaxTransparency - settings.slicerTextCardSettings.transparency.value) / ChicletSlicer.MaxTransparency);
                 this.slicerBody.style('background-color', backgroundColor);
             } else { this.slicerBody.style('background-color', null); }
 
-            if (this.interactivityService && this.slicerBody) {
-                this.interactivityService.applySelectionStateToData(data.slicerDataPoints);
 
-                const slicerBody: Selection<any> = this.slicerBody.attr('width', this.currentViewport.width),
-                    slicerItemContainers: Selection<any> = slicerBody.selectAll(ChicletSlicer.ItemContainerSelector.selectorName),
-                    slicerItemLabels: Selection<any> = slicerBody.selectAll(ChicletSlicer.LabelTextSelector.selectorName),
-                    slicerItemInputs: Selection<any> = slicerBody.selectAll(ChicletSlicer.InputSelector.selectorName),
-                    slicerClear: Selection<any> = this.slicerHeader.select(ChicletSlicer.ClearSelector.selectorName);
+            const slicerBody: Selection<any> = this.slicerBody.attr('width', this.currentViewport.width),
+                slicerItemContainers: Selection<any> = slicerBody.selectAll(ChicletSlicer.ItemContainerSelector.selectorName),
+                slicerItemLabels: Selection<any> = slicerBody.selectAll(ChicletSlicer.LabelTextSelector.selectorName),
+                slicerItemInputs: Selection<any> = slicerBody.selectAll(ChicletSlicer.InputSelector.selectorName),
+                slicerClear: Selection<any> = this.slicerHeader.select(ChicletSlicer.ClearSelector.selectorName);
 
-                const behaviorOptions: ChicletSlicerBehaviorOptions = {
-                    jsonFilters: this.jsonFilters,
-                    visualHost: this.visualHost,
-                    dataPoints: data.slicerDataPoints,
-                    slicerItemContainers: slicerItemContainers,
-                    slicerItemLabels: slicerItemLabels,
-                    slicerItemInputs: slicerItemInputs,
-                    slicerClear: slicerClear,
-                    interactivityService: this.interactivityService,
-                    slicerSettings: data.slicerSettings,
-                    identityFields: data.identityFields,
-                    isHighContrastMode: this.colorHelper.isHighContrast,
-                    behavior: this.behavior,
-                    interactivityServiceOptions: <InteractivityServiceOptions>{
-                        hasSelectionOverride: data.hasSelectionOverride,
-                    }
-                };
-                this.interactivityService.bind(behaviorOptions);
-                this.renderTooltip(slicerItemContainers);
-                this.behavior.styleSlicerInputs(rowSelection.select(ChicletSlicer.ItemContainerSelector.selectorName));
-            }
-            else { this.behavior.styleSlicerInputs(rowSelection.select(ChicletSlicer.ItemContainerSelector.selectorName)); }
+            const behaviorOptions: ChicletSlicerBehaviorOptions = {
+                jsonFilters: this.jsonFilters,
+                visualHost: this.visualHost,
+                dataPoints: data.slicerDataPoints,
+                slicerItemContainers: slicerItemContainers,
+                slicerItemLabels: slicerItemLabels,
+                slicerItemInputs: slicerItemInputs,
+                slicerClear: slicerClear,
+                formattingSettings: data.formattingSettings,
+                isHighContrastMode: this.colorHelper.isHighContrast
+            };
+
+            this.behavior.bindEvents(behaviorOptions);
+
+            this.renderTooltip(slicerItemContainers, settings.tooltipsCardSettings);
         }
     }
 
     private createSearchHeader(container: Selection<any>): void {
-
         this.searchHeader = container
             .append("div")
             .classed("searchHeader", true)
@@ -743,21 +646,18 @@ export class ChicletSlicer implements IVisual {
             .append('input')
             .attr("type", "text")
             .attr("drag-resize-disabled", "true")
-            .classed("searchInput", true);
-
-        // Filter chiclets based on search input
-        this.searchInput.on("input", () => {
-            const searchText: string = this.searchInput.node().value;
-            if (this.dataView.metadata.objects?.general?.selfFilterEnabled && searchText != null) {
-                this.filterDataPoints(this.chicletSlicerData.slicerDataPoints, searchText);
-                this.render();
-            }
-        });
+            .classed("searchInput", true)
+            .on("input", (event: InputEvent) => {
+                const searchText: string = (event.target as HTMLInputElement).value;
+                if (this.renderFiltered) {
+                    this.renderFiltered(searchText);
+                }
+            });
     }
 
-    private updateSearchHeader(): void {
-        this.searchHeader.classed("show", this.dataView.metadata.objects?.general?.selfFilterEnabled ? true : false);
-        this.searchHeader.classed("collapsed", this.dataView.metadata.objects?.general?.selfFilterEnabled ? false : true);
+    private updateSearchHeader(selfFilterEnabled: boolean): void {
+        this.searchHeader.classed("show", selfFilterEnabled);
+        this.searchHeader.classed("collapsed", !selfFilterEnabled);
     }
 
     private getSearchHeaderHeight(): number {
@@ -766,12 +666,11 @@ export class ChicletSlicer implements IVisual {
             : 0;
     }
 
-    private getSlicerBodyViewport(currentViewport: IViewport): IViewport {
-        const settings: ChicletSlicerSettingsModel = this.formattingSettings,
-            headerHeight: number = (settings.headerCardSettings.show.value) ? this.getHeaderHeight() : 0,
-            searchHeight: number = (this.dataView.metadata.objects?.general?.selfFilterEnabled) ? this.getSearchHeaderHeight() : 0,
-            borderHeight: number = settings.headerCardSettings.outlineWeight.value,
-            height: number = currentViewport.height - (headerHeight + searchHeight + borderHeight + settings.headerCardSettings.borderBottomWidth),
+    private getSlicerBodyViewport(currentViewport: IViewport, headerCardSettings: HeaderCardSettings, selfFilterEnabled: boolean): IViewport {
+        const headerHeight: number = (headerCardSettings.show.value) ? ChicletSlicer.getHeaderHeight(headerCardSettings) : 0,
+            searchHeight: number = selfFilterEnabled ? this.getSearchHeaderHeight() : 0,
+            borderHeight: number = headerCardSettings.outlineWeight.value,
+            height: number = currentViewport.height - (headerHeight + searchHeight + borderHeight + headerCardSettings.borderBottomWidth),
             width: number = currentViewport.width - ChicletSlicer.WidthOfScrollbar;
 
         return {
@@ -780,37 +679,36 @@ export class ChicletSlicer implements IVisual {
         };
     }
 
-    private updateSlicerBodyDimensions(): void {
-        const slicerViewport: IViewport = this.getSlicerBodyViewport(this.currentViewport);
+    private updateSlicerBodyDimensions(headerCardSettings: HeaderCardSettings, selfFilterEnabled: boolean): void {
+        const slicerViewport: IViewport = this.getSlicerBodyViewport(this.currentViewport, headerCardSettings, selfFilterEnabled);
         this.slicerBody
             .style("height", PixelConverter.toString(slicerViewport.height))
             .style("width", `${ChicletSlicer.MaxImageWidth}%`);
     }
 
-    public static GET_CHICLET_TEXT_PROPERTIES(textSize?: number): TextProperties {
+    public static getChicletTextProperties(textSize?: number): TextProperties {
         return <TextProperties>{
             fontFamily: ChicletSlicer.DefaultFontFamily,
             fontSize: PixelConverter.fromPoint(textSize || ChicletSlicer.DefaultFontSizeInPt),
         };
     }
 
-    private getHeaderHeight(): number {
+    private static getHeaderHeight(headerCardSettings: HeaderCardSettings): number {
         return textMeasurementService.estimateSvgTextHeight(
-            ChicletSlicer.GET_CHICLET_TEXT_PROPERTIES(this.formattingSettings.headerCardSettings.textSize.value));
+            ChicletSlicer.getChicletTextProperties(headerCardSettings.textSize.value));
     }
 
-    private getRowHeight(): number {
-        const textSettings = this.formattingSettings.slicerTextCardSettings;
+    private static getRowHeight(textSettings: SlicerTextCardSettings): number {
         return textSettings.height.value !== 0
             ? textSettings.height.value
-            : textMeasurementService.estimateSvgTextHeight(ChicletSlicer.GET_CHICLET_TEXT_PROPERTIES(textSettings.textSize.value));
+            : textMeasurementService.estimateSvgTextHeight(ChicletSlicer.getChicletTextProperties(textSettings.textSize.value));
     }
 
-    private getBorderStyle(outlineElement: string): string {
+    private static getBorderStyle(outlineElement: string): string {
         return outlineElement === '0px' ? 'none' : 'solid';
     }
 
-    private getBorderWidth(outlineElement: string, outlineWeight: number): string {
+    private static getBorderWidth(outlineElement: string, outlineWeight: number): string {
         switch (outlineElement) {
             case 'None':
                 return '0px';
@@ -829,7 +727,7 @@ export class ChicletSlicer implements IVisual {
         }
     }
 
-    private getBorderRadius(borderType: string): string {
+    private static getBorderRadius(borderType: string): string {
         switch (borderType) {
             case ChicletBorderStyle.ROUNDED:
                 return "10px";
@@ -841,26 +739,6 @@ export class ChicletSlicer implements IVisual {
     }
 
     public getFormattingModel(): powerbi.visuals.FormattingModel {
-
-        this.formattingSettings.setLocalizedOptions(this.localizationManager);
-        return this.formattingSettingsService.buildFormattingModel(this.formattingSettings);
-    }
-
-    protected telemetryTrace()
-    {
-        this.visualHost.telemetry.trace(powerbiVisualsApi.VisualEventType.Trace, "External image link detected");
-        this.externalImageTelemetryTraced();
-    }
-
-    public static IS_EXTERNAL_LINK(link: string): boolean {
-        return /^(ftp|https|http):\/\/[^ "]+$/.test(link);
-    }
-
-    public getExternalImageTelemetryTracedProperty(): boolean {
-        return this.ExternalImageTelemetryTraced;
-    }
-
-    public externalImageTelemetryTraced(): void {
-        this.ExternalImageTelemetryTraced = true;
+        return this.formattingSettingsService.buildFormattingModel(this.formattingSettings)
     }
 }

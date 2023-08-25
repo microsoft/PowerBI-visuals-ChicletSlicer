@@ -57,7 +57,7 @@ export class ChicletSlicerData extends TestDataViewBuilder {
         "https://powerbi.com/picture1.png",
         "",
         "https://powerbi.com/picture3.png",
-        null,
+        "null",
         "https://powerbi.com/picture5.png"
     ];
 

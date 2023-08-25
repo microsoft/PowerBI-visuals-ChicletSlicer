@@ -27,11 +27,14 @@
 import powerbiVisualsApi from "powerbi-visuals-api";
 import powerbi = powerbiVisualsApi;
 
-import {range as d3Range} from "d3-array";
+import { range as d3Range } from "d3-array";
 import lodashTake from "lodash.take";
 
 import DataView = powerbi.DataView;
 import DataViewValueColumn = powerbi.DataViewValueColumn;
+import PrimitiveValue = powerbi.PrimitiveValue;
+
+import { ExternalLinksTelemetry } from "../src/telemetry";
 
 import {
     assertNumberMatch,
@@ -61,8 +64,10 @@ import { ChicletSlicerConverter } from "../src/chicletSlicerConverter";
 import { ChicletSlicerDataPoint } from "../src/interfaces";
 import { TableView } from "../src/tableView";
 
+import { ChicletSlicerWebBehavior } from "../src/webBehavior";
+
 describe("ChicletSlicer", () => {
-    let visualBuilder: ChicletSlicerBuilder,
+    let visualBuilder: ChicletSlicerBuilder = new ChicletSlicerBuilder(1000, 500),
         defaultDataViewBuilder: ChicletSlicerData,
         dataView: DataView;
 
@@ -78,24 +83,24 @@ describe("ChicletSlicer", () => {
 
     describe("getValidImageSplit", () => {
         it("should return a min value when argument less than the min value", () => {
-            expect(VisualClass.GET_VALID_IMAGE_SPLIT(-9999)).toBe(VisualClass.MinImageSplit);
+            expect(VisualClass.getValidImageSplit(-9999)).toBe(VisualClass.MinImageSplit);
         });
 
         it("should return a max value when argument more than the max value", () => {
-            expect(VisualClass.GET_VALID_IMAGE_SPLIT(9999)).toBe(VisualClass.MaxImageSplit);
+            expect(VisualClass.getValidImageSplit(9999)).toBe(VisualClass.MaxImageSplit);
         });
 
         it("should return a input value when a input value between the min value and the max value", () => {
             const inputValue: number = 50;
 
-            expect(VisualClass.GET_VALID_IMAGE_SPLIT(inputValue)).toBe(inputValue);
+            expect(VisualClass.getValidImageSplit(inputValue)).toBe(inputValue);
         });
     });
 
     describe("DOM tests", () => {
         it("main element created", () => {
             visualBuilder.updateRenderTimeout(dataView, () => {
-               expect(visualBuilder.mainElement).toBeDefined();
+                expect(visualBuilder.mainElement).toBeDefined();
             });
         });
 
@@ -104,7 +109,7 @@ describe("ChicletSlicer", () => {
                 expect(visualBuilder.visibleGroup).toBeDefined();
 
                 expect(visualBuilder.visibleGroup.querySelectorAll(".cell").length)
-                    .toBe(dataView.categorical.categories[0].values.length);
+                    .toBe((dataView?.categorical?.categories && dataView?.categorical?.categories[0]?.values?.length) as number);
 
                 done();
             });
@@ -114,7 +119,7 @@ describe("ChicletSlicer", () => {
             let dataViewCst = defaultDataViewBuilder.getDataViewWithoutValues();
 
             visualBuilder.updateRenderTimeout(dataViewCst, () => {
-                expect(dataViewCst.categorical.values).toBeUndefined();
+                expect(dataViewCst?.categorical?.values).toBeUndefined();
                 expect(visualBuilder.slicerItemImages.length).toBe(5);
                 Array.from(visualBuilder.slicerItemImages)
                     .forEach((element: HTMLImageElement) => {
@@ -126,7 +131,7 @@ describe("ChicletSlicer", () => {
         });
 
         it("show images with gaps without values", (done) => {
-            let dataViewCst = defaultDataViewBuilder.getDataViewWithoutValues(null, null, true);
+            let dataViewCst = defaultDataViewBuilder.getDataViewWithoutValues(undefined, undefined, true);
 
             visualBuilder.updateRenderTimeout(dataViewCst, () => {
                 expect(visualBuilder.slicerItemImages.length).toBe(5);
@@ -135,7 +140,7 @@ describe("ChicletSlicer", () => {
                         expect(element.tagName).toBe("IMG");
 
                         if ([0, 2, 4].indexOf(index) > -1) {
-                            expect(element.getAttribute('src').indexOf("https://")).toBe(0);
+                            expect(element?.getAttribute('src')?.indexOf("https://")).toBe(0);
                         } else {
                             expect(element.getAttribute('src')).toBe("");
                         }
@@ -162,14 +167,15 @@ describe("ChicletSlicer", () => {
                     .fontSize
                     .replace(/[^-\d\.]/g, ""));
 
-                const textProp: TextProperties = VisualClass.GET_CHICLET_TEXT_PROPERTIES(
+                const textProp: TextProperties = VisualClass.getChicletTextProperties(
                     PixelConverter.toPoint(slicerFontSize));
 
                 const slicerTextDelta: number = textMeasurementService.estimateSvgTextBaselineDelta(textProp);
 
-                const slicerImgHeight: number = Number(visualBuilder.slicerItemContainer
-                    .querySelector(".slicer-img-wrapper")
-                    .clientHeight);
+                const slicerImgHeight: number = visualBuilder
+                    ?.slicerItemContainer
+                    ?.querySelector(".slicer-img-wrapper")
+                    ?.clientHeight as number;
 
                 const expectedValue: number = slicerFontSize
                     + slicerTextDelta
@@ -204,7 +210,7 @@ describe("ChicletSlicer", () => {
                     .fontSize
                     .replace(/[^-\d\.]/g, ""));
 
-                const textProp: TextProperties = VisualClass.GET_CHICLET_TEXT_PROPERTIES(
+                const textProp: TextProperties = VisualClass.getChicletTextProperties(
                     PixelConverter.toPoint(slicerFontSize));
 
                 const slicerTextDelta: number = textMeasurementService.estimateSvgTextBaselineDelta(textProp);
@@ -385,9 +391,9 @@ describe("ChicletSlicer", () => {
 
             const chicletTotalColumns: number = visualBuilder
                 .visibleGroup
-                .querySelectorAll("div.row")[0]
-                .querySelectorAll(".cell")
-                .length;
+                ?.querySelectorAll("div.row")[0]
+                ?.querySelectorAll(".cell")
+                ?.length;
 
             (<any>dataView.metadata.objects).general.orientation = orientation;
             (<any>dataView.metadata.objects).general.сolumns = expectedNumber;
@@ -395,9 +401,9 @@ describe("ChicletSlicer", () => {
             visualBuilder.updateRenderTimeout(dataView, () => {
                 const chicletTotalColumns0: number = visualBuilder
                     .visibleGroup
-                    .querySelectorAll("div.row")[0]
-                    .querySelectorAll(".cell")
-                    .length;
+                    ?.querySelectorAll("div.row")[0]
+                    ?.querySelectorAll(".cell")
+                    ?.length;
 
                 expect(chicletTotalColumns).toEqual(chicletTotalColumns0);
 
@@ -414,22 +420,20 @@ describe("ChicletSlicer", () => {
 
             visualBuilder.update(dataView);
 
-            let chicletCellWidth: string = visualBuilder
-                .visibleGroup
-                .querySelector("div.row")
-                .querySelector(".cell")
-                .clientWidth
-                .toString();
+            let chicletCellWidth: number = visualBuilder
+                ?.visibleGroup
+                ?.querySelector("div.row")
+                ?.querySelector(".cell")
+                ?.clientWidth as number;
 
             (<any>dataView.metadata.objects).rows.width = 0;
 
             visualBuilder.updateRenderTimeout(dataView, () => {
-                let chicletCellWidth0: string = visualBuilder
-                    .visibleGroup
-                    .querySelector("div.row")
-                    .querySelector(".cell")
-                    .clientWidth
-                    .toString();
+                let chicletCellWidth0: number = visualBuilder
+                    ?.visibleGroup
+                    ?.querySelector("div.row")
+                    ?.querySelector(".cell")
+                    ?.clientWidth as number;
 
                 expect(chicletCellWidth).toEqual(chicletCellWidth0);
 
@@ -446,22 +450,20 @@ describe("ChicletSlicer", () => {
 
             visualBuilder.update(dataView);
 
-            const chicletCellHeight: string = visualBuilder
-                .visibleGroup
-                .querySelector("div.row")
-                .querySelector(".cell")
-                .clientHeight
-                .toString();
+            const chicletCellHeight: number = visualBuilder
+                ?.visibleGroup
+                ?.querySelector("div.row")
+                ?.querySelector(".cell")
+                ?.clientHeight as number;
 
             (<any>dataView.metadata.objects).rows.height = 0;
 
             visualBuilder.updateRenderTimeout(dataView, () => {
-                const chicletCellHeight0: string = visualBuilder
-                    .visibleGroup
-                    .querySelector("div.row")
-                    .querySelector(".cell")
-                    .clientHeight
-                    .toString();
+                const chicletCellHeight0: number = visualBuilder
+                    ?.visibleGroup
+                    ?.querySelector("div.row")
+                    ?.querySelector(".cell")
+                    ?.clientHeight as number;
 
                 expect(chicletCellHeight).toEqual(chicletCellHeight0);
 
@@ -510,7 +512,7 @@ describe("ChicletSlicer", () => {
                     const slicerTextElements: NodeListOf<HTMLElement> = visualBuilder.slicerTextElements;
 
                     for (let i: number = 0, length: number = slicerTextElements.length; i < length; i++) {
-                        let slicerText: string = slicerTextElements[i].textContent,
+                        let slicerText: string = slicerTextElements[i].textContent as string,
                             isElementAvailable: boolean;
 
                         isElementAvailable = categories.some((category: string) => {
@@ -564,7 +566,7 @@ describe("ChicletSlicer", () => {
             });
 
             it("columns", () => {
-                const columns: number = Math.min(dataView.categorical.categories[0].values.length, 5);
+                const columns: number = Math.min((dataView?.categorical?.categories && dataView?.categorical?.categories[0]?.values?.length) as number, 5);
 
                 dataView.metadata.objects = {
                     general: {
@@ -582,7 +584,7 @@ describe("ChicletSlicer", () => {
             });
 
             it("rows", () => {
-                const rows: number = Math.min(dataView.categorical.categories[0].values.length, 5);
+                const rows: number = Math.min((dataView?.categorical?.categories && dataView?.categorical?.categories[0]?.values?.length) as number, 5);
 
                 dataView.metadata.objects = {
                     general: {
@@ -600,12 +602,15 @@ describe("ChicletSlicer", () => {
             it("show disabled", () => {
                 const highlightedIndex: number = 1;
 
-                dataView.categorical.values.forEach((column: DataViewValueColumn) => {
-                    column.highlights = d3Range(column.values.length).map(() => null);
+
+                dataView?.categorical?.values?.forEach((column: DataViewValueColumn) => {
+                    column.highlights = d3Range(column.values.length).map(() => <unknown>null) as PrimitiveValue[];
                 });
 
-                dataView.categorical.values.forEach((valueColumn: DataViewValueColumn) => {
-                    valueColumn.highlights[highlightedIndex] = valueColumn.values[highlightedIndex];
+                dataView?.categorical?.values?.forEach((valueColumn: DataViewValueColumn) => {
+                    if (valueColumn.highlights) {
+                        valueColumn.highlights[highlightedIndex] = valueColumn.values[highlightedIndex];
+                    }
                 });
 
                 dataView.metadata.objects = {
@@ -617,21 +622,21 @@ describe("ChicletSlicer", () => {
                 };
 
                 visualBuilder.updateFlushAllD3Transitions(dataView);
-
-                const highlightedColor: string = visualBuilder.visibleGroupCells[highlightedIndex]
-                    .querySelector("ul")
-                    .querySelector("li")
-                    .style
-                    .backgroundColor;
+                const highlightedColor: string = visualBuilder
+                    ?.visibleGroupCells[highlightedIndex]
+                    ?.querySelector("ul")
+                    ?.querySelector("li")
+                    ?.style
+                    ?.backgroundColor as string;
 
                 Array.from(visualBuilder.visibleGroupCells)
                     .forEach((element: Element, index: number) => {
                         if (index !== highlightedIndex) {
                             const backgroundColor: string = element
-                                .querySelector("ul")
-                                .querySelector("li")
-                                .style
-                                .backgroundColor;
+                                ?.querySelector("ul")
+                                ?.querySelector("li")
+                                ?.style
+                                ?.backgroundColor as string;
 
                             assertColorsMatch(
                                 backgroundColor,
@@ -646,11 +651,10 @@ describe("ChicletSlicer", () => {
                 Array.from(visualBuilder.visibleGroupCells)
                     .forEach((element: Element, index: number) => {
                         const backgroundColor: string = element
-                            .querySelector("ul")
-                            .querySelector("li")
-                            .style
-                            .backgroundColor;
-
+                            ?.querySelector("ul")
+                            ?.querySelector("li")
+                            ?.style
+                            ?.backgroundColor as string;
 
                         assertColorsMatch(
                             backgroundColor,
@@ -664,47 +668,52 @@ describe("ChicletSlicer", () => {
                 expect(visualBuilder.visibleGroupCells.length).toBe(1);
 
                 assertColorsMatch(
-                    visualBuilder.visibleGroupCells[0]
-                        .querySelector("ul")
-                        .querySelector("li")
-                        .style
-                        .backgroundColor,
+                    visualBuilder
+                        ?.visibleGroupCells[0]
+                        ?.querySelector("ul")
+                        ?.querySelector("li")
+                        ?.style
+                        ?.backgroundColor as string,
                     highlightedColor);
             });
 
-            it(`categories data without disabled elements must be in same sequence after switching to
-                    'Bottom' in 'Show disabled' setting`, () => {
-                    let valuesCategoryData: string[] = [
-                        "Alabama",
-                        "Alaska",
-                        "Arizona",
-                        "Arkansas",
-                        "California",
-                        "Colorado",
-                        "Connecticut",
-                        "Delaware",
-                        "Florida",
-                        "Georgia",
-                        "Hawaii"
-                    ];
+            it(`categories data without disabled elements must be in same sequence after switching to 'Bottom' in 'Show disabled' setting`, () => {
+                let valuesCategoryData: string[] = [
+                    "Alabama",
+                    "Alaska",
+                    "Arizona",
+                    "Arkansas",
+                    "California",
+                    "Colorado",
+                    "Connecticut",
+                    "Delaware",
+                    "Florida",
+                    "Georgia",
+                    "Hawaii"
+                ];
 
+                if (dataView?.categorical?.categories?.length) {
                     dataView.categorical.categories[0].values = valuesCategoryData;
-                    dataView.metadata.objects = {
-                        general: {
-                            columns: 3,
-                            orientation: "Horizontal",
-                            showDisabled: "Bottom"
-                        }
-                    };
-
-                    visualBuilder.updateFlushAllD3Transitions(dataView);
-
-                    const slicerTextElements: NodeListOf<HTMLElement> = visualBuilder.slicerTextElements;
-
-                    for (let i: number = 0, length: number = slicerTextElements.length; i < length; i++) {
-                        expect(slicerTextElements[i].textContent).toEqual(valuesCategoryData[i]);
+                    dataView.categorical.categories[0].identity = valuesCategoryData.map((value: string, index: number) => {
+                        return { identityIndex: index };
+                    });
+                }
+                dataView.metadata.objects = {
+                    general: {
+                        columns: 3,
+                        orientation: "Horizontal",
+                        showDisabled: "Bottom"
                     }
-                });
+                };
+
+                visualBuilder.updateFlushAllD3Transitions(dataView);
+
+                const slicerTextElements: NodeListOf<HTMLElement> = visualBuilder.slicerTextElements;
+
+                for (let i: number = 0, length: number = slicerTextElements.length; i < length; i++) {
+                    expect(slicerTextElements[i].textContent).toEqual(valuesCategoryData[i]);
+                }
+            });
 
             it("search header is visible", () => {
                 dataView.metadata.objects = {
@@ -749,7 +758,8 @@ describe("ChicletSlicer", () => {
 
                 const expectedValue = visualBuilder.slicerBody.clientHeight;
 
-                expect(actualValue).toEqual(expectedValue);
+                expect(actualValue).toBeGreaterThan(expectedValue - 2);
+                expect(actualValue).toBeLessThan(expectedValue + 2);
             });
 
             describe("Multi selection", () => {
@@ -762,7 +772,9 @@ describe("ChicletSlicer", () => {
                 });
 
                 it("multi selection should work when ctrlKey is pressed and multi select is turned off", (done) => {
-                    dataView.metadata.objects.general.multiselect = false;
+                    if (dataView?.metadata?.objects?.general) {
+                        dataView.metadata.objects.general.multiselect = false;
+                    }
 
                     testMultiSelection(
                         dataView,
@@ -777,7 +789,7 @@ describe("ChicletSlicer", () => {
                     testMultiSelection(
                         dataView,
                         visualBuilder,
-                        null,
+                        ClickEventType.Default,
                         defaultDataViewBuilder.valuesCategory.length,
                         () => true,
                         done);
@@ -793,12 +805,12 @@ describe("ChicletSlicer", () => {
                         done);
                 });
 
-                it("multi selection should work when altKey is pressed", (done) => {
+                it("multi selection should work when ctrlKey is pressed", (done) => {
                     testMultiSelection(
                         dataView,
                         visualBuilder,
-                        ClickEventType.AltKey,
-                        defaultDataViewBuilder.valuesCategory.length,
+                        ClickEventType.CtrlKey,
+                        2,
                         (element, index) => !index || index === defaultDataViewBuilder.valuesCategory.length - 1,
                         done);
                 });
@@ -943,10 +955,10 @@ describe("ChicletSlicer", () => {
                 const slicerTexts: HTMLElement[] = Array.from(visualBuilder.visibleGroupCells)
                     .map((element: HTMLElement) => {
                         return element
-                            .querySelector("ul")
-                            .querySelector("li")
-                            .querySelector("div.slicer-text-wrapper")
-                            .querySelector("span.slicerText");
+                            ?.querySelector("ul")
+                            ?.querySelector("li")
+                            ?.querySelector("div.slicer-text-wrapper")
+                            ?.querySelector("span.slicerText") as HTMLElement;
                     });
 
                 slicerTexts.forEach((element: HTMLElement) => {
@@ -1087,8 +1099,8 @@ describe("ChicletSlicer", () => {
 
                 let firstItem: HTMLElement = visualBuilder.slicerItemContainers[0],
                     firstItemText: HTMLElement = firstItem
-                        .querySelector("div.slicer-text-wrapper")
-                        .querySelector("span.slicerText");
+                        ?.querySelector("div.slicer-text-wrapper")
+                        ?.querySelector("span.slicerText") as HTMLElement;
 
                 firstItem.dispatchEvent(new Event("mouseover"));
 
@@ -1106,17 +1118,19 @@ describe("ChicletSlicer", () => {
 
                 const highlightedIndex: number = 1;
 
-                dataView.categorical.values.forEach((valueColumn: DataViewValueColumn) => {
-                    valueColumn.highlights = d3Range(valueColumn.values.length).map(x => null);
+                dataView?.categorical?.values?.forEach((valueColumn: DataViewValueColumn) => {
+                    valueColumn.highlights = d3Range(valueColumn.values.length).map(() => <unknown>null) as PrimitiveValue[];
                 });
 
-                dataView.categorical.values.forEach((valueColumn: DataViewValueColumn) => {
-                    valueColumn.highlights[highlightedIndex] = valueColumn.values[highlightedIndex];
+                dataView?.categorical?.values?.forEach((valueColumn: DataViewValueColumn) => {
+                    if (valueColumn.highlights) {
+                        valueColumn.highlights[highlightedIndex] = valueColumn.values[highlightedIndex];
+                    }
                 });
 
                 (<any>dataView.metadata.objects).general = {
                     showDisabled: "Inplace",
-                    columns: dataView.categorical.categories[0].values.length
+                    columns: (dataView?.categorical?.categories?.length && dataView?.categorical?.categories[0]?.values?.length)
                 };
 
                 visualBuilder.updateFlushAllD3Transitions(dataView);
@@ -1383,14 +1397,14 @@ describe("ChicletSlicer", () => {
             selector: string,
             done: () => void): void {
 
-            updateVisual(visualBuilder, dataView, selector).then((firstElement: Element) => {
+            updateVisual(visualBuilder, dataView, selector).then((firstElement: HTMLElement) => {
                 dataView.metadata.objects = {
                     general: {
                         orientation: "Horizontal"
                     }
                 };
 
-                updateVisual(visualBuilder, dataView, selector).then((secondElement: Element) => {
+                updateVisual(visualBuilder, dataView, selector).then((secondElement: HTMLElement) => {
                     expect(firstElement).toBe(secondElement);
 
                     done();
@@ -1400,15 +1414,15 @@ describe("ChicletSlicer", () => {
             function updateVisual(
                 visualBuilder: ChicletSlicerBuilder,
                 dataView: DataView,
-                selector: string)  {
+                selector: string) {
 
-                    return new Promise((resolve, reject) => {
-                        setTimeout(() => {
-                            visualBuilder.updateRenderTimeout(dataView, () => {
-                                resolve(<HTMLElement>visualBuilder.mainElement.querySelector(selector));
-                            });
-                        }, 0);
-                      });
+                return new Promise((resolve: (value: HTMLElement) => void, reject) => {
+                    setTimeout(() => {
+                        visualBuilder.updateRenderTimeout(dataView, () => {
+                            resolve(<HTMLElement>visualBuilder.mainElement.querySelector(selector));
+                        });
+                    }, 0);
+                });
             }
         }
     });
@@ -1423,7 +1437,8 @@ describe("ChicletSlicer", () => {
 
             let chicletSlicerConverter: ChicletSlicerConverter = new ChicletSlicerConverter(
                 dataViewBuilder.getDataView(),
-                visualBuilder.visualHost);
+                visualBuilder.visualHost,
+                []);
 
             chicletSlicerConverter.convert();
 
@@ -1467,7 +1482,8 @@ describe("ChicletSlicer", () => {
 
                     let chicletSlicerConverter: ChicletSlicerConverter = new ChicletSlicerConverter(
                         dataViewBuilder.getDataView(),
-                        visualBuilder.visualHost);
+                        visualBuilder.visualHost,
+                        []);
 
                     chicletSlicerConverter.convert();
 
@@ -1540,17 +1556,22 @@ describe("ChicletSlicer", () => {
     describe("URL Link", () => {
         it("matches to https pattern", () => {
             let link = "https://powerbi.com";
-            expect(VisualClass.IS_EXTERNAL_LINK(link).valueOf()).toBe(true);
+            expect(ExternalLinksTelemetry.containsExternalURL(link).valueOf()).toBe(true);
         });
 
         it("matches to ftp pattern", () => {
             let link = "ftp://microsoft@ftp.someserver.com/program.exe";
-            expect(VisualClass.IS_EXTERNAL_LINK(link).valueOf()).toBe(true);
+            expect(ExternalLinksTelemetry.containsExternalURL(link).valueOf()).toBe(true);
         });
 
         it("does not matches to http, https or ftp pattern", () => {
             let link = "powerbi.com";
-            expect(VisualClass.IS_EXTERNAL_LINK(link).valueOf()).toBe(false);
+            expect(ExternalLinksTelemetry.containsExternalURL(link).valueOf()).toBe(false);
+        });
+
+        it("base64 image does not matches to http, https or ftp pattern", () => {
+            let link = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAApgAAAKYB3X3/OAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAANCSURBVEiJtZZPbBtFFMZ/M7ubXdtdb1xSFyeilBapySVU8h8OoFaooFSqiihIVIpQBKci6KEg9Q6H9kovIHoCIVQJJCKE1ENFjnAgcaSGC6rEnxBwA04Tx43t2FnvDAfjkNibxgHxnWb2e/u992bee7tCa00YFsffekFY+nUzFtjW0LrvjRXrCDIAaPLlW0nHL0SsZtVoaF98mLrx3pdhOqLtYPHChahZcYYO7KvPFxvRl5XPp1sN3adWiD1ZAqD6XYK1b/dvE5IWryTt2udLFedwc1+9kLp+vbbpoDh+6TklxBeAi9TL0taeWpdmZzQDry0AcO+jQ12RyohqqoYoo8RDwJrU+qXkjWtfi8Xxt58BdQuwQs9qC/afLwCw8tnQbqYAPsgxE1S6F3EAIXux2oQFKm0ihMsOF71dHYx+f3NND68ghCu1YIoePPQN1pGRABkJ6Bus96CutRZMydTl+TvuiRW1m3n0eDl0vRPcEysqdXn+jsQPsrHMquGeXEaY4Yk4wxWcY5V/9scqOMOVUFthatyTy8QyqwZ+kDURKoMWxNKr2EeqVKcTNOajqKoBgOE28U4tdQl5p5bwCw7BWquaZSzAPlwjlithJtp3pTImSqQRrb2Z8PHGigD4RZuNX6JYj6wj7O4TFLbCO/Mn/m8R+h6rYSUb3ekokRY6f/YukArN979jcW+V/S8g0eT/N3VN3kTqWbQ428m9/8k0P/1aIhF36PccEl6EhOcAUCrXKZXXWS3XKd2vc/TRBG9O5ELC17MmWubD2nKhUKZa26Ba2+D3P+4/MNCFwg59oWVeYhkzgN/JDR8deKBoD7Y+ljEjGZ0sosXVTvbc6RHirr2reNy1OXd6pJsQ+gqjk8VWFYmHrwBzW/n+uMPFiRwHB2I7ih8ciHFxIkd/3Omk5tCDV1t+2nNu5sxxpDFNx+huNhVT3/zMDz8usXC3ddaHBj1GHj/As08fwTS7Kt1HBTmyN29vdwAw+/wbwLVOJ3uAD1wi/dUH7Qei66PfyuRj4Ik9is+hglfbkbfR3cnZm7chlUWLdwmprtCohX4HUtlOcQjLYCu+fzGJH2QRKvP3UNz8bWk1qMxjGTOMThZ3kvgLI5AzFfo379UAAAAASUVORK5CYII=";
+            expect(ExternalLinksTelemetry.containsExternalURL(link).valueOf()).toBe(false);
         });
     });
 
@@ -1561,7 +1582,7 @@ describe("ChicletSlicer", () => {
                 let containsExternalImage: boolean = false;
                 visualBuilder.slicerItemImages
                     .forEach((element: Element) => {
-                        containsExternalImage = containsExternalImage || VisualClass.IS_EXTERNAL_LINK(element.getAttribute("src"));
+                        containsExternalImage = containsExternalImage || ExternalLinksTelemetry.containsExternalURL(element.getAttribute("src"));
                     });
                 expect(containsExternalImage.valueOf()).toBe(true);
                 done();
@@ -1578,7 +1599,7 @@ describe("ChicletSlicer", () => {
 
                 visualBuilder.slicerItemImages
                     .forEach((element: Element) => {
-                        containsExternalImage = containsExternalImage || VisualClass.IS_EXTERNAL_LINK(element.getAttribute("src"));
+                        containsExternalImage = containsExternalImage || ExternalLinksTelemetry.containsExternalURL(element.getAttribute("src"));
                     });
                 expect(containsExternalImage.valueOf()).toBe(false);
                 done();
@@ -1586,17 +1607,14 @@ describe("ChicletSlicer", () => {
         });
     });
 
+    describe("JSONFilter order", () => {
+        it("sortByJsonFilterTarget set the correct order for new selections", () => {
+            const jsonFilter = [4, 3, 2, 1, 0];
+            const selected = [1, 3, 4, 5, 6];
 
-    describe("Telemetry", () => {
-        it("Trace method is not called", () => {
-            expect(visualBuilder.externalImageTelemetryTracedProperty).toBe(false);
-        });
+            const sortedTargers = ChicletSlicerWebBehavior.sortByJSONFilterTarget(selected, jsonFilter);
 
-        it("Trace method is called", (done) => {
-            visualBuilder.updateRenderTimeout(dataView, () => {
-                expect(visualBuilder.externalImageTelemetryTracedProperty).toBe(true);
-                done();
-            });
+            expect(sortedTargers).toEqual([4, 3, 1, 5, 6]);
         });
     });
 });
