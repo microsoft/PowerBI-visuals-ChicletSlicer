@@ -1,6 +1,6 @@
 {
   "name": "powerbi-visuals-chicletslicer",
-  "version": "2.1.8.0",
+  "version": "2.1.9.0",
   "author": {
     "name": "Microsoft",
     "email": "pbicvsupport@microsoft.com"
@@ -20,14 +20,14 @@
     "cert": "pbiviz --install-cert"
   },
   "devDependencies": {
-    "@types/d3-array": "^3.0.6",
+    "@types/d3-array": "^3.0.7",
     "@types/d3-selection": "^3.0.6",
     "@types/jasmine": "^4.3.5",
     "@types/karma": "^6.3.4",
     "@types/webpack": "^5.28.2",
-    "@typescript-eslint/eslint-plugin": "^6.4.1",
+    "@typescript-eslint/eslint-plugin": "^6.6.0",
     "css-loader": "^6.8.1",
-    "eslint": "^8.47.0",
+    "eslint": "^8.48.0",
     "eslint-plugin-powerbi-visuals": "^0.8.1",
     "jasmine": "^5.1.0",
     "karma": "^6.4.2",
@@ -40,12 +40,12 @@
     "karma-webpack": "^5.0.0",
     "less": "^4.2.0",
     "playwright": "^1.37.1",
-    "powerbi-visuals-tools": "^5.1.0",
+    "powerbi-visuals-tools": "^5.1.1",
     "powerbi-visuals-utils-testutils": "^6.0.1",
     "style-loader": "^3.3.3",
     "ts-loader": "^9.4.4",
     "ts-node": "^10.9.1",
-    "typescript": "^5.1.6",
+    "typescript": "^5.2.2",
     "webpack": "^5.88.2"
   },
   "dependencies": {
