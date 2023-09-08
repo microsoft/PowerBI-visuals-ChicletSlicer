@@ -188,7 +188,7 @@ export class ChicletSlicer implements IVisual {
             !options.viewport) {
 
             this.clear();
-            this.visualHost.eventService.renderingFailed(options, "No data or viewport");
+            this.visualHost.eventService.renderingFinished(options);
             return;
         }
 
@@ -211,7 +211,7 @@ export class ChicletSlicer implements IVisual {
 
         if (!slicerData) {
             this.clear();
-            this.visualHost.eventService.renderingFailed(options, "No data or viewport");
+            this.visualHost.eventService.renderingFinished(options);
             return;
         }
 
