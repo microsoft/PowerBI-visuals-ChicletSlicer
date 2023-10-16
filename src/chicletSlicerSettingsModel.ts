@@ -8,18 +8,18 @@ import Model = formattingSettings.Model;
 
 import IEnumMember = powerbi.IEnumMember;
 
-const orientationOptions : IEnumMember[] = [
+const orientationOptions: IEnumMember[] = [
     { displayName: "Visual_Orientation_Horizontal", value: "Horizontal" },
     { displayName: "Visual_Orientation_Vertical", value: "Vertical" },
 ]
 
-const showDisabledOptions : IEnumMember[] = [
+const showDisabledOptions: IEnumMember[] = [
     { displayName: "Visual_ShowDisabled_Inplace", value: "Inplace" },
     { displayName: "Visual_ShowDisabled_Bottom", value: "Bottom" },
     { displayName: "Visual_ShowDisabled_Hide", value: "Hide" },
 ]
 
-const outlineOptions : IEnumMember[] = [
+const outlineOptions: IEnumMember[] = [
     { displayName: "formattingHeaderOutlineTypeNone", value: "None" },
     { displayName: "formattingHeaderOutlineTypeBottomOnly", value: "BottomOnly" },
     { displayName: "formattingHeaderOutlineTypeTopOnly", value: "TopOnly" },
@@ -28,7 +28,7 @@ const outlineOptions : IEnumMember[] = [
     { displayName: "formattingHeaderOutlineTypeFrame", value: "Frame" },
 ]
 
-const borderStyleOptions : IEnumMember[] = [
+const borderStyleOptions: IEnumMember[] = [
     { displayName: "Visual_OutlineStyle_Rounded", value: "Rounded" },
     { displayName: "Visual_OutlineStyle_Cut", value: "Cut" },
     { displayName: "Visual_OutlineStyle_Square", value: "Square" },
@@ -330,7 +330,7 @@ export class SlicerTextCardSettings extends Card {
     background = new formattingSettings.ColorPicker({
         name: "background",
         displayNameKey: "Visual_Background",
-        value: { value : null }
+        value: { value: null }
     });
 
     transparency = new formattingSettings.Slider({
@@ -573,7 +573,7 @@ export class HeaderText extends Card {
     public marginLeft: number = 0;
 }
 
-export class ChicletSlicerSettingsModel extends Model { 
+export class ChicletSlicerSettingsModel extends Model {
     generalCardSettings = new GeneralCardSettings();
     headerCardSettings = new HeaderCardSettings();
     slicerTextCardSettings = new SlicerTextCardSettings();
@@ -582,7 +582,7 @@ export class ChicletSlicerSettingsModel extends Model {
     slicerItemContainer = new SlicerItemContainer();
     margin = new Margin();
     headerText = new HeaderText();
-    
+
     cards = [this.generalCardSettings, this.headerCardSettings, this.slicerTextCardSettings, this.imagesCardSettings, this.tooltipsCardSettings];
 
     setLocalizedOptions(localizationManager: ILocalizationManager) {
@@ -590,7 +590,37 @@ export class ChicletSlicerSettingsModel extends Model {
         this.setLocalizedDisplayName(orientationOptions, localizationManager);
         this.setLocalizedDisplayName(outlineOptions, localizationManager);
         this.setLocalizedDisplayName(showDisabledOptions, localizationManager);
-    }   
+    }
+
+    public static applyOldSettings(objects: any, formattingSettings: ChicletSlicerSettingsModel, localizationManager?: ILocalizationManager): void {
+        const orientationValue = objects?.general?.orientation;
+        const hasNumericOrientation = !isNaN(orientationValue);
+        if (hasNumericOrientation) {
+            switch (orientationValue) {
+                case 1:
+                    formattingSettings.generalCardSettings.orientation.value =
+                    {
+                        "displayName": localizationManager?.getDisplayName("Horizontal") || "Horizontal",
+                        "value": "Horizontal"
+                    };
+                    break;
+                case 2:
+                    formattingSettings.generalCardSettings.orientation.value =
+                    {
+                        "displayName": localizationManager?.getDisplayName("Vertical") || "Vertical",
+                        "value": "Vertical"
+                    };
+                    break;
+                default: // Horizontal is default
+                    formattingSettings.generalCardSettings.orientation.value =
+                    {
+                        "displayName": localizationManager?.getDisplayName("Horizontal") || "Horizontal",
+                        "value": "Horizontal"
+                    };
+                    break;
+            }
+        }
+    }
 
     public setLocalizedDisplayName(options: IEnumMember[], localizationManager: ILocalizationManager) {
         options.forEach(option => {
