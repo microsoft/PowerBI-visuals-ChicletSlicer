@@ -200,7 +200,8 @@ export class ChicletSlicer implements IVisual {
         }
 
         this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(ChicletSlicerSettingsModel, options.dataViews);
-        ChicletSlicerSettingsModel.applyOldSettings(options.dataViews[0].metadata.objects, this.formattingSettings, this.localizationManager);
+        this.formattingSettings.generalCardSettings.orientation.value = ChicletSlicerSettingsModel.getOldOrientationSettings(options.dataViews[0].metadata.objects, this.localizationManager); // actual fix
+
         this.formattingSettings.setLocalizedOptions(this.localizationManager);
 
         const slicerData: ChicletSlicerData = ChicletSlicer.converter(

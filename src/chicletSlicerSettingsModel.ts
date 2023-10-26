@@ -592,32 +592,26 @@ export class ChicletSlicerSettingsModel extends Model {
         this.setLocalizedDisplayName(showDisabledOptions, localizationManager);
     }
 
-    public static applyOldSettings(objects: any, formattingSettings: ChicletSlicerSettingsModel, localizationManager?: ILocalizationManager): void {
+    public static getOldOrientationSettings(objects: powerbi.DataViewObjects, localizationManager?: ILocalizationManager): IEnumMember {
         const orientationValue = objects?.general?.orientation;
-        const hasNumericOrientation = !isNaN(orientationValue);
+        const hasNumericOrientation = !isNaN(orientationValue as number);
         if (hasNumericOrientation) {
             switch (orientationValue) {
                 case 1:
-                    formattingSettings.generalCardSettings.orientation.value =
-                    {
+                    return {
                         "displayName": localizationManager?.getDisplayName("Horizontal") || "Horizontal",
                         "value": "Horizontal"
                     };
-                    break;
                 case 2:
-                    formattingSettings.generalCardSettings.orientation.value =
-                    {
+                    return {
                         "displayName": localizationManager?.getDisplayName("Vertical") || "Vertical",
                         "value": "Vertical"
                     };
-                    break;
                 default: // Horizontal is default
-                    formattingSettings.generalCardSettings.orientation.value =
-                    {
+                    return {
                         "displayName": localizationManager?.getDisplayName("Horizontal") || "Horizontal",
                         "value": "Horizontal"
                     };
-                    break;
             }
         }
     }
