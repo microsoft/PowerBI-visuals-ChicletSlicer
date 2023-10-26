@@ -369,7 +369,7 @@ export class SlicerTextCardSettings extends Card {
         displayNameKey: "Visual_OutlineColor",
         value: { value: "#000000" }
     });
-    
+
     outlineWeight = new formattingSettings.NumUpDown({
         name: "outlineWeight",
         displayNameKey: "Visual_OutlineWeight",
@@ -592,27 +592,24 @@ export class ChicletSlicerSettingsModel extends Model {
         this.setLocalizedDisplayName(showDisabledOptions, localizationManager);
     }
 
-    public static getOldOrientationSettings(objects: powerbi.DataViewObjects, localizationManager?: ILocalizationManager): IEnumMember {
-        const orientationValue = objects?.general?.orientation;
-        const hasNumericOrientation = !isNaN(orientationValue as number);
-        if (hasNumericOrientation) {
-            switch (orientationValue) {
-                case 1:
-                    return {
-                        "displayName": localizationManager?.getDisplayName("Horizontal") || "Horizontal",
-                        "value": "Horizontal"
-                    };
-                case 2:
-                    return {
-                        "displayName": localizationManager?.getDisplayName("Vertical") || "Vertical",
-                        "value": "Vertical"
-                    };
-                default: // Horizontal is default
-                    return {
-                        "displayName": localizationManager?.getDisplayName("Horizontal") || "Horizontal",
-                        "value": "Horizontal"
-                    };
-            }
+    public static getOldOrientationSettings(orientationValue: number, localizationManager?: ILocalizationManager): IEnumMember {
+        debugger;
+        switch (orientationValue) {
+            case 1:
+                return {
+                    "displayName": localizationManager?.getDisplayName("Horizontal") || "Horizontal",
+                    "value": "Horizontal"
+                };
+            case 2:
+                return {
+                    "displayName": localizationManager?.getDisplayName("Vertical") || "Vertical",
+                    "value": "Vertical"
+                };
+            default: // Horizontal is default
+                return {
+                    "displayName": localizationManager?.getDisplayName("Horizontal") || "Horizontal",
+                    "value": "Horizontal"
+                };
         }
     }
 

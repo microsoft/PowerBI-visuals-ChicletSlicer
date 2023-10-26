@@ -198,10 +198,15 @@ export class ChicletSlicer implements IVisual {
         if (this.jsonFilters && this.jsonFilters[0] && this.jsonFilters[0]?.target.length === 0) {
             this.resetScrollbarPosition = true;
         }
-
         this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(ChicletSlicerSettingsModel, options.dataViews);
-        this.formattingSettings.generalCardSettings.orientation.value = ChicletSlicerSettingsModel.getOldOrientationSettings(options.dataViews[0].metadata.objects, this.localizationManager); // actual fix
 
+        // orientation bug fix (v2.1.9)
+        const orientationValue = options.dataViews[0].metadata.objects?.general?.orientation;
+        const hasNumericOrientation = !isNaN(orientationValue as any);
+        if (hasNumericOrientation){
+            this.formattingSettings.generalCardSettings.orientation.value = ChicletSlicerSettingsModel.getOldOrientationSettings(orientationValue as number, this.localizationManager); // actual fix
+        }
+        
         this.formattingSettings.setLocalizedOptions(this.localizationManager);
 
         const slicerData: ChicletSlicerData = ChicletSlicer.converter(
