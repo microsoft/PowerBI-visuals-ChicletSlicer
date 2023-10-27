@@ -1,3 +1,6 @@
+## 2.1.10.0
+* Backward compatibility fix for orientation
+
 ## 2.1.0.0
 * Removed InteractivityUtils and SelectionManager
 * Added TupleFilter and jsonFilers
