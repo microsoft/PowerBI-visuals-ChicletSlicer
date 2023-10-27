@@ -593,7 +593,6 @@ export class ChicletSlicerSettingsModel extends Model {
     }
 
     public static getOldOrientationSettings(orientationValue: number, localizationManager?: ILocalizationManager): IEnumMember {
-        debugger;
         switch (orientationValue) {
             case 1:
                 return {
