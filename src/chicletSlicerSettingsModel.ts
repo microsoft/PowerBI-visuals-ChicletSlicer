@@ -8,18 +8,18 @@ import Model = formattingSettings.Model;
 
 import IEnumMember = powerbi.IEnumMember;
 
-const orientationOptions : IEnumMember[] = [
+const orientationOptions: IEnumMember[] = [
     { displayName: "Visual_Orientation_Horizontal", value: "Horizontal" },
     { displayName: "Visual_Orientation_Vertical", value: "Vertical" },
 ]
 
-const showDisabledOptions : IEnumMember[] = [
+const showDisabledOptions: IEnumMember[] = [
     { displayName: "Visual_ShowDisabled_Inplace", value: "Inplace" },
     { displayName: "Visual_ShowDisabled_Bottom", value: "Bottom" },
     { displayName: "Visual_ShowDisabled_Hide", value: "Hide" },
 ]
 
-const outlineOptions : IEnumMember[] = [
+const outlineOptions: IEnumMember[] = [
     { displayName: "formattingHeaderOutlineTypeNone", value: "None" },
     { displayName: "formattingHeaderOutlineTypeBottomOnly", value: "BottomOnly" },
     { displayName: "formattingHeaderOutlineTypeTopOnly", value: "TopOnly" },
@@ -28,7 +28,7 @@ const outlineOptions : IEnumMember[] = [
     { displayName: "formattingHeaderOutlineTypeFrame", value: "Frame" },
 ]
 
-const borderStyleOptions : IEnumMember[] = [
+const borderStyleOptions: IEnumMember[] = [
     { displayName: "Visual_OutlineStyle_Rounded", value: "Rounded" },
     { displayName: "Visual_OutlineStyle_Cut", value: "Cut" },
     { displayName: "Visual_OutlineStyle_Square", value: "Square" },
@@ -330,7 +330,7 @@ export class SlicerTextCardSettings extends Card {
     background = new formattingSettings.ColorPicker({
         name: "background",
         displayNameKey: "Visual_Background",
-        value: { value : null }
+        value: { value: null }
     });
 
     transparency = new formattingSettings.Slider({
@@ -369,7 +369,7 @@ export class SlicerTextCardSettings extends Card {
         displayNameKey: "Visual_OutlineColor",
         value: { value: "#000000" }
     });
-    
+
     outlineWeight = new formattingSettings.NumUpDown({
         name: "outlineWeight",
         displayNameKey: "Visual_OutlineWeight",
@@ -573,7 +573,7 @@ export class HeaderText extends Card {
     public marginLeft: number = 0;
 }
 
-export class ChicletSlicerSettingsModel extends Model { 
+export class ChicletSlicerSettingsModel extends Model {
     generalCardSettings = new GeneralCardSettings();
     headerCardSettings = new HeaderCardSettings();
     slicerTextCardSettings = new SlicerTextCardSettings();
@@ -582,7 +582,7 @@ export class ChicletSlicerSettingsModel extends Model {
     slicerItemContainer = new SlicerItemContainer();
     margin = new Margin();
     headerText = new HeaderText();
-    
+
     cards = [this.generalCardSettings, this.headerCardSettings, this.slicerTextCardSettings, this.imagesCardSettings, this.tooltipsCardSettings];
 
     setLocalizedOptions(localizationManager: ILocalizationManager) {
@@ -590,7 +590,27 @@ export class ChicletSlicerSettingsModel extends Model {
         this.setLocalizedDisplayName(orientationOptions, localizationManager);
         this.setLocalizedDisplayName(outlineOptions, localizationManager);
         this.setLocalizedDisplayName(showDisabledOptions, localizationManager);
-    }   
+    }
+
+    public static getOldOrientationSettings(orientationValue: number, localizationManager?: ILocalizationManager): IEnumMember {
+        switch (orientationValue) {
+            case 1:
+                return {
+                    "displayName": localizationManager?.getDisplayName("Horizontal") || "Horizontal",
+                    "value": "Horizontal"
+                };
+            case 2:
+                return {
+                    "displayName": localizationManager?.getDisplayName("Vertical") || "Vertical",
+                    "value": "Vertical"
+                };
+            default: // Horizontal is default
+                return {
+                    "displayName": localizationManager?.getDisplayName("Horizontal") || "Horizontal",
+                    "value": "Horizontal"
+                };
+        }
+    }
 
     public setLocalizedDisplayName(options: IEnumMember[], localizationManager: ILocalizationManager) {
         options.forEach(option => {
