@@ -557,7 +557,7 @@ export class TooltipsCardSettings extends Card {
 }
 
 export class SlicerItemContainer extends Card {
-    public marginTop: number = 5;
+    public marginTop: number = 0;
     public marginLeft: number = 0;
 }
 
@@ -569,7 +569,7 @@ export class Margin extends Card {
 }
 
 export class HeaderText extends Card {
-    public marginTop: number = 5;
+    public marginTop: number = 0;
     public marginLeft: number = 0;
 }
 
