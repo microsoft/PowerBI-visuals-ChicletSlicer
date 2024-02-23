@@ -1,3 +1,7 @@
+## 2.1.11.0
+* text tailoring disabled by default
+* added formatting setting for text tailoring
+
 ## 2.1.10.0
 * Backward compatibility fix for orientation
 
