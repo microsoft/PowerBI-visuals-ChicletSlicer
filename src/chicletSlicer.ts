@@ -577,7 +577,9 @@ export class ChicletSlicer implements IVisual {
                     ChicletSlicer.СhicletTotalInnerRightLeftPaddings -
                     ChicletSlicer.СellTotalInnerBorders -
                     settings.slicerTextCardSettings.outlineWeight.value;
-                return textMeasurementService.getTailoredTextOrDefault(textProperties, maxWidth);
+                return settings.slicerTextCardSettings.tailoring.value ? 
+                    textMeasurementService.getTailoredTextOrDefault(textProperties, maxWidth):
+                    textProperties.text;
             });
 
             rowSelection.style("padding", PixelConverter.toString(settings.slicerTextCardSettings.padding.value));
