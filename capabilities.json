@@ -217,6 +217,11 @@
                         "numeric": true
                     }
                 },
+                "tailoring": {
+                    "type": {
+                        "bool": true
+                    }  
+                },
                 "height": {
                     "type": {
                         "numeric": true

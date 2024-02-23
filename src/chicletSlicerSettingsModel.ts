@@ -303,6 +303,13 @@ export class SlicerTextCardSettings extends Card {
         }
     });
 
+    tailoring = new formattingSettings.ToggleSwitch({
+        name: "tailoring",
+        displayNameKey: "Visual_Enable_Tailoring",
+        value: false,
+        topLevelToggle: false
+    })
+
     height = new formattingSettings.NumUpDown({
         name: "height",
         displayNameKey: "Visual_Height",
@@ -409,7 +416,7 @@ export class SlicerTextCardSettings extends Card {
 
     name: string = "rows";
     displayNameKey: string = "Visual_Chiclets";
-    slices = [this.textSize, this.height, this.width, this.background, this.transparency, this.selectedColor, this.hoverColor, 
+    slices = [this.textSize, this.tailoring, this.height, this.width, this.background, this.transparency, this.selectedColor, this.hoverColor, 
                 this.unselectedColor, this.disabledColor, this.outlineColor, this.outlineWeight, this.fontColor, this.padding, this.borderStyle]
 
     revertToDefaultDescriptors: [

@@ -50,5 +50,6 @@
 	"Visual_Selection": "Selection",
 	"Visual_show": "Show",
 	"Visual_Description_Transparency": "Set transparency for background color",
-	"Visual_Tooltips": "Tooltips"
+	"Visual_Tooltips": "Tooltips",
+	"Visual_Enable_Tailoring": "Crop text"
 }
