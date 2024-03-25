@@ -36,7 +36,7 @@ export interface ChicletSlicerData {
 
 export interface ChicletSlicerDataPoint {
     identity: any;
-    selected: boolean;
+    selected: boolean; // json filter
     category?: string;
     value?: number;
     mouseOver?: boolean;
@@ -44,7 +44,7 @@ export interface ChicletSlicerDataPoint {
     isSelectAllDataPoint?: boolean;
     imageURL?: string;
     selectable?: boolean;
-    filtered?: boolean;
+    filtered?: boolean; // self filter
     id?: number;
     columnName?: any;
 }
