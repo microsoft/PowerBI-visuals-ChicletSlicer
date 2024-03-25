@@ -1,3 +1,7 @@
+## 2.2.0.0
+* restored Alt + click selection behavior
+* fixed viewmode update with forced selection scenario
+
 ## 2.1.11.0
 * text tailoring disabled by default
 * added formatting setting for text tailoring

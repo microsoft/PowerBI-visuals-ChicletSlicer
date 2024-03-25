@@ -155,6 +155,17 @@ export class ChicletSlicer implements IVisual {
     private telemetry: ExternalLinksTelemetry;
     private renderFiltered: (searchText: string) => void;
 
+
+    private static isFilterStateValid(options: any): boolean{
+        const semanticFilters = options.dataViews[0].metadata.objects?.general?.filter?.whereItems[0]?.condition?.values;
+        const jsonFilters = options.jsonFilters[0]?.target;
+
+        if (!semanticFilters && !jsonFilters || semanticFilters?.length === jsonFilters?.length){
+            return true;
+        }
+        return false
+    }
+
     constructor(options: VisualConstructorOptions) {
         this.root = d3Select(options.element);
         this.visualHost = options.host;
@@ -189,6 +200,11 @@ export class ChicletSlicer implements IVisual {
 
             this.clear();
             this.visualHost.eventService.renderingFinished(options);
+            return;
+        }
+        
+        // compare objects with jsonFilters
+        if (!ChicletSlicer.isFilterStateValid(options)){
             return;
         }
 
