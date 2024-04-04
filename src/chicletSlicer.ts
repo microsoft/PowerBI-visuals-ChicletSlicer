@@ -75,6 +75,7 @@ import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 
 import { ExternalLinksTelemetry } from "./telemetry";
 
+
 import IFilter = powerbi.IFilter;
 
 const enum ChicletBorderStyle {
@@ -156,15 +157,6 @@ export class ChicletSlicer implements IVisual {
     private renderFiltered: (searchText: string) => void;
 
 
-    private static isFilterStateValid(options: any): boolean{
-        const semanticFilters = options.dataViews[0].metadata.objects?.general?.filter?.whereItems[0]?.condition?.values;
-        const jsonFilters = options.jsonFilters[0]?.target;
-
-        if (!semanticFilters && !jsonFilters || semanticFilters?.length === jsonFilters?.length){
-            return true;
-        }
-        return false
-    }
 
     constructor(options: VisualConstructorOptions) {
         this.root = d3Select(options.element);
@@ -202,15 +194,13 @@ export class ChicletSlicer implements IVisual {
             this.visualHost.eventService.renderingFinished(options);
             return;
         }
-        
-        // compare objects with jsonFilters
-        if (!ChicletSlicer.isFilterStateValid(options)){
-            return;
-        }
 
         this.resetScrollbarPosition = false;
 
-        this.jsonFilters = options.jsonFilters;
+        // reassign filters only when data update 
+        if (options.type & powerbi.VisualUpdateType.Data) {
+            this.jsonFilters = options.jsonFilters;
+        }
         if (this.jsonFilters && this.jsonFilters[0] && this.jsonFilters[0]?.target.length === 0) {
             this.resetScrollbarPosition = true;
         }
@@ -219,7 +209,7 @@ export class ChicletSlicer implements IVisual {
         // orientation bug fix (v2.1.9)
         const orientationValue = options.dataViews[0].metadata.objects?.general?.orientation;
         const hasNumericOrientation = !isNaN(orientationValue as any);
-        if (hasNumericOrientation){
+        if (hasNumericOrientation) {
             this.formattingSettings.generalCardSettings.orientation.value = ChicletSlicerSettingsModel.getOldOrientationSettings(orientationValue as number, this.localizationManager); // actual fix
         }
         
@@ -593,8 +583,8 @@ export class ChicletSlicer implements IVisual {
                     ChicletSlicer.СhicletTotalInnerRightLeftPaddings -
                     ChicletSlicer.СellTotalInnerBorders -
                     settings.slicerTextCardSettings.outlineWeight.value;
-                return settings.slicerTextCardSettings.tailoring.value ? 
-                    textMeasurementService.getTailoredTextOrDefault(textProperties, maxWidth):
+                return settings.slicerTextCardSettings.tailoring.value ?
+                    textMeasurementService.getTailoredTextOrDefault(textProperties, maxWidth) :
                     textProperties.text;
             });
 
