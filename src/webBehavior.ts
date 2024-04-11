@@ -139,7 +139,7 @@ export class ChicletSlicerWebBehavior {
                     [endIndex, startIndex] = [startIndex, endIndex];
                 }
 
-                for (let dp of this.dataPoints){
+                for (const dp of this.dataPoints){
                     if (dp.id < startIndex || dp.id > endIndex) {
                         dp.selected = false;
                     }
