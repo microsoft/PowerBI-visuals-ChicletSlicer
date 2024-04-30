@@ -1,3 +1,6 @@
+## 2.2.1.0
+* json filters bug fix
+
 ## 2.2.0.0
 * restored Alt + click selection behavior
 * fixed viewmode update with forced selection scenario

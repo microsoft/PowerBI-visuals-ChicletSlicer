@@ -134,12 +134,12 @@ export class ChicletSlicerWebBehavior {
                     : 0;
                 let endIndex = dataPoint.id;
 
-                
+                // reverse selection
                 if (startIndex > endIndex) {
                     [endIndex, startIndex] = [startIndex, endIndex];
                 }
 
-                for (const dp of this.dataPoints){
+                for (const dp of this.dataPoints) {
                     if (dp.id < startIndex || dp.id > endIndex) {
                         dp.selected = false;
                     }
@@ -152,10 +152,10 @@ export class ChicletSlicerWebBehavior {
                 this.saveSelection();
 
             }
-            else if ((((<MouseEvent>event).ctrlKey || (<MouseEvent>event).metaKey)) || multiselect) {
-                this.handleSelection(dataPoint, true /* isMultiSelect */);
-            } else {
-                this.handleSelection(dataPoint, false /* isMultiSelect */);
+            else {
+                // can select multiple chiclets at once
+                const multiselectEnabled = (<MouseEvent>event).ctrlKey || (<MouseEvent>event).metaKey || multiselect;
+                this.handleSelection(dataPoint, multiselectEnabled);
             }
         });
 
@@ -170,16 +170,17 @@ export class ChicletSlicerWebBehavior {
         });
 
         this.renderSelection();
-        this.forceSelection();
+
+        // force selection
+        if (this.formattingSettings.generalCardSettings.forcedSelection.value) {
+            this.forceSelection();
+        }
     }
 
     private forceSelection(): void {
-        if (!this.formattingSettings.generalCardSettings.forcedSelection.value) {
-            return;
-        }
-
-        const isSelected: boolean = this.dataPoints.some((dataPoint: ChicletSlicerDataPoint) => dataPoint.selected);
-        if (!isSelected) {
+        // checks if there is a datapoint that is already selected, selects first suitable otherwise
+        const selectedExists: boolean = this.dataPoints.some((dataPoint: ChicletSlicerDataPoint) => dataPoint.selected);
+        if (!selectedExists) {
             const dataPoint = this.dataPoints.find((dataPoint: ChicletSlicerDataPoint) => dataPoint.selectable && !dataPoint.filtered);
             if (dataPoint) {
                 dataPoint.selected = true;

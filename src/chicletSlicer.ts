@@ -220,7 +220,7 @@ export class ChicletSlicer implements IVisual {
             this?.searchInput?.node()?.value,
             this.formattingSettings,
             this.visualHost,
-            options.jsonFilters);
+            this.jsonFilters);
 
         if (!slicerData) {
             this.clear();
