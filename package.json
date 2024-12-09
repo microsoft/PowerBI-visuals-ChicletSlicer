@@ -1,6 +1,6 @@
 {
   "name": "powerbi-visuals-chicletslicer",
-  "version": "2.1.9.0",
+  "version": "2.2.1.0",
   "author": {
     "name": "Microsoft",
     "email": "pbicvsupport@microsoft.com"
@@ -59,7 +59,7 @@
     "powerbi-visuals-api": "~5.4.0",
     "powerbi-visuals-utils-colorutils": "^6.0.1",
     "powerbi-visuals-utils-dataviewutils": "^6.0.1",
-    "powerbi-visuals-utils-formattingutils": "^6.0.1",
+    "powerbi-visuals-utils-formattingutils": "^6.1.0",
     "powerbi-visuals-utils-svgutils": "^6.0.1",
     "powerbi-visuals-utils-tooltiputils": "^6.0.1",
     "powerbi-visuals-utils-typeutils": "^6.0.1"

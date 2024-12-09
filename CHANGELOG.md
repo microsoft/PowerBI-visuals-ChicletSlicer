@@ -1,3 +1,17 @@
+## 2.2.1.0
+* json filters bug fix
+
+## 2.2.0.0
+* restored Alt + click selection behavior
+* fixed viewmode update with forced selection scenario
+
+## 2.1.11.0
+* text tailoring disabled by default
+* added formatting setting for text tailoring
+
+## 2.1.10.0
+* Backward compatibility fix for orientation
+
 ## 2.1.0.0
 * Removed InteractivityUtils and SelectionManager
 * Added TupleFilter and jsonFilers

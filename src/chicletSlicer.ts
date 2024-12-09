@@ -75,6 +75,7 @@ import VisualTooltipDataItem = powerbi.extensibility.VisualTooltipDataItem;
 
 import { ExternalLinksTelemetry } from "./telemetry";
 
+
 import IFilter = powerbi.IFilter;
 
 const enum ChicletBorderStyle {
@@ -155,6 +156,8 @@ export class ChicletSlicer implements IVisual {
     private telemetry: ExternalLinksTelemetry;
     private renderFiltered: (searchText: string) => void;
 
+
+
     constructor(options: VisualConstructorOptions) {
         this.root = d3Select(options.element);
         this.visualHost = options.host;
@@ -194,12 +197,22 @@ export class ChicletSlicer implements IVisual {
 
         this.resetScrollbarPosition = false;
 
-        this.jsonFilters = options.jsonFilters;
+        // reassign filters only when data update 
+        if (options.type & powerbi.VisualUpdateType.Data) {
+            this.jsonFilters = options.jsonFilters;
+        }
         if (this.jsonFilters && this.jsonFilters[0] && this.jsonFilters[0]?.target.length === 0) {
             this.resetScrollbarPosition = true;
         }
-
         this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(ChicletSlicerSettingsModel, options.dataViews);
+
+        // orientation bug fix (v2.1.9)
+        const orientationValue = options.dataViews[0].metadata.objects?.general?.orientation;
+        const hasNumericOrientation = !isNaN(orientationValue as any);
+        if (hasNumericOrientation) {
+            this.formattingSettings.generalCardSettings.orientation.value = ChicletSlicerSettingsModel.getOldOrientationSettings(orientationValue as number, this.localizationManager); // actual fix
+        }
+        
         this.formattingSettings.setLocalizedOptions(this.localizationManager);
 
         const slicerData: ChicletSlicerData = ChicletSlicer.converter(
@@ -207,7 +220,7 @@ export class ChicletSlicer implements IVisual {
             this?.searchInput?.node()?.value,
             this.formattingSettings,
             this.visualHost,
-            options.jsonFilters);
+            this.jsonFilters);
 
         if (!slicerData) {
             this.clear();
@@ -570,7 +583,9 @@ export class ChicletSlicer implements IVisual {
                     ChicletSlicer.СhicletTotalInnerRightLeftPaddings -
                     ChicletSlicer.СellTotalInnerBorders -
                     settings.slicerTextCardSettings.outlineWeight.value;
-                return textMeasurementService.getTailoredTextOrDefault(textProperties, maxWidth);
+                return settings.slicerTextCardSettings.tailoring.value ?
+                    textMeasurementService.getTailoredTextOrDefault(textProperties, maxWidth) :
+                    textProperties.text;
             });
 
             rowSelection.style("padding", PixelConverter.toString(settings.slicerTextCardSettings.padding.value));

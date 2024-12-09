@@ -96,7 +96,7 @@ export class ChicletSlicerWebBehavior {
             }
         });
 
-        slicers.on("click", (event, dataPoint: ChicletSlicerDataPoint) => {
+        slicers.on("click", (event: MouseEvent, dataPoint: ChicletSlicerDataPoint) => {
             if (!dataPoint.selectable) {
                 return;
             }
@@ -109,7 +109,7 @@ export class ChicletSlicerWebBehavior {
 
             const selectedIndexes: number[] = this.dataPoints
                 .filter((dataPoint: ChicletSlicerDataPoint) => dataPoint.selected)
-                .map(dataPoint => dataPoint.id);
+                .map(dataPoint => dataPoint.id); // id guarantees correct order in category array
 
             if (settings.generalCardSettings.forcedSelection.value && selectedIndexes.length === 1) {
                 const availableDataPoints: ChicletSlicerDataPoint[] = this.dataPoints.map((dataPoint: ChicletSlicerDataPoint) => {
@@ -124,10 +124,38 @@ export class ChicletSlicerWebBehavior {
                 }
             }
 
-            if ((((<MouseEvent>event).ctrlKey || (<MouseEvent>event).metaKey)) || multiselect) {
-                this.handleSelection(dataPoint, true /* isMultiSelect */);
-            } else {
-                this.handleSelection(dataPoint, false /* isMultiSelect */);
+            // when holding alt
+            // selects all chiclets between last selected datapoint and current selected datapoint
+            // same as v1.6.3
+            if (event.altKey && multiselect) {
+                // selecting from last selected to current selected
+                let startIndex: number = selectedIndexes.length > 0
+                    ? (selectedIndexes[selectedIndexes.length - 1])
+                    : 0;
+                let endIndex = dataPoint.id;
+
+                // reverse selection
+                if (startIndex > endIndex) {
+                    [endIndex, startIndex] = [startIndex, endIndex];
+                }
+
+                for (const dp of this.dataPoints) {
+                    if (dp.id < startIndex || dp.id > endIndex) {
+                        dp.selected = false;
+                    }
+                    else {
+                        dp.selected = true;
+                    }
+                }
+
+                this.renderSelection();
+                this.saveSelection();
+
+            }
+            else {
+                // can select multiple chiclets at once
+                const multiselectEnabled = (<MouseEvent>event).ctrlKey || (<MouseEvent>event).metaKey || multiselect;
+                this.handleSelection(dataPoint, multiselectEnabled);
             }
         });
 
@@ -142,16 +170,17 @@ export class ChicletSlicerWebBehavior {
         });
 
         this.renderSelection();
-        this.forceSelection();
+
+        // force selection
+        if (this.formattingSettings.generalCardSettings.forcedSelection.value) {
+            this.forceSelection();
+        }
     }
 
     private forceSelection(): void {
-        if (!this.formattingSettings.generalCardSettings.forcedSelection.value) {
-            return;
-        }
-
-        const isSelected: boolean = this.dataPoints.some((dataPoint: ChicletSlicerDataPoint) => dataPoint.selected);
-        if (!isSelected) {
+        // checks if there is a datapoint that is already selected, selects first suitable otherwise
+        const selectedExists: boolean = this.dataPoints.some((dataPoint: ChicletSlicerDataPoint) => dataPoint.selected);
+        if (!selectedExists) {
             const dataPoint = this.dataPoints.find((dataPoint: ChicletSlicerDataPoint) => dataPoint.selectable && !dataPoint.filtered);
             if (dataPoint) {
                 dataPoint.selected = true;
