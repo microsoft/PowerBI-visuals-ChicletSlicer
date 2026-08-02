@@ -412,7 +412,7 @@ export class ChicletSlicer implements IVisual {
     }
 
     private renderTooltip(selection: Selection<any>, tooltipsCardSettings: TooltipsCardSettings): void {
-        if (!this.tooltipService || !tooltipsCardSettings.show.value) {
+        if (!this.tooltipService) {
             return;
         }
 
