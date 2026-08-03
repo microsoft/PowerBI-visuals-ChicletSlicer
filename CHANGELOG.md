@@ -1,3 +1,6 @@
+## 2.2.2.0
+* Updated tooltip utils - show avoid moving tooltip when it is not enabled
+
 ## 2.2.1.0
 * json filters bug fix
 
