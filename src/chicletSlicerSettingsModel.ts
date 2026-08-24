@@ -3,7 +3,7 @@ import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
 import ILocalizationManager = powerbi.extensibility.ILocalizationManager;
 
-import Card = formattingSettings.Card;
+import SimpleCard = formattingSettings.SimpleCard;
 import Model = formattingSettings.Model;
 
 import IEnumMember = powerbi.IEnumMember;
@@ -78,7 +78,7 @@ class ImagesSplitSettings {
     public static readonly MaxValue: number = 100;
 }
 
-export class GeneralCardSettings extends Card {
+export class GeneralCardSettings extends SimpleCard {
 
     orientation = new formattingSettings.ItemDropdown({
         name: "orientation",
@@ -125,15 +125,13 @@ export class GeneralCardSettings extends Card {
     multiselect = new formattingSettings.ToggleSwitch({
         name: "multiselect",
         displayNameKey: "Visual_MultipleSelection",
-        value: true,
-        topLevelToggle: false
+        value: true
     });
 
     forcedSelection = new formattingSettings.ToggleSwitch({
         name: "forcedSelection",
         displayNameKey: "Visual_ForcedSelection",
-        value: false,
-        topLevelToggle: false
+        value: false
     });
 
     name: string = "general";
@@ -168,15 +166,14 @@ export class GeneralCardSettings extends Card {
     ]
 }
 
-export class HeaderCardSettings extends Card {
+export class HeaderCardSettings extends SimpleCard {
 
     public borderBottomWidth: number = 1;
 
     show = new formattingSettings.ToggleSwitch({
         name: "show",
         displayNameKey: "Visual_Show",
-        value: true,
-        topLevelToggle: true
+        value: true
     });
 
     title = new formattingSettings.TextInput({
@@ -245,7 +242,8 @@ export class HeaderCardSettings extends Card {
 
     name: string = "header";
     displayNameKey: string = "Visual_Header";
-    slices = [this.show, this.title, this.fontColor, this.background, this.textSize, this.outline, this.outlineColor, this.outlineWeight];
+    topLevelSlice = this.show;
+    slices = [this.title, this.fontColor, this.background, this.textSize, this.outline, this.outlineColor, this.outlineWeight];
 
     revertToDefaultDescriptors: [
         {
@@ -283,7 +281,7 @@ export class HeaderCardSettings extends Card {
     ]
 }
 
-export class SlicerTextCardSettings extends Card {
+export class SlicerTextCardSettings extends SimpleCard {
 
     public outline: string = "Frame";
 
@@ -306,8 +304,7 @@ export class SlicerTextCardSettings extends Card {
     tailoring = new formattingSettings.ToggleSwitch({
         name: "tailoring",
         displayNameKey: "Visual_Enable_Tailoring",
-        value: false,
-        topLevelToggle: false
+        value: false
     })
 
     height = new formattingSettings.NumUpDown({
@@ -479,7 +476,7 @@ export class SlicerTextCardSettings extends Card {
     ]
 }
 
-export class ImagesCardSettings extends Card {
+export class ImagesCardSettings extends SimpleCard {
 
     imageSplit = new formattingSettings.NumUpDown({
         name: "imageSplit",
@@ -500,22 +497,19 @@ export class ImagesCardSettings extends Card {
     imageRound = new formattingSettings.ToggleSwitch({
         name: "imageRound",
         displayNameKey: "Visual_Images_Round",
-        value: false,
-        topLevelToggle: false
+        value: false
     });
 
     stretchImage = new formattingSettings.ToggleSwitch({
         name: "stretchImage",
         displayNameKey: "Visual_Images_Stretch",
-        value: false,
-        topLevelToggle: false
+        value: false
     });
 
     bottomImage = new formattingSettings.ToggleSwitch({
         name: "bottomImage",
         displayNameKey: "Visual_Images_Bottom",
-        value: false,
-        topLevelToggle: false
+        value: false
     });
 
     name: string = "images";
@@ -542,18 +536,17 @@ export class ImagesCardSettings extends Card {
     ]
 }
 
-export class TooltipsCardSettings extends Card {
+export class TooltipsCardSettings extends SimpleCard {
 
     show = new formattingSettings.ToggleSwitch({
         name: "show",
         displayNameKey: "Visual_Show",
-        value: false,
-        topLevelToggle: true
+        value: false
     });
 
     name: string = "tooltips";
     displayNameKey: string = "Visual_Tooltips";
-    slices = [this.show];
+    topLevelSlice = this.show;
 
     revertToDefaultDescriptors: [
         {
@@ -563,19 +556,12 @@ export class TooltipsCardSettings extends Card {
     ]
 }
 
-export class SlicerItemContainer extends Card {
+export class SlicerItemContainer {
     public marginTop: number = 0;
     public marginLeft: number = 0;
 }
 
-export class Margin extends Card {
-    public top: number = 50;
-    public bottom: number = 50;
-    public right: number = 50;
-    public left: number = 50;
-}
-
-export class HeaderText extends Card {
+export class HeaderText {
     public marginTop: number = 0;
     public marginLeft: number = 0;
 }
@@ -587,7 +573,6 @@ export class ChicletSlicerSettingsModel extends Model {
     imagesCardSettings = new ImagesCardSettings();
     tooltipsCardSettings = new TooltipsCardSettings();
     slicerItemContainer = new SlicerItemContainer();
-    margin = new Margin();
     headerText = new HeaderText();
 
     cards = [this.generalCardSettings, this.headerCardSettings, this.slicerTextCardSettings, this.imagesCardSettings, this.tooltipsCardSettings];

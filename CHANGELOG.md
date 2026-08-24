@@ -1,3 +1,6 @@
+## 2.2.3.0
+* Updated Power BI visuals API to 5.7.0
+
 ## 2.2.2.0
 * Updated tooltip utils to avoid moving a stale tooltip when tooltips are disabled
 

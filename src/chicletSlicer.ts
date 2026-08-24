@@ -204,7 +204,7 @@ export class ChicletSlicer implements IVisual {
         if (this.jsonFilters && this.jsonFilters[0] && this.jsonFilters[0]?.target.length === 0) {
             this.resetScrollbarPosition = true;
         }
-        this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(ChicletSlicerSettingsModel, options.dataViews);
+        this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(ChicletSlicerSettingsModel, options.dataViews[0]);
 
         // orientation bug fix (v2.1.9)
         const orientationValue = options.dataViews[0].metadata.objects?.general?.orientation;
